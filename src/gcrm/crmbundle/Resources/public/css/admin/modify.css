@@ -1,0 +1,189 @@
+body.list table tbody td.actions {
+    white-space: nowrap;
+    width: 1%;
+    background-color: #e6e6e6;
+}
+
+.multi-export-panel {
+    padding: 10px;
+    border: 1px solid #CCC;
+    margin-bottom: 20px;
+}
+.multi-export-buttons {
+    margin-bottom: 10px;
+}
+.under-multi-export-buttons {
+    font-size: 12px;
+    line-height: 18px;
+}
+.under-multi-export-buttons p {
+    margin-bottom: 0;
+    opacity: 0.7;
+}
+
+.list-search-form-panel {
+    padding: 10px;
+    border: 1px solid #CCC;
+    margin-bottom: 20px;
+    background: rgba(0,0,0,.05);
+}
+
+.list-search-form-panel .input-text,
+.list-search-form-panel .checkbox,
+.list-search-form-panel .select {
+    margin-top: 0;
+    margin-bottom: 7px;
+}
+
+.list-search-form-panel .input-text label,
+.list-search-form-panel .select label {
+    display: block;
+    margin-bottom: 0;
+    font-size: 12px;
+}
+.list-search-form-panel .input-text input {
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    height: 24px;
+}
+.list-search-form-panel .checkbox input {
+    margin-left: 0;
+}
+
+.list-search-form-panel .checkbox label {
+    font-size: 12px;
+}
+
+.list-search-form-panel .select2-container--bootstrap .select2-selection--single {
+    height: 24px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.select2-container--bootstrap .select2-selection--single .select2-selection__rendered {
+    padding-top: 3px;
+}
+
+.list-search-form-panel .apply-select > div {
+    display: flex;
+}
+
+.list-search-form-panel .apply-select .select2-container {
+}
+
+.list-search-form-panel .selects-date-col {
+    /*min-width: 377px;*/
+}
+
+.list-search-form-panel .selects-date-col .select2-container--bootstrap .select2-selection--single {
+    padding-left: 7px;
+}
+
+.select2-container--bootstrap .select2-search--dropdown .select2-search__field {
+    width: 100%;
+    margin: 0;
+}
+
+#add-contract-panel > *,
+#add-contract-panel > * > * {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+#add-contract-panel label {
+    margin-bottom: 0;
+    margin-right: 10px;
+}
+#add-contract-panel input {
+    margin-right: 5px;
+}
+
+.list-info-panel {
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid #CCC;
+    margin-bottom: 20px;
+    background: rgba(0,0,0,.05);
+    font-size: 12px;
+}
+
+.list-info-panel .summary {
+    font-size: 14px;
+}
+
+.list-info-panel .summary strong {
+    font-size: 16px;
+}
+
+.balance-row {
+    font-size: 60px;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+.balance-row.smaller {
+    font-size: 50px;
+}
+.balance-row .neutral {
+    color: orange;
+}
+.balance-row .to-pay {
+    color: red;
+}
+.balance-row .paid {
+    color: green;
+}
+
+.balance-legend {
+    margin-bottom: 10px;
+}
+.balance-legend .neutral,
+.balance-legend .to-pay,
+.balance-legend .paid {
+    position: relative;
+    color: #9a9a9a;
+    display: block;
+}
+.balance-legend .neutral:before,
+.balance-legend .to-pay:before,
+.balance-legend .paid:before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 100px;
+    margin-right: 5px;
+}
+.balance-legend .neutral:before {
+    background-color: orange;
+}
+.balance-legend .to-pay:before {
+    background-color: red;
+}
+.balance-legend .paid:before {
+    background-color: green;
+}
+
+
+table .correction-row {
+    background-color: #ffff9b;
+}
+
+#list-action-form {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,0,0,0.2);
+}
+
+#list-action-form form {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.payments-table-wrapper {
+    overflow: auto;
+    height: 205px;
+}

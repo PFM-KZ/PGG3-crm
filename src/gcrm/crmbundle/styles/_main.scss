@@ -1,0 +1,84 @@
+#all {
+
+}
+
+section {
+    padding: 40px 0;
+}
+
+hr {
+    margin: 35px 0;
+    border-color: $borderColor;
+    opacity: 0.3;
+}
+
+.buttons-menu {
+    margin: 0 0 30px;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+    > li {
+        float: left;
+        margin-right: 20px;
+        &.active {
+            .button {
+                background-color: $colorActiveSecond;
+                color: white;
+            }
+        }
+    }
+}
+
+.target-menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    > li {
+        display: none;
+        &.active {
+            display: block;
+        }
+    }
+}
+
+.bordered-box {
+    margin-bottom: 30px;
+    border: 1px solid $borderColor;
+    padding: 30px;
+    background: #fafafa;
+    .bordered-box {
+        background: darken(#fafafa, 2%);
+        padding: 20px;
+    }
+}
+
+.group-field-note {
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: $colorSecondary;
+    letter-spacing: 1px;
+}
+
+.field-note {
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: $colorSecondary;
+    letter-spacing: 1px;
+}
+
+table.table-history {
+    width: 100%;
+    font-size: 1.6em;
+    th {
+        padding: 10px;
+        border-bottom: 1px solid $borderColor;
+    }
+    td {
+        padding: 10px;
+        border-bottom: 1px solid $borderColor;
+    }
+}
+
+.contract-box {
+    height: 200px;
+}

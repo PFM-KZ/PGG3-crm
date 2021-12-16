@@ -1,0 +1,309 @@
+imports:
+    - { resource: ../packages/easy_admin/ }
+
+easy_admin:
+    entities:
+
+#################################################################
+#
+# PREDEFINED VALUES
+#
+#################################################################
+
+        InvoiceType:
+            class: GCRM\CRMBundle\Entity\InvoiceType
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'type', label: 'Typ' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'type', label: 'Typ' }
+
+        ContractSignPersonType:
+            class: GCRM\CRMBundle\Entity\ContractSignPersonType
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+
+        ContractTerminationTypeFormerServiceProvider:
+            class: GCRM\CRMBundle\Entity\ContractTerminationTypeFormerServiceProvider
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+
+        ContractShownDocumentTypeBeforeSign:
+            class: GCRM\CRMBundle\Entity\ContractShownDocumentTypeBeforeSign
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+
+        StatusDepartment:
+            class: GCRM\CRMBundle\Entity\StatusDepartment
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+
+        StatusContractAction:
+            class: GCRM\CRMBundle\Entity\StatusContractAction
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+
+        StatusContract:
+            class: GCRM\CRMBundle\Entity\StatusContract
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - id
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'specialActionOption', label: 'Specjalna akcja', template: '@GCRMCRMBundle/Default/admin/fields/option_array.html.twig', format: 'GCRM\CRMBundle\Service\StatusContractModel', class: 'getSpecialActionOptionByValue' }
+                    - { property: 'specialActions', label: 'Specjalne akcje' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'specialActionOption', label: 'Specjalna akcja', type: 'choice', type_options: { multiple: false, expanded: false, choices: { 'Ustaw ten status po zwrocie': 1 }, placeholder: 'Wybierz...' } }
+                    - { property: 'specialActions', label: 'Specjalne akcje', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\StatusContractAndSpecialActionType', by_reference: false } }
+
+        StatusContractAuthorization:
+            class: GCRM\CRMBundle\Entity\StatusContractAuthorization
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+
+        StatusContractAdministration:
+            class: GCRM\CRMBundle\Entity\StatusContractAdministration
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+
+        StatusContractControl:
+            class: GCRM\CRMBundle\Entity\StatusContractControl
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+
+        StatusContractProcess:
+            class: GCRM\CRMBundle\Entity\StatusContractProcess
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+
+        StatusContractFinances:
+            class: GCRM\CRMBundle\Entity\StatusContractFinances
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+
+        StatusClient:
+            class: GCRM\CRMBundle\Entity\StatusClient
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+
+        StatusClientVerification:
+            class: GCRM\CRMBundle\Entity\StatusClientVerification
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+
+        StatusContractVerification:
+            class: GCRM\CRMBundle\Entity\StatusContractVerification
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'statusContractAction', label: 'Akcja' }
+                    - { property: 'statusContract', label: 'Status' }
+
+        ServiceProvider:
+            class: GCRM\CRMBundle\Entity\ServiceProvider
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'ukeNr', label: 'Numer UKE' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'ukeNr', label: 'Numer UKE' }
+
+        CustomerAllowedDevice:
+            class: GCRM\CRMBundle\Entity\CustomerAllowedDevice
+            permissions: ['ROLE_PREDEFINED_VALUES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+
+
+#################################################################
+#
+# MERGED TABLES
+#
+#################################################################
+
+        ClientAndUser:
+            class: GCRM\CRMBundle\Entity\ClientAndUser
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'client', label: 'Klient' }
+                    - { property: 'user', label: 'Użytkownik' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                fields:
+                    - { property: 'client', label: 'Klient' }
+                    - { property: 'user', label: 'Użytkownik' }
+
+        EndContractType:
+            class: GCRM\CRMBundle\Entity\EndContractType
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+
+        CampaignFieldType:
+            class: GCRM\CRMBundle\Entity\CampaignFieldType
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Nazwa' }
+                    - { property: 'code', label: 'Code' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Nazwa' }
+                    - { property: 'code', label: 'Code' }
+
+        Campaign:
+            class: GCRM\CRMBundle\Entity\Campaign
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Nazwa' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+                    - { property: 'isActive', label: 'Aktywny' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Nazwa' }
+                    - { property: 'campaignAndCampaignFieldTypes', label: 'Pola rekordów kampanii', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\CampaignAndCampaignFieldTypeType', by_reference: false } }
+                    - { property: 'isActive', label: 'Aktywny' }
+
+#################################################################
+#################################################################
+# END OF CRM CONFIG                                             #
+#################################################################
+#################################################################

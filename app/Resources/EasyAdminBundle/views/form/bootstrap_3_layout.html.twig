@@ -1,0 +1,1407 @@
+{% use 'form_div_layout.html.twig' %}
+
+{% block lazy_choice_widget %}
+    {{ block('choice_widget') }}
+    <script>
+        var selectsToUpdate = $('form select[data-ajax-lazyload="true"]');
+        selectsToUpdate.select2({
+            theme: 'bootstrap',
+            language: 'pl',
+            minimumResultsForSearch: 0,
+            minimumInputLength: 3,
+            ajax: {
+                type: "POST",
+                delay: 250,
+                url: "{{ url(attr['data-ajax-route']) }}",
+                dataType: "JSON",
+                data: function (params) {
+                    return 'search=' + params.term + '&select=' + this.attr('id');
+                },
+                processResults: function(data) {
+                    if (data.tooMany) {
+                        setTimeout(function() {
+                            $('.select2-results__option').remove();
+                            $('.select2-results__options').append(
+                                $('<li>').addClass('select2-results__option')
+                                    .attr('role', 'treeitem')
+                                    .text('Zbyt dużo wyników (' + data.tooMany + ')... zawęź wyszukiwanie')
+                            )
+                        }, 50);
+
+                        return {
+                            results: ''
+                        };
+                    }
+
+                    if (data.select && data.map) {
+                        var select = $('#' + data.select);
+                        if (select.length) {
+                            select.attr('data-bag', JSON.stringify(data));
+                        }
+                    }
+
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
+
+        // remove select options before selecting (to leave only one option that is created after select)
+        selectsToUpdate.on('select2:selecting', function(e) {
+            var options = $(e.currentTarget).find('option');
+            options.remove();
+        });
+
+        // mark added option as selected to properly send data
+        selectsToUpdate.on('select2:select', function(e) {
+            // mark
+            var options = $(e.currentTarget).find('option');
+            if (options.length) {
+                options.eq(0).attr('selected', 'selected');
+            }
+
+            // if data-bag exists, map it
+            var dataBag = JSON.parse($(e.currentTarget).attr('data-bag'));
+
+            for (var i = 0; i < dataBag.results.length; i++) {
+                if (dataBag.results[i].id == options.eq(0).val()) {
+                    dataToAppend = dataBag.results[i].map;
+                    jQuery.each(dataToAppend, function(key, value) {
+                        $('#' + key).val(value);
+                    });
+
+                    break;
+                }
+            }
+        });
+
+        // chose first option after page is loaded - for records that have already saved value
+        for (var i = 0; i < selectsToUpdate.length; i++) {
+            var select = $(selectsToUpdate.eq(i));
+            if (selectsToUpdate.eq(i)[0] !== undefined && selectsToUpdate.eq(i)[0][1] !== undefined) {
+                var option = $(selectsToUpdate.eq(i)[0][1]);
+                option.attr('selected', 'selected');
+                select.parent().find('.select2-selection__rendered').text(option.text());
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block form_start -%}
+    {% if 'easyadmin' == block_prefixes|slice(-2)|first %}
+        {% set attr = attr|merge({
+            'class': [
+                _easyadmin_form_type|default('') == 'horizontal' ? 'form-horizontal' : 'form-vertical',
+                attr.class|default(''),
+                easyadmin.view ~ '-form'
+            ]|join(' '),
+            'data-view': easyadmin.view,
+            'data-entity': easyadmin.entity.name,
+            'data-entity-id': attribute(value, easyadmin.entity.primary_key_field_name),
+        }) %}
+    {% endif %}
+
+    {% if form.vars.errors|length > 0 %}
+        {{ form_errors(form) }}
+    {% endif %}
+
+    {{- parent() -}}
+
+    <input type="hidden" name="referer" value="{{ app.request.query.get('referer', '') }}"/>
+{%- endblock form_start %}
+
+{# Widgets #}
+
+{% block form_widget %}
+    {{- parent() -}}
+
+    {% if form.parent.vars.allow_delete|default(false) %}
+        {% set remove_item_javascript %}
+            $(function() {
+            if (event.preventDefault) event.preventDefault(); else event.returnValue = false;
+
+            var containerDiv = $('#{{ id }}').parents('.form-group:first');
+            var parentDiv = containerDiv.parents('[data-prototype]:first');
+            containerDiv.remove();
+            parentDiv.trigger('easyadmin.collection.item-deleted');
+
+            if (0 == parentDiv.children().length && 'undefined' !== parentDiv.attr('data-empty-collection')) {
+                $(parentDiv.attr('data-empty-collection')).insertBefore(parentDiv);
+            }
+            });
+        {% endset %}
+
+        <div class="text-right field-collection-item-action">
+            <a href="#" onclick="{{ remove_item_javascript|raw }}" class="text-danger">
+                <i class="fa fa-remove"></i>
+                {{ 'action.remove_item'|trans({}, 'EasyAdminBundle') }}
+            </a>
+        </div>
+    {% endif %}
+{% endblock form_widget %}
+
+{% block form_widget_simple -%}
+    {% if type is not defined or type not in ['file', 'hidden'] %}
+        {%- set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) -%}
+    {% endif %}
+    {{- parent() -}}
+
+    {% if attr['data-action'] is defined and attr['data-action'] == 'updateDateByAnotherDateField' %}
+        <script>
+            $(function() {
+                var initialField = $('#{{ attr['data-field-id'] }}');
+                var updateField = $('#{{ form.vars.id }}');
+
+                initialField.change(function() {
+                    if (initialField.val()) {
+                        var changeToDate = new Date(initialField.val());
+                        changeToDate.setDate(changeToDate.getDate() + {{ attr['data-value'] }});
+
+                        var changeToDateFormatted = changeToDate.getFullYear() + '-'
+                            + ('0' + (changeToDate.getMonth()+1)).slice(-2) + '-'
+                            + ('0' + changeToDate.getDate()).slice(-2);
+
+                        updateField.val(changeToDateFormatted);
+                    }
+                });
+            });
+        </script>
+    {% endif %}
+{%- endblock form_widget_simple %}
+
+{% block textarea_widget -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+    {{- parent() -}}
+{%- endblock textarea_widget %}
+
+{% block button_widget -%}
+    {% set attr = attr|merge({class: (attr.class|default('btn-default') ~ ' btn')|trim}) %}
+    {{- parent() -}}
+{%- endblock %}
+
+{% block money_widget -%}
+    <div class="input-group">
+        {% set prepend = '{{' == money_pattern[0:2] %}
+        {% if not prepend %}
+            <span class="input-group-addon">{{ money_pattern|replace({ '{{ widget }}':''}) }}</span>
+        {% endif %}
+        {{- block('form_widget_simple') -}}
+        {% if prepend %}
+            <span class="input-group-addon">{{ money_pattern|replace({ '{{ widget }}':''}) }}</span>
+        {% endif %}
+    </div>
+{%- endblock money_widget %}
+
+{% block percent_widget -%}
+    <div class="input-group">
+        {{- block('form_widget_simple') -}}
+        <span class="input-group-addon">%</span>
+    </div>
+{%- endblock percent_widget %}
+
+{% block datetime_widget -%}
+    {% if widget == 'single_text' %}
+        {{- block('form_widget_simple') -}}
+    {% else -%}
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-inline')|trim}) -%}
+        <div {{ block('widget_container_attributes') }}>
+            {{- form_errors(form.date) -}}
+            {{- form_errors(form.time) -}}
+            {{- form_widget(form.date, { datetime: true } ) -}}
+            {{- form_widget(form.time, { datetime: true } ) -}}
+        </div>
+    {%- endif %}
+{%- endblock datetime_widget %}
+
+{% block date_widget -%}
+    {% if widget == 'single_text' %}
+        {{- block('form_widget_simple') -}}
+    {% else -%}
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-inline')|trim}) -%}
+        {% if datetime is not defined or not datetime -%}
+            <div {{ block('widget_container_attributes') -}}>
+        {%- endif %}
+            {{- date_pattern|replace({
+                '{{ year }}': form_widget(form.year),
+                '{{ month }}': form_widget(form.month),
+                '{{ day }}': form_widget(form.day),
+            })|raw -}}
+        {% if datetime is not defined or not datetime -%}
+            </div>
+        {%- endif -%}
+    {% endif %}
+{%- endblock date_widget %}
+
+{% block time_widget -%}
+    {% if widget == 'single_text' %}
+        {{- block('form_widget_simple') -}}
+    {% else -%}
+        {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-inline')|trim}) -%}
+        {% if datetime is not defined or false == datetime -%}
+            <div {{ block('widget_container_attributes') -}}>
+        {%- endif -%}
+        {{- form_widget(form.hour) }}:{{ form_widget(form.minute) }}{% if with_seconds %}:{{ form_widget(form.second) }}{% endif %}
+        {% if datetime is not defined or false == datetime -%}
+            </div>
+        {%- endif -%}
+    {% endif %}
+{%- endblock time_widget %}
+
+{% block choice_widget_collapsed -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+    {{- parent() -}}
+    {% if form.parent.vars.allow_delete|default(false) %}
+        {% set remove_item_javascript %}
+            $(function() {
+            if (event.preventDefault) event.preventDefault(); else event.returnValue = false;
+
+            var containerDiv = $('#{{ id }}').parents('.form-group:first');
+            var parentDiv = containerDiv.parents('[data-prototype]:first');
+            containerDiv.remove();
+            parentDiv.trigger('easyadmin.collection.item-deleted');
+
+            if (0 == parentDiv.children().length && 'undefined' !== parentDiv.attr('data-empty-collection')) {
+            $(parentDiv.attr('data-empty-collection')).insertBefore(parentDiv);
+            }
+            });
+        {% endset %}
+
+        <div class="text-right field-collection-item-action">
+            <a href="#" onclick="{{ remove_item_javascript|raw }}" class="text-danger">
+                <i class="fa fa-remove"></i>
+                {{ 'action.remove_item'|trans({}, 'EasyAdminBundle') }}
+            </a>
+        </div>
+    {% endif %}
+
+    {% if attr['data-ajax-update-targeted'] is defined %}
+        <script>
+            var selectsTargets = $('form select[data-ajax-update-targeted="true"]');
+
+            // clear unselected options
+            if (selectsTargets.length) {
+                for (var i = 0; i < selectsTargets.length; i++) {
+                    var select = selectsTargets.eq(i);
+                    var options = select.find('option');
+                    var selectedOptionVal = null;
+                    if (options.length) {
+                        for (var a = 0; a < options.length; a++) {
+                            if (options.eq(a).attr('selected') != 'selected' && options.eq(a).val()) {
+                                options.eq(a).remove();
+                            } else if (options.eq(a).attr('selected') == 'selected') {
+                                selectedOptionVal = options.eq(a).val();
+                            }
+                        }
+                    }
+
+                    var target = $('form select[data-ajax-update-target-id="' + select.data('ajax-update-targeted-id') + '"]');
+                    dataAjaxUpdateTarget(target, selectedOptionVal);
+                }
+            }
+
+            // update options list and select one if was selected before
+
+        </script>
+    {% endif %}
+
+    {% if attr['data-ajax-update-target'] is defined %}
+        <script>
+            function dataAjaxUpdateTarget(select, selectedOptionVal) {
+                var selectedOptionValue = select.val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url(attr['data-ajax-route']) }}",
+                    dataType: "JSON",
+                    data: { id: selectedOptionValue },
+                    success: function(data) {
+                        var target = $('form select[data-ajax-update-targeted-id="' + select.data('ajax-update-target-id') + '"]');
+                        var options = target.find('option');
+                        // remove only options with value, leave empty option
+                        var emptyOption = null;
+                        if (options.length) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options.eq(i).val()) {
+                                    options.eq(i).remove();
+                                } else {
+                                    emptyOption = options.eq(i);
+                                }
+                            }
+                        }
+
+                        if (emptyOption) {
+                            target.parent().find('.select2-selection__rendered').text(emptyOption.text());
+                        } else {
+                            target.parent().find('.select2-selection__rendered').text('');
+                        }
+
+                        if (data.results && data.results.length) {
+                            // append fetched options
+                            for(var i = 0; i < data.results.length; i++) {
+                                option = $('<option>').val(data.results[i].id).text(data.results[i].text);
+                                if (selectedOptionVal && selectedOptionVal == data.results[i].id) {
+                                    option.attr('selected', 'selected');
+                                    target.parent().find('.select2-selection__rendered').text(data.results[i].text);
+                                }
+                                target.append(option);
+                            }
+                        }
+                    }
+                });
+            }
+
+            var selectsToUpdate = $('form select[data-ajax-update-target="true"]');
+
+            // update target on change
+            selectsToUpdate.change(function(e) {
+                dataAjaxUpdateTarget($(this));
+            });
+        </script>
+    {% endif %}
+{%- endblock %}
+
+{% block choice_widget_expanded -%}
+
+    {% if '-inline' in label_attr.class|default('') -%}
+        <div class="control-group">
+            {%- for child in form %}
+                {{- form_widget(child, {
+                    parent_label_class: label_attr.class|default(''),
+                    translation_domain: choice_translation_domain,
+                }) -}}
+            {% endfor -%}
+        </div>
+    {%- else -%}
+        {% if form.vars.id == 'user_roles' %}
+            <style>
+                .mark-all {
+                    margin-bottom: 15px;
+                    cursor: pointer;
+                }
+                .box-bordered {
+                    margin-bottom: 30px;
+                    border: 1px solid #ddd;
+                }
+                .box-bordered .top-line {
+                    padding: 20px 20px 10px;
+                    cursor: pointer;
+                }
+                .box-bordered .top-line:hover {
+                    background: #ddd;
+                }
+                .box-bordered h3 {
+                    text-transform: uppercase;
+                    margin-top: 0;
+                    font-size: 18px;
+                    font-weight: bold;
+                    letter-spacing: 0.5px;
+                }
+                .box-bordered.active h3 i {
+                    -webkit-transform: rotate(-90deg);
+                    -ms-transform: rotate(-90deg);
+                    -o-transform: rotate(-90deg);
+                    transform: rotate(-90deg);
+                }
+                .box-bordered.active .top-line {
+                    background: #ddd;
+                }
+                .box-bordered.active .expander {
+                    height: auto;
+                    padding: 20px;
+                }
+                .box-bordered .expander {
+                    height: 0;
+                    overflow: hidden;
+                }
+            </style>
+            {% set roles = {
+                'authorizationDepartment': [
+                    'ROLE_AUTHORIZATION_DEPARTMENT',
+                ],
+                'verificationDepartment': [
+                    'ROLE_VERIFICATION_DEPARTMENT',
+                ],
+                'administrationDepartment': [
+                    'ROLE_ADMINISTRATION_DEPARTMENT',
+                    'ROLE_ADMINISTRATION_STATISTICS',
+                    'ROLE_CLIENTS',
+                    'ROLE_CLIENTS_SHOW',
+                    'ROLE_CLIENTS_EDIT',
+                    'ROLE_CLIENTS_NEW',
+                    'ROLE_CLIENTS_DELETE',
+                    'ROLE_CLIENTS_LIST',
+                    'ROLE_CLIENTS_SEARCH',
+                    'ROLE_CONTRACTS',
+                    'ROLE_CONTRACTS_SHOW',
+                    'ROLE_CONTRACTS_EDIT',
+                    'ROLE_CONTRACTS_NEW',
+                    'ROLE_CONTRACTS_DELETE',
+                    'ROLE_CONTRACTS_LIST',
+                    'ROLE_CONTRACTS_SEARCH',
+                ],
+                'controlDepartment': [
+                    'ROLE_CONTROL_DEPARTMENT',
+                ],
+                'processDepartment': [
+                    'ROLE_PROCESS_DEPARTMENT',
+                ],
+                'financesDepartment': [
+                    'ROLE_FINANCES_DEPARTMENT',
+                    'ROLE_FINANCES_STATISTICS',
+                    'ROLE_FINANCES_DOWNLOAD',
+                    'ROLE_INVOICE_PARSER',
+                    'ROLE_INVOICES',
+                    'ROLE_INVOICES_SHOW',
+                    'ROLE_INVOICES_EDIT',
+                    'ROLE_INVOICES_NEW',
+                    'ROLE_INVOICES_DELETE',
+                    'ROLE_INVOICES_LIST',
+                    'ROLE_INVOICES_SEARCH',
+                    'ROLE_INVOICE_RABATES',
+                    'ROLE_INVOICE_RABATES_SHOW',
+                    'ROLE_INVOICE_RABATES_EDIT',
+                    'ROLE_INVOICE_RABATES_NEW',
+                    'ROLE_INVOICE_RABATES_DELETE',
+                    'ROLE_INVOICE_RABATES_LIST',
+                    'ROLE_INVOICE_RABATES_SEARCH',
+                ],
+                'legalDepartment': [
+                    'ROLE_LEGAL_DEPARTMENT',
+                ],
+                'salesDepartment': [
+                    'ROLE_SALES_DEPARTMENT',
+                ],
+                'managementDepartment': [
+                    'ROLE_MANAGEMENT_DEPARTMENT',
+                ],
+                'adminPanelAccess': [
+                    'ROLE_USER',
+                    'ROLE_ADMIN',
+                    'ROLE_SUPERADMIN',
+                ],
+                'tariffAndServices': [
+                    'ROLE_TARIFF',
+                    'ROLE_TARIFF_SHOW',
+                    'ROLE_TARIFF_EDIT',
+                    'ROLE_TARIFF_NEW',
+                    'ROLE_TARIFF_DELETE',
+                    'ROLE_TARIFF_LIST',
+                    'ROLE_TARIFF_SEARCH',
+                    'ROLE_SERVICES',
+                    'ROLE_SERVICES_SHOW',
+                    'ROLE_SERVICES_EDIT',
+                    'ROLE_SERVICES_NEW',
+                    'ROLE_SERVICES_DELETE',
+                    'ROLE_SERVICES_LIST',
+                    'ROLE_SERVICES_SEARCH',
+                ],
+                'packages': [
+                    'ROLE_PACKAGES',
+                ],
+                'calls': [
+                    'ROLE_CALLS',
+                ],
+                'warehouse': [
+                    'ROLE_WAREHOUSE',
+                ],
+                'companiesMarksBranches': [
+                    'ROLE_COMPANY',
+                    'ROLE_BRANDS',
+                    'ROLE_BRANCHES',
+                ],
+            } %}
+
+            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+
+            <div class="row">
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                            <h3>Dostępy do panelu <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.adminPanelAccess %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                        <h3>Cennik / usługi <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.tariffAndServices %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                        <h3>Pakiety <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.packages %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                        <h3>Magazyn <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.warehouse %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                        <h3>Połączenia (CDR) <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.calls %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                        <h3>Firmy / marki / oddziały <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.companiesMarksBranches %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                            <h3>D. AUTORYZACJI <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.authorizationDepartment %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                            <h3>D. WERYFIKACJI <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.verificationDepartment %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                        <h3>D. ADMINISTRACJI <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.administrationDepartment %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                        <h3>D. KONTROLI <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.controlDepartment %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                            <h3>D. PROCESOWY <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.processDepartment %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                        <h3>D. FINANSOWY <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.financesDepartment %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                            <h3>D. PRAWNY <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.legalDepartment %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                            <h3>D. SPRZEDAŻOWY <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.salesDepartment %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                            <h3>D. ZARZĄDU <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if child.vars.value in roles.managementDepartment %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-md-12">
+                    <div class="box-bordered roles-target">
+                        <div class="top-line">
+                        <h3>Pozostałe <i class="fa fa-angle-left pull-right"></i></h3>
+                        </div>
+
+
+                        <div class="expander">
+                            <span class="mark-all btn btn-default">Zaznacz wszystkie</span>
+                            {%- for child in form %}
+                                {% if
+                                (child.vars.value not in roles.adminPanelAccess) and
+                                (child.vars.value not in roles.financesDepartment) and
+                                (child.vars.value not in roles.administrationDepartment) and
+                                (child.vars.value not in roles.verificationDepartment) and
+                                (child.vars.value not in roles.tariffAndServices) and
+                                (child.vars.value not in roles.warehouse) and
+                                (child.vars.value not in roles.companiesMarksBranches) and
+                                (child.vars.value not in roles.packages) and
+                                (child.vars.value not in roles.calls)
+                                %}
+                                    {{- form_widget(child, {
+                                        parent_label_class: label_attr.class|default(''),
+                                        translation_domain: choice_translation_domain,
+                                    }) -}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <div {{ block('widget_container_attributes') }}>
+                {%- for child in form %}
+                    {{- form_widget(child, {
+                        parent_label_class: label_attr.class|default(''),
+                        translation_domain: choice_translation_domain,
+                    }) -}}
+                {% endfor -%}
+            </div>
+        {% endif %}
+
+
+
+    {%- endif %}
+{%- endblock choice_widget_expanded %}
+
+{% block checkbox_widget -%}
+    {%- set parent_label_class = parent_label_class|default(label_attr.class|default('')) -%}
+    {% if 'checkbox-inline' in parent_label_class %}
+        {{- form_label(form, null, { widget: parent() }) -}}
+    {% else -%}
+        <div class="checkbox">
+            {{- form_label(form, null, { widget: parent() }) -}}
+
+
+
+            {% if form.vars.value == 'ROLE_USER' %}
+                <div>Domyślne uprawnienia. Powinien je mieć każdy użytkownik.</div>
+            {% elseif form.vars.value == 'ROLE_ADMIN' %}
+                <div>Dostęp do panelu administracyjnego</div>
+            {% elseif form.vars.value == 'ROLE_SUPERADMIN' %}
+                <div>Dostęp do dodatkowych ustawień systemowych</div>
+            {% elseif form.vars.value == 'ROLE_WEBSITE' %}
+                <div>Dostęp do modyfikowania strony</div>
+
+            {% elseif form.vars.value == 'ROLE_FINANCES_STATISTICS' %}
+                <div>Dostęp do statystyk finansowych.</div>
+            {% elseif form.vars.value == 'ROLE_INVOICE_PARSER' %}
+                <div>Dostęp do parsera faktur (dział "Finanse")</div>
+            {% elseif form.vars.value == 'ROLE_INVOICES' %}
+                <div>Dostęp do faktur. Aby opcja pojawiła się w menu, musi dodatkowo zostać wybrana opcja lista.</div>
+            {% elseif form.vars.value == 'ROLE_INVOICES_SHOW' %}
+                <div>Dostęp do faktur - podgląd rekordu</div>
+            {% elseif form.vars.value == 'ROLE_INVOICES_EDIT' %}
+                <div>Dostęp do faktur - edycja</div>
+            {% elseif form.vars.value == 'ROLE_INVOICES_NEW' %}
+                <div>Dostęp do faktur - tworzenie nowego rekordu</div>
+            {% elseif form.vars.value == 'ROLE_INVOICES_DELETE' %}
+                <div>Dostęp do faktur - usuwanie</div>
+            {% elseif form.vars.value == 'ROLE_INVOICES_LIST' %}
+                <div>Dostęp do faktur - lista</div>
+            {% elseif form.vars.value == 'ROLE_INVOICES_SEARCH' %}
+                <div>Dostęp do faktur - wyszukiwanie</div>
+            {% elseif form.vars.value == 'ROLE_INVOICE_RABATES' %}
+                <div>Dostęp do rabatów używanych w fakturach. Aby opcja pojawiła się w menu, musi dodatkowo zostać wybrana opcja lista.</div>
+            {% elseif form.vars.value == 'ROLE_INVOICE_RABATES_SHOW' %}
+                <div>Dostęp do rabatów używanych w fakturach - podgląd rekordu</div>
+            {% elseif form.vars.value == 'ROLE_INVOICE_RABATES_EDIT' %}
+                <div>Dostęp do rabatów używanych w fakturach - edycja</div>
+            {% elseif form.vars.value == 'ROLE_INVOICE_RABATES_NEW' %}
+                <div>Dostęp do rabatów używanych w fakturach - nowy</div>
+            {% elseif form.vars.value == 'ROLE_INVOICE_RABATES_DELETE' %}
+                <div>Dostęp do rabatów używanych w fakturach - usuwanie</div>
+            {% elseif form.vars.value == 'ROLE_INVOICE_RABATES_LIST' %}
+                <div>Dostęp do rabatów używanych w fakturach - lista</div>
+            {% elseif form.vars.value == 'ROLE_INVOICE_RABATES_SEARCH' %}
+                <div>Dostęp do rabatów używanych w fakturach - wyszukiwanie</div>
+            {% elseif form.vars.value == 'ROLE_FINANCES_DOWNLOAD' %}
+                <div>Dostęp do pobierania danych z działu finansowego</div>
+
+
+            {% elseif form.vars.value == 'ROLE_ADMINISTRATION_STATISTICS' %}
+                <div>Dostęp do statystyk administracyjnych.</div>
+            {% elseif form.vars.value == 'ROLE_CLIENTS' %}
+                <div>Dostęp do klientów. Aby opcja pojawiła się w menu, musi dodatkowo zostać wybrana opcja lista.</div>
+            {% elseif form.vars.value == 'ROLE_CLIENTS_SHOW' %}
+                <div>Dostęp do klientów - podgląd rekordu</div>
+            {% elseif form.vars.value == 'ROLE_CLIENTS_EDIT' %}
+                <div>Dostęp do klientów - edycja</div>
+            {% elseif form.vars.value == 'ROLE_CLIENTS_NEW' %}
+                <div>Dostęp do klientów - tworzenie nowego rekordu</div>
+            {% elseif form.vars.value == 'ROLE_CLIENTS_DELETE' %}
+                <div>Dostęp do klientów - usuwanie</div>
+            {% elseif form.vars.value == 'ROLE_CLIENTS_LIST' %}
+                <div>Dostęp do klientów - lista</div>
+            {% elseif form.vars.value == 'ROLE_CLIENTS_SEARCH' %}
+                <div>Dostęp do klientów - wyszukiwanie</div>
+
+
+
+
+            {% elseif form.vars.value == 'ROLE_CONTRACTS' %}
+                <div>Dostęp do umów. Aby opcja pojawiła się w menu, musi dodatkowo zostać wybrana opcja lista.</div>
+            {% elseif form.vars.value == 'ROLE_CONTRACTS_SHOW' %}
+                <div>Dostęp do umów - podgląd rekordu</div>
+            {% elseif form.vars.value == 'ROLE_CONTRACTS_EDIT' %}
+                <div>Dostęp do umów - edycja</div>
+            {% elseif form.vars.value == 'ROLE_CONTRACTS_NEW' %}
+                <div>Dostęp do umów - tworzenie nowego rekordu</div>
+            {% elseif form.vars.value == 'ROLE_CONTRACTS_DELETE' %}
+                <div>Dostęp do umów - usuwanie</div>
+            {% elseif form.vars.value == 'ROLE_CONTRACTS_LIST' %}
+                <div>Dostęp do umów - lista</div>
+            {% elseif form.vars.value == 'ROLE_CONTRACTS_SEARCH' %}
+                <div>Dostęp do umów - wyszukiwanie</div>
+
+
+
+
+
+            {% elseif form.vars.value == 'ROLE_TARIFF' %}
+                <div>Dostęp do cenników. Aby opcja pojawiła się w menu, musi dodatkowo zostać wybrana opcja lista.</div>
+            {% elseif form.vars.value == 'ROLE_TARIFF_SHOW' %}
+                <div>Dostęp do cenników - podgląd rekordu</div>
+            {% elseif form.vars.value == 'ROLE_TARIFF_EDIT' %}
+                <div>Dostęp do cenników - edycja</div>
+            {% elseif form.vars.value == 'ROLE_TARIFF_NEW' %}
+                <div>Dostęp do cenników - tworzenie nowego rekordu</div>
+            {% elseif form.vars.value == 'ROLE_TARIFF_DELETE' %}
+                <div>Dostęp do cenników - usuwanie</div>
+            {% elseif form.vars.value == 'ROLE_TARIFF_LIST' %}
+                <div>Dostęp do cenników - lista</div>
+            {% elseif form.vars.value == 'ROLE_TARIFF_SEARCH' %}
+                <div>Dostęp do cenników - wyszukiwanie</div>
+            {% elseif form.vars.value == 'ROLE_SERVICES' %}
+                <div>Dostęp do usług. Aby opcja pojawiła się w menu, musi dodatkowo zostać wybrana opcja lista.</div>
+            {% elseif form.vars.value == 'ROLE_SERVICES_SHOW' %}
+                <div>Dostęp do usług - podgląd rekordu</div>
+            {% elseif form.vars.value == 'ROLE_SERVICES_EDIT' %}
+                <div>Dostęp do usług - edycja</div>
+            {% elseif form.vars.value == 'ROLE_SERVICES_NEW' %}
+                <div>Dostęp do usług - tworzenie nowego rekordu</div>
+            {% elseif form.vars.value == 'ROLE_SERVICES_DELETE' %}
+                <div>Dostęp do usług - usuwanie</div>
+            {% elseif form.vars.value == 'ROLE_SERVICES_LIST' %}
+                <div>Dostęp do usług - lista</div>
+            {% elseif form.vars.value == 'ROLE_SERVICES_SEARCH' %}
+                <div>Dostęp do usług - wyszukiwanie</div>
+            {% elseif form.vars.value == 'ROLE_USERADMIN' %}
+                <div>Dostęp do użytkowników</div>
+            {% elseif form.vars.value == 'ROLE_PH' %}
+                <div>Dostęp do panelu handlowca</div>
+            {% elseif form.vars.value == 'ROLE_WAREHOUSE' %}
+                <div>Dostęp do magazynu</div>
+            {% elseif form.vars.value == 'ROLE_CONFIG' %}
+                <div>Dostęp do ustawień systemowych</div>
+            {% elseif form.vars.value == 'ROLE_PREDEFINED_VALUES' %}
+                <div>Dostęp do predefiniowanych wartości systemowych</div>
+            {% elseif form.vars.value == 'ROLE_COMPANY' %}
+                <div>Dostęp do firm</div>
+            {% elseif form.vars.value == 'ROLE_BRANDS' %}
+                <div>Dostęp do marek</div>
+            {% elseif form.vars.value == 'ROLE_BRANCHES' %}
+                <div>Dostęp do oddziałów</div>
+            {% endif %}
+        </div>
+    {%- endif %}
+{%- endblock checkbox_widget %}
+
+{% block radio_widget -%}
+    {%- set parent_label_class = parent_label_class|default(label_attr.class|default('')) -%}
+    {% if 'radio-inline' in parent_label_class %}
+        {{- form_label(form, null, { widget: parent() }) -}}
+    {% else -%}
+        <div class="radio">
+            {{- form_label(form, null, { widget: parent() }) -}}
+        </div>
+    {%- endif %}
+{%- endblock radio_widget %}
+
+{# Labels #}
+
+{% block form_label -%}
+    {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' control-label')|trim}) -%}
+    {{- parent() -}}
+{%- endblock form_label %}
+
+{% block choice_label -%}
+    {# remove the checkbox-inline and radio-inline class, it's only useful for embed labels #}
+    {%- set label_attr = label_attr|merge({class: label_attr.class|default('')|replace({'checkbox-inline': '', 'radio-inline': ''})|trim}) -%}
+    {{- block('form_label') -}}
+{% endblock %}
+
+{% block checkbox_label -%}
+    {{- block('checkbox_radio_label') -}}
+{%- endblock checkbox_label %}
+
+{% block radio_label -%}
+    {{- block('checkbox_radio_label') -}}
+{%- endblock radio_label %}
+
+{% block checkbox_radio_label %}
+    {# Do no display the label if widget is not defined in order to prevent double label rendering #}
+    {% if widget is defined %}
+        {% if required %}
+            {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' required')|trim}) %}
+        {% endif %}
+        {% if parent_label_class is defined %}
+            {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' ' ~ parent_label_class)|trim}) %}
+        {% endif %}
+        {% if label is not same as(false) and label is empty %}
+            {% set label = name|humanize %}
+        {% endif %}
+        <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+            {{- widget|raw -}}
+            {{- label is not same as(false) ? label|trans({}, translation_domain ?: easyadmin.entity.translation_domain) -}}
+        </label>
+    {% endif %}
+{% endblock checkbox_radio_label %}
+
+{# Rows #}
+
+{% block form_row -%}
+    {% set _field_type = easyadmin.field.fieldType|default('default') %}
+    <div class="form-group {% if (not compound or force_error|default(false)) and not valid %}has-error{% endif %} field-{{ block_prefixes|slice(-2)|first }}">
+        {{- form_label(form) -}}
+        {{- form_widget(form) -}}
+
+        {% if _field_type in ['datetime', 'date', 'time', 'birthday'] and easyadmin.field.nullable|default(false) %}
+            <div class="nullable-control">
+                <label>
+                    <input type="checkbox" {% if data is null %}checked="checked"{% endif %}>
+                    {{ 'label.nullable_field'|trans({}, 'EasyAdminBundle')}}
+                </label>
+            </div>
+        {% endif %}
+
+        {{- form_errors(form) -}}
+
+        {% if easyadmin.field.help|default('') != '' %}
+            <span class="help-block"><i class="fa fa-info-circle"></i> {{ easyadmin.field.help|trans(domain = easyadmin.entity.translation_domain)|raw }}</span>
+        {% endif %}
+    </div>
+{%- endblock form_row %}
+
+{% block collection_row %}
+    {{ block('form_row') }}
+
+    {% if allow_add|default(false) %}
+        {% set js_add_item %}
+            $(function() {
+                if (event.preventDefault) event.preventDefault(); else event.returnValue = false;
+
+                var collection = $('#{{ id }}');
+
+                // Use a counter to avoid having the same index more than once
+                var numItems = collection.data('count') || collection.children('div.form-group').length;
+
+                // edited functionality - script must get largest number to avoid duplicates, if it takes count then script is broken
+                var items = collection.children('div.form-group');
+                var maxNumber = 0;
+                for (var i = 0; i < items.length; i++) {
+                    var label = items.eq(i).find('> label');
+                    if (label.length) {
+                        maxNumber = Math.max(parseInt(label.text()) + 1, maxNumber);
+                    }
+                }
+                numItems = maxNumber;
+                //
+
+
+                collection.prev('.collection-empty').remove();
+
+                var newItem = collection.attr('data-prototype')
+                    .replace(/\>__name__label__\</g, '>' + numItems + '<')
+                    .replace(/_{{ name }}___name__/g, '_{{ name }}_' + numItems)
+                    .replace(/{{ name }}\]\[__name__\]/g, '{{ name }}][' + numItems + ']')
+                ;
+
+                // Increment the counter and store it in the collection
+                collection.data('count', ++numItems);
+
+                collection.append(newItem).trigger('easyadmin.collection.item-added');
+            });
+        {% endset %}
+
+        <div class="text-right field-collection-action">
+            <a href="#" onclick="{{ js_add_item|raw }}" class="text-primary">
+                <i class="fa fa-plus-square"></i>
+                {{ (form|length == 0 ? 'action.add_new_item' : 'action.add_another_item')|trans({}, 'EasyAdminBundle') }}
+            </a>
+        </div>
+    {% endif %}
+{% endblock collection_row %}
+
+{% block button_row -%}
+    <div class="form-group field-{{ block_prefixes|slice(-2)|first }} {{ easyadmin.field.css_class|default('') }}">
+        {{- form_widget(form) -}}
+    </div>
+{%- endblock button_row %}
+
+{% block choice_row -%}
+    {% set force_error = true %}
+    {{- block('form_row') }}
+{%- endblock choice_row %}
+
+{% block date_row -%}
+    {% set force_error = true %}
+    {{- block('form_row') }}
+{%- endblock date_row %}
+
+{% block time_row -%}
+    {% set force_error = true %}
+    {{- block('form_row') }}
+{%- endblock time_row %}
+
+{% block datetime_row -%}
+    {% set force_error = true %}
+    {{- block('form_row') }}
+{%- endblock datetime_row %}
+
+{% block checkbox_row -%}
+    <div class="form-group {% if not valid %}has-error{% endif %} field-{{ block_prefixes|slice(-2)|first }}">
+        {{- form_widget(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock checkbox_row %}
+
+{% block radio_row -%}
+    <div class="form-group {% if not valid %}has-error{% endif %} field-{{ block_prefixes|slice(-2)|first }}">
+        {{- form_widget(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock radio_row %}
+
+{# Errors #}
+{% block form_errors %}
+    {% set error_count = errors|length %}
+    {% if error_count >= 1 %}
+        <div class="error-block">
+            <span class="label label-danger">{{ 'errors'|transchoice(error_count, {}, 'EasyAdminBundle') }}</span>
+            {% if error_count == 1 %}
+                {{ errors|first.message }}
+            {% else %}
+                <ul>
+                    {% for error in errors %}
+                        <li>{{ error.message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock form_errors %}
+
+{%- block form_widget_compound -%}
+    {# the "is iterable" check is needed because if an object implements __toString() and
+       returns an empty string, "is empty" returns true even if it's not a collection #}
+    {% if value is iterable and value is empty %}
+        {{ block('empty_collection') }}
+    {% endif %}
+    {% if value is iterable and value is empty or form.vars.prototype is defined %}
+        {% set attr = attr|merge({'data-empty-collection': block('empty_collection') }) %}
+    {% endif %}
+
+    {{ parent() }}
+{%- endblock form_widget_compound -%}
+
+{% block empty_collection %}
+    <div class="empty collection-empty">
+        {{ include(easyadmin.entity.templates.label_empty) }}
+    </div>
+{% endblock empty_collection %}
+
+{% block vich_file_row %}
+    {% set force_error = true %}
+    {{ block('form_row') }}
+{% endblock %}
+
+{% block vich_file_widget %}
+{% spaceless %}
+    <div class="easyadmin-vich-file">
+        {% if download_uri|default('') is not empty %}
+            {% set download_title = download_uri|split('/')|last ?: 'download'|trans({}, 'VichUploaderBundle') %}
+            {% set download_folder = download_uri|split('/') ?: '' %}
+            {% if form.vars.easyadmin.field.public is defined and form.vars.easyadmin.field.public %}
+                <a href="{{ asset(download_uri) }}">{{ download_title }}</a>
+            {% elseif form.vars.easyadmin.field.public is defined and not form.vars.easyadmin.field.public %}
+                <a href="{{ url('vichDisplayPrivate', { dir: download_folder.2, url: download_title }) }}" class="btn">Pokaż</a>
+            {% else %}
+                <div>
+                    Public file:
+                    <a href="{{ asset(download_uri) }}">{{ download_title }}</a>
+                </div>
+                <div>
+                    Private file:
+                    <a href="{{ url('vichDisplayPrivate', { dir: download_folder.2, url: download_title }) }}" class="btn">Display</a>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="row">
+            {% if form.delete is defined %}
+            <div class="col-sm-3 col-md-2">
+                {{ form_row(form.delete, { label: 'action.delete' }) }}
+            </div>
+            {% endif %}
+            <div class="{{ form.delete is defined ? 'col-sm-9 col-md-10' : 'col-sm-12' }}">
+                {{ form_widget(form.file) }}
+            </div>
+        </div>
+    </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block vich_image_row %}
+    {% set force_error = true %}
+    {{ block('form_row') }}
+{% endblock %}
+
+{% block vich_image_widget %}
+{% spaceless %}
+    <div class="easyadmin-vich-image">
+        {{ form_widget(form.file) }}
+        {% if form.delete is defined %}
+            {{ form_row(form.delete, { label: 'action.delete' }) }}
+        {% endif %}
+
+        {% if download_uri|default('') is not empty %}
+            {% set _lightbox_id = 'easyadmin-lightbox-' ~ id %}
+
+            <a href="#" class="easyadmin-thumbnail" data-featherlight="#{{ _lightbox_id }}" data-featherlight-close-on-click="anywhere">
+                <img src="{{ asset(download_uri) }}">
+            </a>
+
+            <div id="{{ _lightbox_id }}" class="easyadmin-lightbox">
+                <img src="{{ asset(download_uri) }}">
+            </div>
+        {% endif %}
+    </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block easyadmin_rest %}
+    {{- form_rest(form) -}}
+    <div class="row">
+        <div class="col-xs-12 form-actions">
+            <div class="form-group">
+                <div id="form-actions-row">
+                    {{- block('item_actions') -}}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock easyadmin_rest %}
+
+{% block item_actions %}
+    {% set _translation_domain = easyadmin.entity.translation_domain %}
+    {% set _trans_parameters = { '%entity_name%':  easyadmin.entity.name|trans, '%entity_label%': easyadmin.entity.label|trans } %}
+
+    {# the 'save' action is hardcoded for the 'edit' and 'new' views #}
+    <button type="submit" class="btn btn-primary action-save">
+        <i class="fa fa-save"></i> {{ 'action.save'|trans(_trans_parameters, _translation_domain) }}
+    </button>
+
+    {% set _entity_actions = (easyadmin.view == 'new')
+        ? easyadmin_get_actions_for_new_item(easyadmin.entity.name)
+        : easyadmin_get_actions_for_edit_item(easyadmin.entity.name) %}
+
+    {% set _entity_id = (easyadmin.view == 'new')
+        ? null
+        : attribute(easyadmin.item, easyadmin.entity.primary_key_field_name) %}
+
+    {% set _request_parameters = { entity: easyadmin.entity.name, referer: app.request.query.get('referer') } %}
+
+    {{ include('@EasyAdmin/default/includes/_actions.html.twig', {
+        actions: _entity_actions,
+        request_parameters: _request_parameters,
+        translation_domain: _translation_domain,
+        trans_parameters: _trans_parameters,
+        item_id: _entity_id
+    }, with_context = false) }}
+{% endblock item_actions %}
+
+{# EasyAdmin form type #}
+{% block easyadmin_widget %}
+    {% set _translation_domain = easyadmin.entity.translation_domain %}
+    <div class="row">
+        {% for group_name, group_config in easyadmin_form_groups %}
+            <div class="field-group col-xs-12 {{ group_config.css_class|default('') }}">
+                <div class="box box-default">
+                    {% if group_config.label|default(false) or group_config.icon|default(false) %}
+                        <div class="box-header with-border">
+                            <h3 class="box-title">
+                                {% if group_config.icon|default(false) %}
+                                    <i class="fa fa-{{ group_config.icon }}"></i>
+                                {% endif %}
+                                {{ group_config.label|trans(domain = _translation_domain)|raw }}
+                            </h3>
+                        </div>
+                    {% endif %}
+
+                    <div class="box-body">
+                        {% if group_config.help|default(false) %}
+                            <p class="help-block">{{ group_config.help|trans(domain = _translation_domain)|nl2br|raw }}</p>
+                        {% endif %}
+
+                        <div class="row">
+                            {% for field in form if 'hidden' not in field.vars.block_prefixes and field.vars.easyadmin.form_group == group_name %}
+                                <div class="col-xs-12 {{ field.vars.easyadmin.field.css_class|default('') }}">
+                                    {{ form_row(field) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            {% for field in form if 'hidden' not in field.vars.block_prefixes %}
+                <div class="col-xs-12 {{ field.vars.easyadmin.field.css_class|default('') }}">
+                    {{ form_row(field) }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock easyadmin_widget %}
+
+{# EasyAdminAutocomplete form type #}
+{% block easyadmin_autocomplete_widget %}
+    {{ form_widget(form.autocomplete, {
+        attr: attr|merge({
+            'data-easyadmin-autocomplete-url' : path('easyadmin', {
+                action: 'autocomplete',
+                entity: autocomplete_entity_name,
+            })|raw })
+        })
+    }}
+{% endblock easyadmin_autocomplete_widget %}
+
+{% block easyadmin_autocomplete_inner_label %}
+    {% set name = form.parent.vars.name %}
+    {{- block('form_label') -}}
+{% endblock easyadmin_autocomplete_inner_label %}
+
+{# EasyAdminDivider form type #}
+{% block easyadmin_divider_row %}
+    <div class="field-divider">
+        <hr>
+    </div>
+{% endblock easyadmin_divider_row %}
+
+{# EasyAdminSection form type #}
+{% block easyadmin_section_row %}
+    {% set _translation_domain = easyadmin.entity.translation_domain %}
+    <div class="field-section {{ easyadmin.field.css_class|default('') }}">
+        {% if easyadmin.field.label|default(false) or easyadmin.field.icon|default(false) %}
+            <h2>
+                {% if easyadmin.field.icon|default(false) %}<i class="fa fa-{{ easyadmin.field.icon }}"></i>{% endif %}
+                {{ easyadmin.field.label|default('')|trans(domain = _translation_domain)|raw }}
+            </h2>
+        {% endif %}
+
+        {% if easyadmin.field.help|default(false) %}
+            <p class="help-block">{{ easyadmin.field.help|trans(domain = _translation_domain)|nl2br|raw }}</p>
+        {% endif %}
+    </div>
+{% endblock easyadmin_section_row %}

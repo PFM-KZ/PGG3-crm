@@ -1,0 +1,149 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    <script src="{{ asset('bundles/gcrmcrm/js/scripts.js') }}"></script>
+
+    {% for label, messages in app.flashes(['notice', 'warning', 'error']) %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+
+
+
+    <div class="content">
+
+
+        <section class="content-header" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1 class="title">Paczka numer: {{ packageToProcess.number }}</h1>
+                    <div><b>Utworzona przez:</b> {{ packageToProcess.addedBy }}</div>
+                    <div><b>Status:</b> {% if packageToProcess.isCancelled %}Anulowana przez {{ packageToProcess.cancelledBy }}{% else %}Aktywna{% endif %}</div>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <b>Umowy w paczce</b>
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+
+
+
+
+
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Akcje</th>
+                                        <th>
+                                            <span>Lp.</span>
+                                        </th>
+
+                                        <th data-property-name="crmNr" class="  string ">
+                                            Numer umowy
+                                        </th>
+
+                                        <th data-property-name="correctionNr" class="  string ">
+                                                Imię
+                                        </th>
+
+                                        <th data-property-name="crmInvoiceCreatedDate" class="  datetime ">
+                                                Nazwisko
+                                        </th>
+
+                                        <th data-property-name="clientFullName" class="  string ">
+                                                Pesel
+                                        </th>
+
+
+
+                                        <th data-property-name="calculatedSummaryGrossValue" class=" virtual text ">
+                                            <span>Numer telefonu</span>
+                                        </th>
+
+                                        <th data-property-name="overdueDateOfPayment" class=" virtual text ">
+                                            <span>Wprowadził</span>
+                                        </th>
+
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                    {% for clientAndContracts in clientsAndContracts %}
+                                        <tr data-id="112">
+                                            <td width="10" data-label="Akcje" class="actions">
+                                                <a class="action-displayInvoice btn btn-default" href="{{ url('clientPage', { id:clientAndContracts.client.id }) }}" target="_self">Karta klienta</a>
+                                            </td>
+
+                                            <td>{{ loop.index }}</td>
+
+                                            <td data-label="" class=" text ">
+                                                {% if clientAndContracts.contract.contractNumber %}{{ clientAndContracts.contract.contractNumber }}{% else %}brak{% endif %}
+                                            </td>
+
+                                            <td data-label="" class=" text ">
+                                                {{ clientAndContracts.client.name }}
+                                            </td>
+
+                                            <td data-label="" class=" text ">
+                                                {{ clientAndContracts.client.surname }}
+                                            </td>
+
+                                            <td data-label="" class=" text ">
+                                                {{ clientAndContracts.client.pesel }}
+                                            </td>
+
+                                            <td data-label="" class=" text ">
+                                                {{ clientAndContracts.client.telephoneNr }}
+                                            </td>
+
+                                            <td data-label="" class=" text ">
+                                                {{ clientAndContracts.contract.user }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

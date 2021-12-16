@@ -1,0 +1,16 @@
+easy_admin:
+    entities:
+        InvoiceTemplate:
+            class: Wecoders\InvoiceBundle\Entity\InvoiceTemplate
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - id
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'code', label: 'Kod' }
+                    - { property: 'file', label: 'Szablon', type: 'vich_file', type_options: { required: false } }
+                    - { property: 'help', label: 'Dostępne wartości', help: 'Lista tokenów do podmiany w dokumencie', type_options: { disabled: true } }

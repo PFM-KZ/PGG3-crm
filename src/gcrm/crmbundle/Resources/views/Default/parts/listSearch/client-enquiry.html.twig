@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-2 selects-date-col">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsUser) }}
+                    {{ form_widget(listSearchForm.lsUser, { 'attr': { 'class': 'form-control', 'data-widget': 'select2' }}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-3 selects-date-col">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text apply-select">
+                    {{ form_label(listSearchForm.lsDateFrom) }}
+                    {{ form_widget(listSearchForm.lsDateFrom) }}
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text apply-select">
+                    {{ form_label(listSearchForm.lsDateTo) }}
+                    {{ form_widget(listSearchForm.lsDateTo) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-2 selects-date-col">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="input-text apply-select">
+                    {{ form_label(listSearchForm.lsName) }}
+                    {{ form_widget(listSearchForm.lsName) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="input-text apply-select">
+                    {{ form_label(listSearchForm.lsSurname) }}
+                    {{ form_widget(listSearchForm.lsSurname) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="input-text apply-select">
+                    {{ form_label(listSearchForm.lsPesel) }}
+                    {{ form_widget(listSearchForm.lsPesel) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <div class="input-text apply-select">
+                    {{ form_label(listSearchForm.lsTelephoneNr) }}
+                    {{ form_widget(listSearchForm.lsTelephoneNr) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

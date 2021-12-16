@@ -1,0 +1,12 @@
+parameters:
+    default_system_settings:
+        - { name: 'logo_header', value: '', tooltip: 'Logo nagłówek', autoload: true }
+        - { name: 'logo', value: '', tooltip: 'Logo', autoload: true }
+        - { name: 'favicon', value: '', tooltip: 'Favicon', autoload: true }
+        - { name: 'brand_color', value: '', tooltip: 'Kolor', autoload: true }
+        - { name: 'logo_document_default', value: '', tooltip: 'Domyślne logo na dokumentach', autoload: true }
+        - { name: 'change_bank_account_document', value: '', tooltip: 'Dokument informujący o zmianie numeru rachunku klienta', autoload: true }
+        - { name: 'certificate_oze', value: '', tooltip: 'Certyfikat OZE', autoload: true }
+        - { name: 'docker_enabled', value: '', tooltip: 'Projekt na dokerze?', autoload: true }
+    default_brand_settings:
+        - { name: 'is_enabled', value: '1', tooltip: 'Włączone', autoload: true }

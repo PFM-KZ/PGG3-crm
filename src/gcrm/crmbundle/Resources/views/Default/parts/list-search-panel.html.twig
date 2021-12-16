@@ -1,0 +1,24 @@
+<div class="list-search-form-panel">
+
+
+    {{ form_start(listSearchForm, {'method': 'GET', 'attr': { 'id': 'search-form', 'novalidate': 'novalidate' }}) }}
+
+        {% if listSearcher.twigTemplate %}
+            {% include listSearcher.twigTemplate %}
+        {% endif %}
+
+        <div style="margin-top: 5px;">
+            {{ form_widget(listSearchForm.listSearch) }}
+        </div>
+
+    {{ form_end(listSearchForm) }}
+
+
+
+
+    {# Action form #}
+    <div id="list-action-form">
+        {{ form_start(listActionForm) }}
+        {{ form_end(listActionForm) }}
+    </div>
+</div>

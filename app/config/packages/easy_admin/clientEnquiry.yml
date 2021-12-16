@@ -1,0 +1,59 @@
+easy_admin:
+  entities:
+    ClientEnquiry:
+      class: GCRM\CRMBundle\Entity\ClientEnquiry
+      permissions: ['ROLE_PREDEFINED_VALUES']
+      list:
+        fields:
+          - { property: 'createdAt', label: 'Data ankiety' }
+          - { property: 'name', label: 'Imię' }
+          - { property: 'surname', label: 'Nazwisko' }
+          - { property: 'pesel', label: 'PESEL' }
+          - { property: 'email', label: 'E-mail' }
+          - { property: 'telephoneNr', label: 'Numer telefonu' }
+          - { property: 'houseNr', label: 'Nr domu' }
+          - { property: 'apartmentNr', label: 'Nr lokalu' }
+          - { property: 'street', label: 'Ulica' }
+          - { property: 'city', label: 'Miasto' }
+          - { property: 'zipCode', label: 'Kod pocztowy' }
+          - { property: 'postOffice', label: 'Poczta/rejon' }
+          - { property: 'county', label: 'Województwo' }
+          - { property: 'comments', label: 'Komentarz handlowca' }
+          - { property: 'departmentComments', label: 'Komentarz działu' }
+      form:
+        fields:
+          - { property: 'createdAt', label: 'Data ankiety', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+          - { property: 'clientType', label: 'Osoba fizyczna / firma', type: 'choice', type_options: { required: true, multiple: false, expanded: true, choices: { 'Osoba Fizyczna': 1, 'Firma': 2 } } }
+          - { property: 'energyType', label: 'Typ', type: 'choice', type_options: { required: true, multiple: false, expanded: false, placeholder: 'Wybierz...', choices: { Prąd: 1, Gaz: 2 }, attr: { data-ajax-update-target: 'true', data-ajax-update-target-id: 'tariff', 'data-ajax-route': 'fetchTariffData' } } }
+          - { type: 'section', label: 'Dane klienta' }
+          - { property: 'name', label: 'Imię' }
+          - { property: 'surname', label: 'Nazwisko' }
+          - { property: 'pesel', label: 'PESEL' }
+          - { property: 'email', label: 'E-mail' }
+          - { property: 'telephoneNr', label: 'Numer telefonu' }
+          - { property: 'houseNr', label: 'Nr domu' }
+          - { property: 'apartmentNr', label: 'Nr lokalu' }
+          - { property: 'street', label: 'Ulica' }
+          - { property: 'city', label: 'Miasto' }
+          - { property: 'zipCode', label: 'Kod pocztowy' }
+          - { property: 'postOffice', label: 'Poczta/rejon' }
+          - { property: 'county', label: 'Województwo' }
+          - { type: 'section', label: 'Adres punktu pobioru' }
+          - { property: 'deliveryHouseNr', label: 'Nr domu' }
+          - { property: 'deliveryApartmentNr', label: 'Nr lokalu' }
+          - { property: 'deliveryStreet', label: 'Ulica' }
+          - { property: 'deliveryCity', label: 'Miasto' }
+          - { property: 'deliveryZipCode', label: 'Kod pocztowy' }
+          - { property: 'deliveryPostOffice', label: 'Poczta/rejon' }
+          - { property: 'deliveryCounty', label: 'Województwo' }
+          - { type: 'section', label: 'Szczegóły zużycia' }
+          - { property: 'consumption', label: 'Roczne zużycie energii [kWh]' }
+          - { property: 'currentSellerObject', label: 'Obecny sprzedawca', type_options: { query_builder: ['GCRM\CRMBundle\Repository\SellerRepository', 'energyRecords'] } }
+          - { property: 'distributorObject', label: 'Dystrybutor' }
+          - { property: 'tariff', label: 'Taryfa', type_options: { required: false, attr: { data-ajax-update-targeted: 'true', data-ajax-update-targeted-id: 'tariff' } } }
+          - { type: 'divider' }
+          - { property: 'isRebateMarketingAgreement', label: 'Zgody marketingowe' }
+          - { property: 'user', label: 'Handlowiec' }
+          - { property: 'comments', label: 'Komentarz handlowca' }
+          - { property: 'departmentComments', label: 'Komentarz działu' }
+          - { property: 'enquiryAttachments', label: 'Pliki', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ClientEnquiryAttachmentType', by_reference: false } }

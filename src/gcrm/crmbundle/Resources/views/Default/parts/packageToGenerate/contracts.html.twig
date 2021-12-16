@@ -1,0 +1,82 @@
+{# required records #}
+{# required entityClass #}
+{# required contractType #}
+<form action="{{ url('contractsToGenerateListPostAction') }}?entityClass={{ entityClass }}&contractType={{ contractType }}" method="post" novalidate>
+
+    <div class="table-responsive">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th style="text-align: center; width: 65px !important;">
+                    <a href="#" class="toggleMultiCheck">Zaznacz</a>
+                </th>
+                <th><span>Akcje</span></th>
+                <th><span>Lp.</span></th>
+                <th><span>Numer umowy</span></th>
+                <th><span>Imię</span></th>
+                <th><span>Nazwisko</span></th>
+                <th><span>Pesel</span></th>
+                <th><span>Numer telefonu</span></th>
+                <th><span>Planowany termin wystawienia</span></th>
+                <th><span>Taryfa</span></th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            {% for record in records %}
+                <tr data-id="{{ record.contract_id }}">
+                    <td style="text-align: center; background-color: #f5f5f5;" class="multi-checkbox-action-column">
+                        <input type="checkbox" name="selectedRows[]" value="{{ record.contract_id }}">
+                    </td>
+                    <td width="10" class="actions">
+                        <a class="action-displayInvoice btn btn-default" href="{{ url('clientPage', { id: record.id }) }}" target="_self">Karta klienta</a>
+                    </td>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        {% if record.contract_number %}{{ record.contract_number }}{% else %}brak{% endif %}
+                    </td>
+                    <td>
+                        {{ record.name }}
+                    </td>
+                    <td>
+                        {{ record.surname }}
+                    </td>
+                    <td>
+                        {{ record.pesel }}
+                    </td>
+                    <td>
+                        {{ record.telephone_nr }}
+                    </td>
+                    <td>
+                        {% if record.next_invoicing_period %}
+                            {{ record.next_invoicing_period|date('Y-m-d') }}
+                        {% elseif record.contract_from_date %}
+                            {{ record.contract_from_date|date('Y-m-d') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ record.tariff_code }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+
+
+        <div id="multi-action-buttons" style="margin-bottom: 15px;">
+            {# after click, modal is enabled - when click 'yes' on modal hidden input multideleteaction is filled and form is processed #}
+            <div style="margin-bottom: 5px;">
+                <label for="multiMakePackageChooseDate{{ entityClass }}">Data wystawienia</label>
+                <input type="date" id="multiMakePackageChooseDate{{ entityClass }}" name="multiMakePackageChooseDate" class="datepicker">
+            </div>
+            <button type="submit" name="multiMakePackage" value="1" class="btn btn-success">Utwórz paczkę</button>
+        </div>
+
+
+    </div>
+
+</form>

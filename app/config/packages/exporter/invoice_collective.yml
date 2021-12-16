@@ -1,0 +1,78 @@
+exporter_bundle:
+    tables:
+        InvoiceCollective:
+            class: Wecoders\EnergyBundle\Entity\InvoiceCollective
+            tweaker: Wecoders\EnergyBundle\Service\Exporter\InvoiceCollectiveTweaker
+            filter: Wecoders\EnergyBundle\Service\Exporter\InvoiceDataFilter
+            alias: i
+            group_by: i.id
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'i.id', label: 'ID' }
+                - { property: 'i.number', label: 'Numer faktury' }
+                - { property: 'i.createdDate', label: 'Data wystawienia', type: 'date', format: 'Y-m-d' }
+                - { property: 'i.dateOfPayment', label: 'Termin płatności', type: 'date', format: 'Y-m-d' }
+                - { property: 'i.createdIn', label: 'Miejsce wystawienia' }
+                - { property: 'i.billingPeriod', label: 'Okres rozliczeniowy' }
+                - { property: 'i.sellerTitle', label: 'Sprzedawca nazwa' }
+                - { property: 'i.sellerAddress', label: 'Sprzedawca adres' }
+                - { property: 'i.sellerZipCode', label: 'Sprzedawca kod pocztowy' }
+                - { property: 'i.sellerCity', label: 'Sprzedawca miasto' }
+                - { property: 'i.sellerNip', label: 'Sprzedawca NIP' }
+                - { property: 'i.sellerBankName', label: 'Sprzedawca nazwa banku' }
+                - { property: 'i.sellerBankAccount', label: 'Sprzedawca numer rachunku' }
+                - { property: 'i.clientFullName', alias: 'client_full_name', label: 'Nabywca pełna nazwa' }
+                - { property: 'i.payerCompanyName', alias: 'payer_company_name', label: 'Płatnik nazwa firmy' }
+                - { property: 'i.clientNip', label: 'Nabywca NIP' }
+                - { property: 'i.clientHouseNr', label: 'Nabywca numer domu' }
+                - { property: 'i.clientApartmentNr', label: 'Nabywca numer lokalu' }
+                - { property: 'i.clientZipCode', label: 'Nabywca kod pocztowy' }
+                - { property: 'i.clientCity', label: 'Nabywca miasto' }
+                - { property: 'i.summaryNetValue', label: 'Kwota netto' }
+                - { property: 'i.summaryVatValue', label: 'Kwota VAT' }
+                - { property: 'i.summaryGrossValue', alias: 'summary_gross_value', label: 'Kwota brutto' }
+                - { property: 'i.isElectronic', label: 'Elektroniczna', type: 'yesno' }
+                - { property: 'i.isPaid', label: 'Opłacona faktura', type: 'yesno' }
+                - { property: 'i.consumption', label: 'Zużycie' }
+                - { property: 'i.billingPeriodFrom', label: 'Okres rozliczeniowy od', type: 'date', format: 'Y-m-d' }
+                - { property: 'i.billingPeriodTo', label: 'Okres rozliczeniowy do', type: 'date', format: 'Y-m-d' }
+                - { property: 'i.exciseValue', label: 'Wartość akcyzy' }
+                - { property: 'ani.number', alias: 'ani_number', label: 'Nr identyfikacyjny rachunku' }
+                - { property: 'i.bankAccountNumber', label: 'Nr rachunku rozliczeniowego' }
+                - { property: 'i.data', alias: 'invoices_numbers', label: 'Numery faktur' }
+                - { property: 'i.type', label: 'TYP' }
+
+                - { property: 'i.gtu1', label: 'GTU_01' }
+                - { property: 'i.gtu2', label: 'GTU_02' }
+                - { property: 'i.gtu3', label: 'GTU_03' }
+                - { property: 'i.gtu4', label: 'GTU_04' }
+                - { property: 'i.gtu5', label: 'GTU_05' }
+                - { property: 'i.gtu6', label: 'GTU_06' }
+                - { property: 'i.gtu7', label: 'GTU_07' }
+                - { property: 'i.gtu8', label: 'GTU_08' }
+                - { property: 'i.gtu9', label: 'GTU_09' }
+                - { property: 'i.gtu10', label: 'GTU_10' }
+                - { property: 'i.gtu11', label: 'GTU_11' }
+                - { property: 'i.gtu12', label: 'GTU_12' }
+                - { property: 'i.gtu13', label: 'GTU_13' }
+                - { property: 'i.transactionProcedure1', label: 'SW' }
+                - { property: 'i.transactionProcedure2', label: 'EE' }
+                - { property: 'i.transactionProcedure3', label: 'TP' }
+                - { property: 'i.transactionProcedure4', label: 'TT_WNT' }
+                - { property: 'i.transactionProcedure5', label: 'TT_D' }
+                - { property: 'i.transactionProcedure6', label: 'MR_T' }
+                - { property: 'i.transactionProcedure7', label: 'MR_UZ' }
+                - { property: 'i.transactionProcedure8', label: 'I_42' }
+                - { property: 'i.transactionProcedure9', label: 'I_63' }
+                - { property: 'i.transactionProcedure10', label: 'B_SPV' }
+                - { property: 'i.transactionProcedure11', label: 'B_SPV_DOSTAWA' }
+                - { property: 'i.transactionProcedure12', label: 'B_MPV_PROWIZJA' }
+                - { property: 'i.transactionProcedure13', label: 'MPP' }
+                # This can probably be done better(when naming it all icor it throws an exception)
+#                - { property: 'FIRST(SELECT icor1.number FROM Wecoders\EnergyBundle\Entity\InvoiceSettlementCorrection icor1 WHERE icor1.invoice = i.id ORDER BY icor1.createdAt DESC)', alias: 'correction_number', label: 'Numer korekty' }
+#                - { property: 'FIRST(SELECT icor2.summaryNetValue FROM Wecoders\EnergyBundle\Entity\InvoiceSettlementCorrection icor2 WHERE icor2.invoice = i.id ORDER BY icor2.createdAt DESC)', alias: 'correction_net_value', label: 'Korekta - kwota netto' }
+#                - { property: 'FIRST(SELECT icor3.summaryVatValue FROM Wecoders\EnergyBundle\Entity\InvoiceSettlementCorrection icor3 WHERE icor3.invoice = i.id ORDER BY icor3.createdAt DESC)', alias: 'correction_vat_value', label: 'Korekta - kwota VAT' }
+#                - { property: 'FIRST(SELECT icor4.summaryGrossValue FROM Wecoders\EnergyBundle\Entity\InvoiceSettlementCorrection icor4 WHERE icor4.invoice = i.id ORDER BY icor4.createdAt DESC)', alias: 'correction_gross_value', label: 'Korekta - kwota brutto' }
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\AccountNumberIdentifier', alias: 'ani', condition: 'i.accountNumberIdentifier = ani.id' }

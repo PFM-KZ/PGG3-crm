@@ -1,0 +1,192 @@
+easy_admin:
+    design:
+        assets:
+            css:
+                - 'bundles/gcrmcrm/css/admin/import.css'
+                - 'bundles/gcrmcrm/css/admin/modify.css'
+                - 'bundles/gcrmcrm/css/admin/font-awesome-all.css'
+                - 'bundles/correspondence/css/import.css'
+                - '//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'
+                - 'bundles/gcrmcrm/css/admin/hide-native-datepicker.css'
+            js:
+                - 'https://code.jquery.com/ui/1.12.1/jquery-ui.js'
+                - 'bundles/gcrmcrm/js/ui.datepicker-pl.js'
+                - 'bundles/gcrmcrm/js/jquery-ui-scripts.js'
+                - 'bundles/correspondence/js/scripts.js'
+        brand_color: '#005eaa'
+        menu:
+            - label: 'Strona startowa'
+            - { label: 'Statystyki', route: 'general', icon: 'chart-bar', default: true }
+            
+            - label: 'Departamenty'
+            - { label: 'D. AUTORYZACJI', route: 'authorizationDepartmentEnergy', icon: 'check', default: false, permissions: ['ROLE_AUTHORIZATION_DEPARTMENT'] }
+            - label: 'D. WERYFIKACJI'
+              icon: 'headphones-alt'
+              default: false
+              permissions: ['ROLE_VERIFICATION_DEPARTMENT']
+              children:
+                - { entity: 'Client', label: 'Klienci', default: false, tokenParams: { lsBranch: '#', lsStatusDepartment: 'verification' }, params: { listSearch: '', lsHideNotActual: 1, statusDepartment: 'verification' }, permissions: ['ROLE_CLIENTS', 'ROLE_CLIENTS_LIST', 'ROLE_VERIFICATION_DEPARTMENT'] }
+            - label: 'D. ADMINISTRACJI'
+              icon: 'edit'
+              default: false
+              permissions: ['ROLE_ADMINISTRATION_DEPARTMENT']
+              children:
+                - { entity: 'Client', label: 'Klienci', default: false, tokenParams: { lsBranch: '#', lsStatusDepartment: 'administration' }, params: { listSearch: '', lsHideNotActual: 1, statusDepartment: 'administration' }, permissions: ['ROLE_CLIENTS', 'ROLE_CLIENTS_LIST', 'ROLE_ADMINISTRATION_DEPARTMENT'] }
+                - { label: 'Paczki' }
+                - { label: 'Gaz - Lista umów do paczek', route: 'contractsToPackageList', params: { contractType: 'gas' }, default: false, permissions: ['ROLE_CLIENTS', 'ROLE_ADMINISTRATION_DEPARTMENT'] }
+                - { label: 'Prąd - Lista umów do paczek', route: 'contractsToPackageList', params: { contractType: 'energy' }, default: false, permissions: ['ROLE_CLIENTS', 'ROLE_ADMINISTRATION_DEPARTMENT'] }
+                - { entity: 'PackageToSend', label: 'Paczki wysłane', default: false, params: { statusDepartment: 'administration', packagesType: 'sent' }, permissions: ['ROLE_ADMINISTRATION_DEPARTMENT'] }
+                - { entity: 'PackageToSend', label: 'Paczki odebrane', default: false, params: { statusDepartment: 'administration', packagesType: 'delivered' }, permissions: ['ROLE_ADMINISTRATION_DEPARTMENT'] }
+                - { entity: 'PackageToSend', label: 'Zwroty', default: false, params: { statusDepartment: 'administration', packagesType: 'returned' }, permissions: ['ROLE_ADMINISTRATION_DEPARTMENT'] }
+            - label: 'D. KONTROLI'
+              icon: 'check-double'
+              default: false
+              permissions: ['ROLE_CONTROL_DEPARTMENT']
+              children:
+                - { entity: 'Client', label: 'Klienci', default: false, tokenParams: { lsBranch: '#', lsStatusDepartment: 'control' }, params: { listSearch: '', lsHideNotActual: 1, statusDepartment: 'control' }, permissions: ['ROLE_CLIENTS', 'ROLE_CLIENTS_LIST', 'ROLE_CONTROL_DEPARTMENT'] }
+                - { label: 'Paczki' }
+                - { entity: 'PackageToSend', label: 'Paczki odebrane', default: false, params: { statusDepartment: 'control', packagesType: 'delivered' }, permissions: ['ROLE_ADMINISTRATION_DEPARTMENT'] }
+                - { entity: 'PackageToSend', label: 'Zwroty', default: false, params: { statusDepartment: 'control', packagesType: 'returned' }, permissions: ['ROLE_ADMINISTRATION_DEPARTMENT'] }
+            - label: 'D. PROCESOWY'
+              route: 'general'
+              icon: 'random'
+              default: false
+              permissions: ['ROLE_PROCESS_DEPARTMENT']
+              children:
+                - { entity: 'Client', label: 'Klienci', default: false, tokenParams: { lsBranch: '#', lsStatusDepartment: 'process' }, params: { listSearch: '', lsHideNotActual: 1, statusDepartment: 'process' }, permissions: ['ROLE_CLIENTS', 'ROLE_PROCESS_DEPARTMENT'] }
+            - label: 'D. FINANSOWY'
+              icon: 'coins'
+              default: false
+              permissions: ['ROLE_FINANCES_DEPARTMENT']
+              children:
+                - { entity: 'Client', label: 'Klienci', default: false, tokenParams: { lsBranch: '#', lsStatusDepartment: 'finances' }, params: { listSearch: '', lsHideNotActual: 1, statusDepartment: 'finances' }, permissions: ['ROLE_CLIENTS', 'ROLE_FINANCES_DEPARTMENT'] }
+                - { label: 'Klienci do fakturowania', route: 'actualToInvoice', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Klienci do wystawienia wezwań do zapłaty', route: 'actualToPaymentRequest', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Klienci do rozliczeń', route: 'actualToSettlement', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Klienci do not obciążeniowych', route: 'actualToDebitNote', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Sprawdź okresy rozl.', route: 'manageLastBillingPeriodTo', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Tworzenie F. zbiorczych', route: 'mergeInvoicesPanel', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Rozliczenia - obliczenia', route: 'energySettlementPanel', permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Płatności' }
+                - { label: 'Wgraj płatności', route: 'importerPayments', default: false, permissions: ['ROLE_INVOICE_PARSER'] }
+                - { entity: 'Payment', label: 'Wpłaty klientów', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { entity: 'PaymentOldEnrex', label: 'Wpłaty klientów 2018', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { label: 'Xslx - płatności 2018 podsumowanie', route: 'getFileDataPaymentsOld', default: false, permissions: ['ROLE_INVOICE_PARSER'] }
+                - { label: 'Faktury / korekty' }
+                - { entity: 'InvoiceCollective', label: 'Faktury zbiorcze', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { entity: 'InvoiceEnergy', label: 'Faktury', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { entity: 'InvoiceCorrectionEnergy', label: 'Faktury korekty', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { entity: 'InvoiceProformaEnergy', label: 'Faktury Proformy', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { entity: 'InvoiceProformaCorrectionEnergy', label: 'Korekty Proform', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { entity: 'InvoiceSettlementEnergy', label: 'Faktury Rozliczeniowe', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { entity: 'InvoiceSettlementCorrectionEnergy', label: 'Korekty rozliczeń', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { entity: 'InvoiceEstimatedSettlementEnergy', label: 'Faktury Rozliczeniowe szacunkowe', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { entity: 'InvoiceEstimatedSettlementCorrectionEnergy', label: 'Korekty rozliczeń szacunkowych', default: false, permissions: ['ROLE_INVOICES', 'ROLE_INVOICES_LIST'] }
+                - { label: 'Xlsx - po terminie płatności', route: 'getFileDataClientsWithOverduePayments', default: false, permissions: ['ROLE_INVOICES_LIST'] }
+                - { label: 'Xlsx (CC) - po terminie płatności', route: 'getFileDataClientsWithOverduePaymentsForCc', default: false, permissions: ['ROLE_INVOICES_LIST'] }
+                - { label: 'Pozostałe dokumenty' }
+                - { entity: 'PaymentRequest', label: 'Wezwania do zapłaty', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'DebitNote', label: 'Noty obciążeniowe', default: false, permissions: ['ROLE_SUPERADMIN'] }
+            - { label: 'D. PRAWNY', route: 'general', icon: 'stamp', default: false, permissions: ['ROLE_LEGAL_DEPARTMENT']  }
+            - label: 'D. SPRZEDAŻOWY'
+              icon: 'euro-sign'
+              default: false
+              permissions: ['ROLE_SALES_DEPARTMENT']
+              children:
+                - { entity: 'Client', label: 'Klienci', default: false, tokenParams: { lsBranch: '#' }, params: { listSearch: '', salesDepartment: '1' }, permissions: ['ROLE_CLIENTS', 'ROLE_CLIENTS_LIST'] }
+                - { entity: 'ClientEnquiry', label: 'Ankiety Sprzedażowe', default: false, tokenParams: { lsBranch: '#' }, params: { listSearch: '', salesDepartment: '1' }, permissions: ['ROLE_CLIENTS', 'ROLE_CLIENTS_LIST'] }
+            - { label: 'D. ZARZĄDU', route: 'management', icon: 'users-cog', default: false, permissions: ['ROLE_MANAGEMENT_DEPARTMENT']  }
+            - { label: 'Korespondencja z klientem' }
+            - { label: 'Typy', entity: 'ThreadType', permissions: ['ROLE_SUPERADMIN'] }
+            - { label: 'Aktywne wątki', entity: 'Thread', permissions: ['ROLE_CORRESPONDENCE'] }
+            - { label: 'Najbliższe terminy odpowiedzi', entity: 'DeadlineThread', permissions: ['ROLE_CORRESPONDENCE'] }
+            - { label: 'Zamknięte wątki', entity: 'ClosedThread', permissions: ['ROLE_CORRESPONDENCE'] }
+
+            - { label: 'Pozostałe' }
+            - { entity: 'Osd', label: 'OSD', default: false, permissions: ['ROLE_SUPERADMIN'] }
+            - label: 'Marki / oddziały'
+              icon: 'user-tie'
+              default: false
+              permissions: ['ROLE_BRANCHES']
+              children:
+                - { entity: 'BrandEnergy', label: 'Marki', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'Branch', label: 'Oddziały', default: false, permissions: ['ROLE_BRANCHES'] }
+            - label: 'Cenniki / taryfy'
+              icon: 'puzzle-piece'
+              default: false
+              permissions: ['ROLE_SERVICES', 'ROLE_SERVICES_LIST']
+              children:
+                - { entity: 'TariffEnergy', label: 'Taryfy', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'TariffTreatLikeLastSettlement', label: 'Taryfy - traktuj jak ostatnie rozliczenie', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'PriceListGroup', label: 'Grupy cennikowe', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'PriceList', label: 'Cenniki', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'Service', label: 'Usługi', default: false, permissions: ['ROLE_SUPERADMIN'] }
+            - label: 'Odczyty'
+              default: false
+              permissions: ['ROLE_SUPERADMIN']
+              children:
+                - { entity: 'EnergyData', label: 'Odczyty', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Wgraj odczyty', route: 'energyDataPanel', permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Rozliczenia', route: 'energySettlementPanel', permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Eksportuj datę odczytu dla kodu PP', route: 'admin_energy_data_last_billing_period_list', permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Eksportuj datę odczytu dla kodu PP z limitem', route: 'admin_energy_data_last_billing_period_list_with_limitation', permissions: ['ROLE_SUPERADMIN'] }
+            - { label: 'System', permissions: ['ROLE_USER'] }
+            - label: 'Wiadomości SMS'
+              permissions: ['ROLE_SUPERADMIN']
+              icon: 'comments'
+              children:
+                  - { label: 'Test wysyłki SMS', route: 'manualSmsSender', permissions: ['ROLE_SUPERADMIN'] }
+                  - { label: 'Szablony SMS', entity: 'SmsTemplate', permissions: ['ROLE_SUPERADMIN'] }
+                  - { label: 'Wiadomości SMS', entity: 'SmsMessage', permissions: ['ROLE_SUPERADMIN'] }
+                  - { label: 'Grupy wysyłkowe', entity: 'SmsClientGroup', permissions: ['ROLE_SUPERADMIN'] }
+                  - { label: 'Utwórz grupę sms z datą płatności', route: 'createSmsClientGroupWithPaymentDate', permissions: ['ROLE_SUPERADMIN'] }
+            - label: 'Bezpieczeństwo'
+              icon: 'lock'
+              default: false
+              permissions: ['ROLE_SUPERADMIN']
+              children:
+                - { entity: 'Alert', label: 'Alerty systemowe', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'DocumentProcess', label: 'Alerty rozliczeń', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'Access', label: 'Historia logowań', default: false, permissions: ['ROLE_SUPERADMIN'] }
+            - label: 'Ustawienia'
+              icon: 'cogs'
+              default: false
+              permissions: ['ROLE_CONFIG']
+              children:
+                - { label: 'Ogólne', entity: 'Settings', default: false, permissions: ['ROLE_CONFIG'] }
+                - { label: 'System', entity: 'SystemSettings', default: false, permissions: ['ROLE_CONFIG'] }
+                - { label: 'Marki', entity: 'BrandSettings', default: false, permissions: ['ROLE_CONFIG'] }
+                - { label: 'Firma', entity: 'Company', default: false, permissions: ['ROLE_CONFIG'] }
+                - { entity: 'ContractType', label: 'Typy umów', default: false, permissions: ['ROLE_CONFIG'] }
+                - { entity: 'Distributor', label: 'Dystrybutorzy', default: false, permissions: ['ROLE_CONFIG'] }
+                - { entity: 'DistributorBranch', label: 'Dystrybutorzy oddziały', default: false, permissions: ['ROLE_CONFIG'] }
+                - { entity: 'Seller', label: 'Sprzedawcy', default: false, permissions: ['ROLE_CONFIG'] }
+                - { entity: 'InvoiceTemplate', label: 'Szablony dokumentów', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'CustomDocumentTemplate', label: 'Szablony customowe dokumentów', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'InvoiceNumberSettings', label: 'Numeracja faktur', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'Excise', label: 'Akcyza', default: false, permissions: ['ROLE_SUPERADMIN'] }
+            - { label: 'Użytkownicy', entity: 'User', icon: 'users', default: false, permissions: ['ROLE_USERADMIN'] }
+            - label: 'Pozostałe'
+              icon: 'question'
+              default: false
+              permissions: ['ROLE_SUPERADMIN']
+              children:
+                - { entity: 'ClientProcedureTP', label: 'Klienci do procedury TP', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { route: 'multiStatusChange', label: 'Masowa zmiana statusów umów', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { route: 'tariffAndUsageChange', label: 'Zmiana cenninków i zużycia', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'DocumentBankAccountChange', label: 'Dokumenty dot. zmiany nr. rach bankowego', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'ContractGas', label: 'Umowy GAZ', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'ContractEnergy', label: 'Umowy PRĄD', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'PackageAdmin', label: 'Paczki', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'ChangeStatusLog', label: 'Logi zmian statusów', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { entity: 'ThreadAdmin', label: 'Wątki', default: false, permissions: ['ROLE_SUPERADMIN'] }
+                - { label: 'Predefiniowane wartości', permissions: ['ROLE_PREDEFINED_VALUES'] }
+                - { entity: 'StatusDepartment', label: 'Statusy działów', default: false, permissions: ['ROLE_PREDEFINED_VALUES'] }
+                - { entity: 'StatusContractAction', label: 'Statusy - LISTA AKCJI', default: false, permissions: ['ROLE_PREDEFINED_VALUES'] }
+                - { entity: 'StatusContract', label: 'Statusy umów', default: false, permissions: ['ROLE_PREDEFINED_VALUES'] }
+                - { entity: 'StatusContractAuthorization', label: 'Statusy umów - autoryzacja', default: false, permissions: ['ROLE_PREDEFINED_VALUES'] }
+                - { entity: 'StatusContractVerification', label: 'Statusy umów - weryfikacja', default: false, permissions: ['ROLE_PREDEFINED_VALUES'] }
+                - { entity: 'StatusContractAdministration', label: 'Statusy umów - administracja', default: false, permissions: ['ROLE_PREDEFINED_VALUES'] }
+                - { entity: 'StatusContractControl', label: 'Statusy umów - kontrola', default: false, permissions: ['ROLE_PREDEFINED_VALUES'] }
+                - { entity: 'StatusContractProcess', label: 'Statusy umów - proces', default: false, permissions: ['ROLE_PREDEFINED_VALUES'] }
+                - { entity: 'StatusContractFinances', label: 'Statusy umów - finanse', default: false, permissions: ['ROLE_PREDEFINED_VALUES'] }

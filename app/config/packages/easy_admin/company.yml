@@ -1,0 +1,37 @@
+easy_admin:
+    entities:
+        Company:
+            class: GCRM\CRMBundle\Entity\Company
+            permissions: ['ROLE_COMPANY']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Oddział' }
+                    - { property: 'name', label: 'Nazwa' }
+                    - { property: 'address', label: 'Adres' }
+                    - { property: 'zipcode', label: 'kod pocztowy' }
+                    - { property: 'city', label: 'Miasto' }
+                    - { property: 'nip', label: 'Nip' }
+                    - { property: 'regon', label: 'Regon' }
+                    - { property: 'bankName', label: 'Nazwa banku' }
+                    - { property: 'bankAccountNumber', label: 'Numer rachunku bankowego' }
+                    - { property: 'enableBankAccountGenerator', label: 'Włącz generator numerów kont bankowych' }
+                    - { property: 'isActive', label: 'Aktywny' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Oddział' }
+                    - { property: 'name', label: 'Nazwa' }
+                    - { property: 'address', label: 'Adres' }
+                    - { property: 'zipcode', label: 'kod pocztowy' }
+                    - { property: 'city', label: 'Miasto' }
+                    - { property: 'nip', label: 'Nip' }
+                    - { property: 'regon', label: 'Regon' }
+                    - { type: 'divider' }
+                    - { property: 'bankName', label: 'Nazwa banku' }
+                    - { property: 'bankAccountNumber', label: 'Numer rachunku bankowego' }
+                    - { property: 'bankGeneratorStaticPartCodeOne', help: '8 znaków', label: 'Przydzielona część numeru rachunku dla generatora (cyfry 3-10)' }
+                    - { property: 'bankGeneratorStaticPartCodeTwo', help: '4 znaki', label: 'Przydzielona część numeru rachunku dla generatora (cyfry 11-14)' }
+                    - { property: 'enableBankAccountGenerator', label: 'Włącz generator numerów kont bankowych' }
+                    - { property: 'isActive', label: 'Aktywny' }

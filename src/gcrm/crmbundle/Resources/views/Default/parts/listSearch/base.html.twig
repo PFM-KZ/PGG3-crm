@@ -1,0 +1,163 @@
+<div class="col-xs-12 col-sm-2">
+    <div class="select">
+        {{ form_label(listSearchForm.lsSalesRepresentative) }}
+        {{ form_widget(listSearchForm.lsSalesRepresentative, { 'attr': { 'class': 'form-control', 'data-widget': 'select2' }}) }}
+    </div>
+
+    <div class="select">
+        {{ form_label(listSearchForm.lsBranch) }}
+        {{ form_widget(listSearchForm.lsBranch, { 'attr': { 'class': 'form-control', 'data-widget': 'select2' }}) }}
+    </div>
+
+    <div class="select">
+        {{ form_label(listSearchForm.lsBrand) }}
+        {{ form_widget(listSearchForm.lsBrand, { 'attr': { 'class': 'form-control', 'data-widget': 'select2' }}) }}
+    </div>
+</div>
+
+<div class="col-xs-12 col-sm-2">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsName) }}
+                {{ form_widget(listSearchForm.lsName) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsSurname) }}
+                {{ form_widget(listSearchForm.lsSurname) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsPesel) }}
+                {{ form_widget(listSearchForm.lsPesel) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsNip) }}
+                {{ form_widget(listSearchForm.lsNip) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsTelephoneNr) }}
+                {{ form_widget(listSearchForm.lsTelephoneNr) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsBadgeId) }}
+                {{ form_widget(listSearchForm.lsBadgeId) }}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="col-xs-12 col-sm-4 selects-date-col">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsContractNumber) }}
+                {{ form_widget(listSearchForm.lsContractNumber) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text apply-select">
+                {{ form_label(listSearchForm.lsContractType) }}
+                {{ form_widget(listSearchForm.lsContractType) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.ppCode) }}
+                {{ form_widget(listSearchForm.ppCode) }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsSignDateFrom) }}
+                {{ form_widget(listSearchForm.lsSignDateFrom) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsSignDateTo) }}
+                {{ form_widget(listSearchForm.lsSignDateTo) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsCreatedDateFrom) }}
+                {{ form_widget(listSearchForm.lsCreatedDateFrom) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsCreatedDateTo) }}
+                {{ form_widget(listSearchForm.lsCreatedDateTo) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-12 col-sm-4 selects-date-col">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsInvoiceNumber) }}
+                {{ form_widget(listSearchForm.lsInvoiceNumber) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsInvoiceCreatedDateFrom) }}
+                {{ form_widget(listSearchForm.lsInvoiceCreatedDateFrom) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text">
+                {{ form_label(listSearchForm.lsInvoiceCreatedDateTo) }}
+                {{ form_widget(listSearchForm.lsInvoiceCreatedDateTo) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text apply-select">
+                {{ form_label(listSearchForm.lsStatusDepartment) }}
+                {{ form_widget(listSearchForm.lsStatusDepartment) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text apply-select">
+                {{ form_label(listSearchForm.lsActualStatus) }}
+                {{ form_widget(listSearchForm.lsActualStatus) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text apply-select">
+                {{ form_label(listSearchForm.lsStatusDepartmentStatus) }}
+                {{ form_widget(listSearchForm.lsStatusDepartmentStatus) }}
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+            <div class="input-text apply-select">
+                {{ form_label(listSearchForm.lsStatusContract) }}
+                {{ form_widget(listSearchForm.lsStatusContract) }}
+            </div>
+        </div>
+    </div>
+</div>

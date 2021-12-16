@@ -1,0 +1,48 @@
+easy_admin:
+    entities:
+        PriceList:
+            class: Wecoders\EnergyBundle\Entity\PriceList
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - id
+                    - { property: 'priceListGroup', label: 'Grupa cennikowa' }
+                    - { property: 'title', label: 'Nazwa cennika' }
+                    - { property: 'dateOfPaymentDays', label: 'Termin płatności (dni)' }
+                    - { property: 'correctionDateOfPaymentDays', label: 'Termin płatności dla korekt (dni)' }
+                    - { property: 'energyType', label: 'Typ', type: 'string' }
+                    - { property: 'showInAuthorization', label: 'Pokaż w autoryzacji' }
+            form:
+                fields:
+                    - { property: 'energyType', label: 'Typ', type: 'choice', type_options: { required: true, multiple: false, expanded: false, choices: { PRĄD: 1, GAZ: 2 } } }
+                    - { property: 'priceListGroup', label: 'Grupa cennikowa' }
+                    - { property: 'title', label: 'Nazwa cennika' }
+                    - { property: 'dateOfPaymentDays', label: 'Termin płatności (dni)' }
+                    - { property: 'correctionDateOfPaymentDays', label: 'Termin płatności dla korekt (dni)' }
+                    - { property: 'priceListDatas', label: 'Dane', type: 'collection', type_options: { entry_type: 'Wecoders\EnergyBundle\Form\PriceListDataType', by_reference: false } }
+                    - { property: 'priceListSubscriptions', label: 'Opłata abonamentowa', type: 'collection', type_options: { entry_type: 'Wecoders\EnergyBundle\Form\PriceListSubscriptionType', by_reference: false } }
+                    - { property: 'priceListAndServiceDatas', label: 'Usługi', type: 'collection', type_options: { entry_type: 'Wecoders\EnergyBundle\Form\PriceListAndServiceDataType', by_reference: false } }
+                    - { type: 'section', label: 'Dodatkowe opłaty' }
+                    - { property: 'feeOhNetValue', label: 'Opłata handlowa Netto' }
+                    - { property: 'feeOhGrossValue', label: 'Opłata handlowa Brutto' }
+                    - { type: 'divider' }
+                    - { property: 'feeOzeNetValue', label: 'Certyfikat OZE Netto' }
+                    - { property: 'feeOzeGrossValue', label: 'Certyfikat OZE Brutto' }
+                    - { type: 'divider' }
+                    - { property: 'feeUdNetValue', label: 'Usługi dodatkowe Netto' }
+                    - { property: 'feeUdGrossValue', label: 'Usługi dodatkowe Brutto' }
+                    - { type: 'divider' }
+                    - { property: 'feeGscNetValue', label: 'Opłata GSC Netto' }
+                    - { property: 'feeGscGrossValue', label: 'Opłata GSC Brutto' }
+                    - { type: 'divider' }
+                    - { type: 'section', label: 'Rabaty naliczane po spełnieniu odpowiednich warunków' }
+                    - { property: 'rebateMarketingAgreementNetValue', label: 'Zgoda marketingowa Netto' }
+                    - { property: 'rebateMarketingAgreementGrossValue', label: 'Zgoda marketingowa Brutto' }
+                    - { type: 'divider' }
+                    - { property: 'rebateTimelyPaymentsNetValue', label: 'Terminowe wpłaty Netto' }
+                    - { property: 'rebateTimelyPaymentsGrossValue', label: 'Terminowe wpłaty Brutto' }
+                    - { type: 'divider' }
+                    - { property: 'rebateElectronicInvoiceNetValue', label: 'Elektroniczna faktura Netto' }
+                    - { property: 'rebateElectronicInvoiceGrossValue', label: 'Elektroniczna faktura Brutto' }
+                    - { type: 'divider' }
+                    - { property: 'showInAuthorization', label: 'Pokaż w autoryzacji' }

@@ -1,0 +1,12 @@
+easy_admin:
+    entities:
+        TariffTreatLikeLastSettlement:
+            class: Wecoders\EnergyBundle\Entity\TariffTreatLikeLastSettlement
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - id
+                    - { property: 'tariff', label: 'Taryfa' }
+            form:
+                fields:
+                    - { property: 'tariff', label: 'Taryfa' }

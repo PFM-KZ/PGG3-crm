@@ -1,0 +1,13 @@
+easy_admin:
+    entities:
+        PriceListGroup:
+            class: Wecoders\EnergyBundle\Entity\PriceListGroup
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - { property: 'title', label: 'Nazwa grupy cennikowej' }
+                    - { property: 'showInAuthorization', label: 'Pokaż w autoryzacji' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Nazwa grupy cennikowej' }
+                    - { property: 'showInAuthorization', label: 'Pokaż w autoryzacji' }

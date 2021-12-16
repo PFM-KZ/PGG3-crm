@@ -1,0 +1,90 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+{% endblock %}
+
+{% block bottom_post_javascript %}
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <div class="content" id="main">
+        <section class="content-header" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1 class="title">Departament zarządu</h1>
+                </div>
+            </div>
+        </section>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ title }}</h3>
+                </div>
+                <div class="box-body">
+                    {% if formConfig is defined %}
+                        <div class="list-search-form-panel">
+                            {{ form_start(formConfig, {'method': 'GET', 'attr': { 'id': 'search-form', 'novalidate': 'novalidate' }}) }}
+                            <div class="row">
+                                <div class="col-xs-12 col-md-4">
+                                    <div class="input-text">
+                                        {{ form_label(formConfig.lsDateFrom) }}
+                                        {{ form_widget(formConfig.lsDateFrom) }}
+                                    </div>
+
+                                    <div class="input-text">
+                                        {{ form_label(formConfig.lsDateTo) }}
+                                        {{ form_widget(formConfig.lsDateTo) }}
+                                    </div>
+
+                                    {% if formConfig.lsGroupByType is defined %}
+                                        <div class="input-text apply-select">
+                                            {{ form_label(formConfig.lsGroupByType) }}
+                                            {{ form_widget(formConfig.lsGroupByType) }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                {{ form_widget(formConfig.submit, { attr: { 'class': 'btn btn-success' } }) }}
+                            </div>
+                            {{ form_end(formConfig) }}
+                        </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {% set config = dbData.config %}
+                            {% set data = dbData.data %}
+                            {% include chartTemplate %}
+                            <br>
+                            <style>
+                                #action-form div {
+                                    margin: 10px 0;
+                                }
+                            </style>
+                            {{ form_start(form, {'attr': { 'id': 'action-form' }}) }}
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

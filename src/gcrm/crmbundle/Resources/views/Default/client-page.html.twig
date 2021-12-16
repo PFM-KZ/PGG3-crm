@@ -1,0 +1,616 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+{% endblock %}
+
+{% block bottom_post_javascript %}
+    <script src="{{ asset('bundles/gcrmcrm/js/scripts.js') }}"></script>
+
+    <script>
+        $(function() {
+            var menu = $('.client-documents-menu');
+            var menuLiElements = menu.find('> li');
+            var target = $('.client-documnets-target');
+            var targetLiElements = target.find('> li');
+
+            menu.find('> li > a').click(function(e) {
+                e.preventDefault();
+
+                var parent = $(this).closest('li');
+                var index = parent.index();
+
+                menuLiElements.removeClass('active');
+                parent.addClass('active');
+
+                targetLiElements.removeClass('active');
+                targetLiElements.eq(index).addClass('active');
+            });
+
+            var showAll = $('.show-all-documents-link');
+            showAll.click(function(e) {
+                e.preventDefault();
+
+                menuLiElements.addClass('active');
+                targetLiElements.addClass('active');
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message|raw }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+
+    <section class="content-header">
+        <div class="row">
+            <div class="col-sm-5">
+                <h1 class="title">Karta klienta</h1>
+            </div>
+        </div>
+    </section>
+
+
+
+    <div class="content">
+        {#{% set referer = app.request.get('referer') %}#}
+        {#{% if referer %}#}
+            {#<a href="{{ referer }}">< Powrót</a>#}
+            {#<br>#}
+            {#<br>#}
+        {#{% endif %}#}
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="row">
+
+                    <div class="field-group col-xs-12">
+                        <div class="box box-default">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">
+                                    {#<a href="/admin/?entity=Client&action=edit{{ customQueryString }}&id={{ client.id }}" class="btn btn-success">Edycja danych</a>#}
+                                    <a href="/admin/?entity=Client&action=edit&id={{ client.id }}&referer=/admin/client-page/{{ client.id }}" class="btn btn-success">Edycja danych</a>
+                                    <b>Klient</b>
+                                </h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <table class="client-page-table">
+                                            <tr>
+                                                <td>Imię i nazwisko:</td>
+                                                <td>{{ client.name }} {{ client.surname }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Pesel</td>
+                                                <td>{{ client.pesel }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Telefon:</td>
+                                                <td>{{ client.telephoneNr }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Adres:</td>
+                                                <td>{{ client.zipCode }} {{ client.city }}, {{ client.street }} {{ client.houseNr }} {{ client.apartmentNr }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Adres do korespondencji:</td>
+                                                <td>{{ client.correspondenceZipCode }} {{ client.correspondenceCity }}, {{ client.correspondenceStreet }} {{ client.correspondenceHouseNr }} {{ client.correspondenceApartmentNr }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Telefon kontaktowy:</td>
+                                                <td>{{ client.contactTelephoneNr }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Aktualny nr rachunku bankowego:</td>
+                                                <td>{{ client.bankAccountNumber }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Poprzedni nr rachunku bankowego:</td>
+                                                <td>{{ client.previousBankAccountNumber }}</td>
+                                            </tr>
+                                        </table>
+                                        {#<div class="box-bordered">#}
+                                        {#<h3>Umowy</h3>#}
+                                        {#</div>#}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-group col-xs-12">
+                        <div class="box box-default">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">
+                                    <b>Wpłaty klienta</b>
+                                </h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        {% if documentsStructure.payments|length %}
+                                            {% set payments = documentsStructure.payments %}
+                                            {% set initialBalance = documentsStructure.balance.initial %}
+                                            {% include '@GCRMCRMBundle/Default/parts/clientPage/payments-table.html.twig' %}
+                                        {% else %}
+                                            Brak
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="row">
+
+                    <div class="field-group col-xs-12">
+                        <div class="box box-default">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">
+                                    <b>Saldo klienta</b>
+                                </h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="balance-row">
+                                            <span class="neutral">{{ documentsStructure.balance.total|number_format(2, ',', '.') }}</span> / <span class="paid">{{ documentsStructure.balance.paid|number_format(2, ',', '.') }}</span>
+                                            <br><span class="to-pay">{{ documentsStructure.balance.toPay|number_format(2, ',', '.') }}</span>
+                                        </div>
+                                        <div class="balance-legend">
+                                            <span class="neutral">Łączna kwota za wystawione dokumenty</span>
+                                            <span class="paid">Wpłacono przez klienta</span>
+                                            <span class="to-pay">Do zapłaty</span>
+                                        </div>
+                                        {#<p>Saldo początkowe: {{ documentsStructure.balance.initial }} {% if documentsStructure.balance.initial != 0 %}({% if documentsStructure.balance.initial > 0 %}nadpłata{% elseif documentsStructure.balance.initial < 0 %}do zapłaty{% endif %}){% endif %}</p>#}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% for documentStructure in documentsStructure.data %}
+                        <div class="field-group col-xs-12 col-md-6">
+                            <div class="box box-default">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">
+                                        <b>{{ documentStructure.settings.balance.title }}</b>
+                                    </h3>
+                                </div>
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="balance-row smaller"><span class="{% if documentStructure.summaryGrossValue|number_format(2, '.', '') > 0 %}to-pay{% else %}paid{% endif %}">{{ documentStructure.summaryGrossValue|number_format(2, ',', '.') }}</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="field-group col-xs-12 col-sm-12 col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <b>Umowy</b>
+                        </h3>
+                        <div id="add-contract-panel">
+                            {{ form_start(formAddContract) }}
+                            {{ form_end(formAddContract) }}
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="row department-section verification-section">
+                            <div class="col-xs-12">
+                                <h2>D. WERYFIKACJI</h2>
+                            </div>
+                            {% for key,contractList in contracts %}
+                                {% for contract in contractList %}
+                                    {% if contract.statusDepartment.code == 'verification' %}
+                                        {% set contractStatus = contract|contractStatus() %}
+                                        {% include '@GCRMCRMBundle/Default/parts/contract-tile-template.html.twig' %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="row department-section administration-section">
+                            <div class="col-xs-12">
+                                <h2>D. Administracji</h2>
+                            </div>
+                            {% for key,contractList in contracts %}
+                                {% for contract in contractList %}
+                                    {% if contract.statusDepartment.code == 'administration' %}
+                                        {% set contractStatus = contract|contractStatus() %}
+                                        {% include '@GCRMCRMBundle/Default/parts/contract-tile-template.html.twig' %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="row department-section control-section">
+                            <div class="col-xs-12">
+                                <h2>D. Kontroli</h2>
+                            </div>
+                            {% for key,contractList in contracts %}
+                                {% for contract in contractList %}
+                                    {% if contract.statusDepartment.code == 'control' %}
+                                        {% set contractStatus = contract|contractStatus() %}
+                                        {% include '@GCRMCRMBundle/Default/parts/contract-tile-template.html.twig' %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="row department-section process-section">
+                            <div class="col-xs-12">
+                                <h2>D. Procesowy</h2>
+                            </div>
+                            {% for key,contractList in contracts %}
+                                {% for contract in contractList %}
+                                    {% if contract.statusDepartment.code == 'process' %}
+                                        {% set contractStatus = contract|contractStatus() %}
+                                        {% include '@GCRMCRMBundle/Default/parts/contract-tile-template.html.twig' %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="row department-section verification-section">
+                            <div class="col-xs-12">
+                                <h2>D. Finansowy</h2>
+                            </div>
+                            {% for key,contractList in contracts %}
+                                {% for contract in contractList %}
+                                    {% if contract.statusDepartment.code == 'finances' %}
+                                        {% set contractStatus = contract|contractStatus() %}
+                                        {% include '@GCRMCRMBundle/Default/parts/contract-tile-template.html.twig' %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="field-group col-xs-12 col-sm-12 col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <b>Korespondencja</b>
+                        </h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                {% if threads|length %}
+                                    <div class="table-responsive" style="max-height: 200px; overflow: auto;">
+                                        <table class="table">
+                                            <tr>
+                                                <th><span>Lp</span></th>
+                                                <th><span>Nazwa</span></th>
+                                                <th><span>Nadawca</span></th>
+                                                <th><span>Typ</span></th>
+                                                <th><span>Aktywny</span></th>
+                                            </tr>
+                                            {% for thread in threads %}
+                                                <tr>
+                                                    <td>{{ loop.index }}</td>
+                                                    <td><a href="{{ url('easyadmin', {'entity': 'Thread', 'action': 'show', 'id': thread.id}) }}">{{ thread }}</a></td>
+                                                    <td>{{ thread.sender }}</td>
+                                                    <td>{% include "CorrespondenceBundle:admin:humanizedType.html.twig" with { 'value': thread.type } %}</td>
+                                                    <td>
+                                                        {% if thread.isActive %}
+                                                            <span class="label label-success">TAK</span>
+                                                        {% else %}
+                                                            <span class="label label-danger">NIE</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    Brak
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="field-group col-xs-12 col-sm-12 col-md-12">
+                <ol class="client-documents-menu">
+                    <li class="active"><a href="#">Wezwania do zapłaty<span class="number {% if not paymentRequests|length %}no-documents{% endif %}">{{ paymentRequests|length }}</span></a></li>
+                    {% for documentStructure in documentsStructure.data %}
+                        <li><a href="#">{{ documentStructure.title }}<span class="number {% if not documentStructure.records|length %}no-documents{% endif %}">{{ documentStructure.records|length }}</span></a></li>
+                    {% endfor %}
+                </ol>
+                <div class="show-all-documents-link-holder">
+                    <a href="#" class="show-all-documents-link">Pokaż wszystkie</a>
+                </div>
+            </div>
+
+
+            <ol class="client-documnets-target">
+                <li class="active">
+                    <div class="field-group col-xs-12 col-sm-12 col-md-12">
+                        <div class="box box-default">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">
+                                    <b>Wezwania do zapłaty</b>
+                                </h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+
+
+                                        {% if paymentRequests|length %}
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <tr>
+                                                        <th><span>Akcje</span></th>
+                                                        <th><span>ID dokumentu</span></th>
+                                                        <th><span>Data wystawienia</span></th>
+                                                        <th><span>Termin płatności</span></th>
+                                                        <th><span>Kwota</span></th>
+                                                        <th><span>Dni po terminie</span></th>
+                                                        <th><span>Opłacone</span></th>
+                                                    </tr>
+
+                                                    <style>
+                                                        .is-not-actual td {
+                                                            opacity: 0.3;
+                                                        }
+                                                        .is-not-actual td:first-child {
+                                                            opacity: 1;
+                                                        }
+                                                        .overdue-date-of-payment {
+                                                            background-color: #ffb9ad;
+                                                        }
+                                                    </style>
+                                                    {% for document in paymentRequests %}
+                                                        <tr data-id="" class="{% if document.overdueDateOfPayment > 0 %} overdue-date-of-payment {% endif %}">
+                                                            <td data-label="Akcje" class="actions">
+                                                                {% if document.isGeneratedFileExist %}
+                                                                    <a class="action-displayInvoice" title="" href="{{ url('displayPaymentRequestFromCustomList') }}?entity=PaymentRequest&id={{ document.id }}" target="_self">Wyświetl plik</a>&nbsp;&nbsp;
+                                                                {% else %}
+                                                                    <span style="opacity: 0.5;">Wyświetl plik</span>&nbsp;&nbsp;
+                                                                {% endif %}
+                                                                <a class="text-primary action-edit" title="" href="/admin/?entity=PaymentRequest&action=edit&page=1&id={{ document.id }}" target="_self">Edytuj</a>
+                                                            </td>
+
+                                                            <td data-label="" class=" string ">
+                                                                {{ document.id }}
+                                                            </td>
+
+                                                            <td data-label="" class=" datetime ">
+                                                                {{ document.createdDate|date('d-m-Y') }}
+                                                            </td>
+
+                                                            <td>{% if document.dateOfPayment %}{{ document.dateOfPayment|date('d-m-Y') }}{% else %}-{% endif %}</td>
+
+                                                            <td data-label="" class=" text ">
+                                                                {{ document.summaryGrossValue }}
+                                                            </td>
+
+                                                            <td data-label="" class=" text ">
+                                                                {{ document.overdueDateOfPayment }}
+                                                            </td>
+
+                                                            <td data-label="" class=" toggle ">
+                                                                {% if document.isPaid %}
+                                                                    <span class="label label-success">Tak</span>
+                                                                {% else %}
+                                                                    <span class="label label-danger">Nie</span>
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            </div>
+                                        {% else %}
+                                            Brak
+                                        {% endif %}
+
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+
+
+                {% for documentStructure in documentsStructure.data %}
+                    <li>
+                        <div class="field-group col-xs-12 col-sm-12 col-md-12">
+                            <div class="box box-default">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">
+                                        <b>{{ documentStructure.title }}</b>
+                                    </h3>
+                                </div>
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+
+
+                                            {% if documentStructure.records|length %}
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <tr>
+                                                            <th><span>Akcje</span></th>
+                                                            <th><span>Numer dokumentu</span></th>
+                                                            <th><span>Korekta do dokumentu</span></th>
+                                                            <th><span>Do rozliczenia</span></th>
+                                                            <th><span>Okres rozliczeniowy</span></th>
+                                                            <th><span>O.R. od</span></th>
+                                                            <th><span>O.R. do</span></th>
+                                                            <th><span>Data wystawienia</span></th>
+                                                            <th><span>Termin płatności</span></th>
+                                                            <th><span>Kwota</span></th>
+                                                            <th><span>Dni po terminie</span></th>
+                                                            <th><span>Opłacone</span></th>
+                                                            <th><span>Zamrożono</span></th>
+                                                            <th><span>Wpłacono</span></th>
+                                                        </tr>
+
+                                                        <style>
+                                                            .is-not-actual td {
+                                                                opacity: 0.3;
+                                                            }
+                                                            .is-not-actual td:first-child {
+                                                                opacity: 1;
+                                                            }
+                                                            .overdue-date-of-payment {
+                                                                background-color: #ffb9ad;
+                                                            }
+                                                        </style>
+                                                        {% for document in documentStructure.records %}
+                                                            <tr data-id="" class="{% if document.isNotActual %} is-not-actual {% endif %}{% if not document.isNotActual and document.overdueDateOfPayment > 0 %} overdue-date-of-payment {% endif %}">
+                                                                <td data-label="Akcje" class="actions">
+                                                                    {% if document.isGeneratedFileExist %}
+                                                                        <a class="action-displayInvoice" title="" href="{{ url('displayInvoiceFromCustomList') }}?entity={{ documentStructure.entityName }}&id={{ document.id }}" target="_self">Wyświetl plik</a>&nbsp;&nbsp;
+                                                                    {% else %}
+                                                                        <span style="opacity: 0.5;">Wyświetl plik</span>&nbsp;&nbsp;
+                                                                    {% endif %}
+                                                                    <a class="text-primary action-edit" title="" href="/admin/?entity={{ documentStructure.entityName }}&action=edit&page=1&id={{ document.id }}" target="_self">Edytuj</a>
+                                                                </td>
+
+                                                                <td data-label="" class=" string ">
+                                                                    {{ document.number }}
+                                                                </td>
+
+                                                                <td data-label="" class=" string ">
+                                                                    {% if documentStructure.settings.isCorrection %}
+                                                                        {{ document.invoice.number }}
+                                                                    {% else %}
+                                                                    -
+                                                                    {% endif %}
+                                                                </td>
+
+                                                                <td data-label="" class=" string ">
+                                                                    {% if document.includedDocuments is defined and document.includedDocuments and document.includedDocuments|length %}
+                                                                        {% for includedDocument in document.includedDocuments %}
+                                                                            {{ includedDocument.documentNumber }}<br>
+                                                                        {% endfor %}
+                                                                    {% elseif
+                                                                        documentStructure.entityName == 'InvoiceProformaEnergy' or
+                                                                        documentStructure.entityName == 'InvoiceProformaCorrectionEnergy'
+                                                                    %}
+                                                                        {% set includedIn = document|includedDocument(documentsStructure.data) %}
+                                                                        {% if includedIn %}{{ includedIn }}{% else %}-{% endif %}
+                                                                    {% else %}
+                                                                        -
+                                                                    {% endif %}
+                                                                </td>
+
+                                                                <td data-label="" class=" string ">
+                                                                    {% if document.billingPeriod is defined and document.billingPeriod %}{{ document.billingPeriod }}{% else %}-{% endif %}
+                                                                </td>
+
+                                                                <td>{% if document.billingPeriodFrom is defined and document.billingPeriodFrom %}{{ document.billingPeriodFrom|date('d-m-Y') }}{% else %}-{% endif %}</td>
+                                                                <td>{% if document.billingPeriodTo is defined and document.billingPeriodTo %}{{ document.billingPeriodTo|date('d-m-Y') }}{% else %}-{% endif %}</td>
+
+                                                                <td data-label="" class=" datetime ">
+                                                                    {{ document.createdDate|date('d-m-Y') }}
+                                                                </td>
+
+                                                                <td>{% if document.dateOfPayment %}{{ document.dateOfPayment|date('d-m-Y') }}{% else %}-{% endif %}</td>
+
+                                                                <td data-label="" class=" text ">
+                                                                    {{ document.summaryGrossValue }}
+                                                                </td>
+
+                                                                <td data-label="" class=" text ">
+                                                                    {{ document.overdueDateOfPayment }}
+                                                                </td>
+
+                                                                <td data-label="" class=" toggle ">
+                                                                    {% if document.corrections is defined %}
+                                                                        {% if document.corrections|length %}
+                                                                            -
+                                                                        {% else %}
+                                                                            {% if document.isPaid %}
+                                                                                <span class="label label-success">Tak</span>
+                                                                            {% else %}
+                                                                                <span class="label label-danger">Nie</span>
+                                                                            {% endif %}
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        {% if document.isPaid %}
+                                                                            <span class="label label-success">Tak</span>
+                                                                        {% else %}
+                                                                            <span class="label label-danger">Nie</span>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                </td>
+
+                                                                <td data-label="" class=" text ">
+                                                                    {{ document.frozenValue }}
+                                                                </td>
+
+                                                                <td data-label="" class=" text ">
+                                                                    {{ document.paidValue }}
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                </div>
+                                            {% else %}
+                                                Brak
+                                            {% endif %}
+
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+
+            </ol>
+
+
+        </div>
+
+        </div>
+{% endblock %}

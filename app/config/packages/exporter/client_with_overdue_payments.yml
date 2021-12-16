@@ -1,0 +1,46 @@
+# exporter_bundle:
+#     tables:
+#         ClientInvoiceProformaWithOverduePayments:
+#             class: GCRM\CRMBundle\Entity\Client
+#             alias: c
+#             tweaker: Wecoders\EnergyBundle\Service\Exporter\ClientOverduePaymentsTweaker
+#             filter: Wecoders\EnergyBundle\Service\Exporter\ClientOverduePaymentsDataFilter
+#             groupBy: c.id
+#             options:
+#                 inc_row_number: true
+#             fields:
+#                 - { property: 'c.name', label: 'Imię' }
+#                 - { property: 'c.surname', label: 'Nazwisko' }
+#                 - { property: 'c.telephoneNr', label: 'Telefon' }
+#                 - { property: 'i.number', label: 'Faktura numer' }
+#                 - { property: 'i.billingPeriod', label: 'Okres rozliczeniowy' }
+#                 - { property: 'i.billingPeriodFrom', label: 'Okres rozliczeniowy od' }
+#                 - { property: 'i.billingPeriodTo', label: 'Okres rozliczeniowy do' }
+#                 - { property: 'i.dateOfPayment', label: 'Dni po terminie' }
+#                 - { property: 'i.summaryGrossValue', label: 'Kwota na fakturze' }
+#                 - { property: 'i.paidValue', label: 'Opłacono' }
+#                 - { property: 'i.summaryGrossValue - i.paidValue', label: 'Kwota do zapłaty' }
+#                 - { property: 'c.pesel', label: 'PESEL' }
+#                 - { property: 'c.nip', label: 'NIP' }
+#                 - { property: 'c.badgeId', labe: 'Indywidualny nr rachunku' }
+#                 - { property: "'Faktura Proforma'", alias: 'document_type', label: 'Typ dokumentu' }
+#                 - { property: "CASE WHEN cg.statusContractFinances IS NOT NULL THEN scf.title ELSE CASE WHEN cg.statusContractProcess IS NOT NULL THEN scp.title ELSE '' END END", alias: 'contract_gas_actual_status', label: 'Aktualny status' }
+#                 - { property: 'cg.ppCode', alias: 'contract_gas_pp_code', label: 'Kod PPE' }
+#                 - { property: 'cg.distributor', alias: 'contract_gas_distributor', label: 'Dystrybutor' }
+#                 - { property: 'cg.distributorBranch', alias: 'contract_gas_distributor_branch', label: 'Dystrybutor oddział' }
+#                 - { property: 'cg.contractNumber', alias: 'contract_gas_contract_number', label: 'Numer umowy' }
+#                 - { property: 'cg.contractFromDate', alias: 'contract_gas_contract_from_date', label: 'Data uruchomienia usługi' }
+#                 - { property: "CASE WHEN ce.statusContractFinances IS NOT NULL THEN scf.title ELSE CASE WHEN ce.statusContractProcess IS NOT NULL THEN scp.title ELSE '' END END", alias: 'contract_energy_actual_status', label: 'Aktualny status' }
+#                 - { property: 'ce.ppCode', alias: 'contract_energy_pp_code', label: 'Kod PPE' }
+#                 - { property: 'ce.distributor', alias: 'contract_energy_distributor', label: 'Dystrybutor' }
+#                 - { property: 'ce.distributorBranch', alias: 'contract_energy_distributor_branch', label: 'Dystrybutor oddział' }
+#                 - { property: 'ce.contractNumber', alias: 'contract_energy_contract_number', label: 'Numer umowy' }
+#                 - { property: 'ce.contractFromDate', alias: 'contract_energy_contract_from_date', label: 'Data uruchomienia usługi' }
+#             joinTables:
+#                 - { class: 'GCRM\CRMBundle\Entity\ClientAndContractGas', alias: 'ccg', condition: 'ccg.client = c.id' }
+#                 - { class: 'GCRM\CRMBundle\Entity\ContractGas', alias: 'cg', condition: 'ccg.contract = cg.id' }
+#                 - { class: 'GCRM\CRMBundle\Entity\ClientAndContractEnergy', alias: 'cce', condition: 'cce.client = c.id' }
+#                 - { class: 'GCRM\CRMBundle\Entity\ContractEnergy', alias: 'ce', condition: 'cce.contract = ce.id' }
+#                 - { class: 'Wecoders\EnergyBundle\Entity\InvoiceProforma', alias: 'i', condition: 'i.client = c.id' }
+#                 - { class: 'GCRM\CRMBundle\Entity\StatusContractProcess', alias: 'scp', condition: 'ce.statusProcess = scp.id OR cg.statusProcess = scp.id' }
+#                 - { class: 'GCRM\CRMBundle\Entity\StatusContractFinances', alias: 'scf', condition: 'ce.statusFinances = scf.id OR cg.statusFinances = scf.id' }

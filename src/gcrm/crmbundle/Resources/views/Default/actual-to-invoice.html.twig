@@ -1,0 +1,194 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+    <style>
+        table {
+            background: #FFFFFF;
+            border: 1px solid #CCC;
+        }
+        th {
+            background: #EEE;
+            border-bottom: 2px solid #CCC !important;
+            padding: 0 !important;
+        }
+        th > * {
+            color: #222222;
+            display: block;
+            padding: 10px 6px;
+            white-space: nowrap;
+        }
+        td {
+            vertical-align: middle !important;
+            border-top: 1px solid #DDD;
+        }
+        tr:hover td {
+            background: #F5F5F5;
+        }
+    </style>
+{% endblock %}
+
+{% block bottom_post_javascript %}
+    <script>
+        var isMultiCheck = false;
+        $('.toggleMultiCheck').click(function(e) {
+            e.preventDefault();
+
+            var form = $(this).closest('form');
+            var checkboxes = form.find('input[type="checkbox"]');
+
+            if (checkboxes.length) {
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (!isMultiCheck) {
+                        checkboxes.eq(i).prop('checked', true);
+                    } else {
+                        checkboxes.eq(i).prop('checked', false);
+                    }
+                }
+                isMultiCheck = isMultiCheck ? false : true;
+                initToggleActivateMultiActionButtons();
+            }
+        });
+
+        $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]').change(function() {
+            initToggleActivateMultiActionButtons();
+        });
+        initToggleActivateMultiActionButtons();
+
+        function initToggleActivateMultiActionButtons()
+        {
+            var tableCheckboxes = $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]');
+
+            var shouldEnableMultiActionButtons = false;
+            for (var i = 0; i < tableCheckboxes.length; i++) {
+                if (tableCheckboxes.eq(i).prop('checked')) {
+                    shouldEnableMultiActionButtons = true;
+                }
+            }
+
+            shouldEnableMultiActionButtons ? enableMultiActionButtons() : disableMultiActionButtons();
+        }
+
+        function disableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', true);
+            }
+        }
+
+        function enableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', false);
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <div class="content" id="main">
+
+
+        <section class="content-header" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1 class="title">Aktualnie do fakturowania</h1>
+                </div>
+            </div>
+        </section>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-body" style="padding: 15px;">
+                    System pobiera klientów do fakturowania <strong>{{ daysToCheckForward }} dni</strong> w przód.<br>
+                    Zmiana tej wartości jest dostępna w zakładce "Ustawienia" w rekordzie o nazwie "actual_to_invoice_days_to_check_forward" w polu "Zawartość".<br>
+                    <br>
+                    Czynniki, które powodują, że umowy wyświetlają się na liście:<br>
+                    - umowa nie była jeszcze fakturowana, a data obow. umowy (contract_from_date) jest mniejsza od aktualnej daty albo równa lub umowa była fakturowana, a jej kolejny okres fakturowania (next_invoicing_period) jest mniejszy od aktualnej daty lub równy<br>
+                    - umowa musi być w departamencie finansowym (status_department_id)<br>
+                    - umowa nie może być wycofana z obiegu (is_resignation, is_broken_contract)<br>
+                    - status umowy w dziale finansowym musi być pusty (NULL)
+                    {% if statusContracts|length %}
+                        lub jeden z podanych niżej:<br>
+                        {% for statusContract in statusContracts %}
+                            &nbsp;&nbsp;{{ statusContract.title }}<br>
+                        {% endfor %}
+                    {% endif %}
+                    <br>
+                    Statusy z działu finansowego, które mają być brane pod uwagę można wybrać z listy statusów dodając opcję: <b>{{ constant('GCRM\\CRMBundle\\Service\\StatusContractModel::SPECIAL_ACTION_CHOOSE_TO_PROFORMA')|getOptionByValue('GCRM\\CRMBundle\\Service\\StatusContractModel', 'getSpecialActionOptionByValue') }}</b>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Umowy gaz</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {% set records = contractsGas %}
+                            {% set entityClass = 'ContractGas' %}
+                            {% set contractType = 'GAS' %}
+                            {% include '@GCRMCRMBundle/Default/parts/packageToGenerate/contracts.html.twig' %}
+                            <a href="{{ url('actualToInvoice') }}?download-gas">pobierz do xlsx</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Umowy prąd</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {% set records = contractsEnergy %}
+                            {% set entityClass = 'ContractEnergy' %}
+                            {% set contractType = 'ENERGY' %}
+                            {% include '@GCRMCRMBundle/Default/parts/packageToGenerate/contracts.html.twig' %}
+                            <a href="{{ url('actualToInvoice') }}?download-energy">pobierz do xlsx</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Paczki</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {% include '@GCRMCRMBundle/Default/parts/packageToGenerate/packages.html.twig' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+    <style>
+        table {
+            background: #FFFFFF;
+            border: 1px solid #CCC;
+        }
+        th {
+            background: #EEE;
+            border-bottom: 2px solid #CCC !important;
+            padding: 0 !important;
+        }
+        th > * {
+            color: #222222;
+            display: block;
+            padding: 10px 6px;
+            white-space: nowrap;
+        }
+        td {
+            vertical-align: middle !important;
+            border-top: 1px solid #DDD;
+        }
+        tr:hover td {
+            background: #F5F5F5;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <div class="content" id="main">
+
+        <section class="content-header" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1 class="title">Ostatni okres rozliczeniowy data "do"</h1>
+                </div>
+            </div>
+        </section>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Wgraj formatkę z klientami, aby sprawdzić ich okresy rozliczeniowe (data do)</h3>
+                    <p>Wymagania dla wgrywanego pliku:</p>
+                    <ul>
+                        <li>format: .xlsx</li>
+                        <li>liczba kolumn: 1 (indywidualny numer rachunku - 12 cyfr)</li>
+                        <li>wiersz rozpoczynający odczyt danych: 2</li>
+                    </ul>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form_start(formInputFile) }}
+                            {{ form_end(formInputFile) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

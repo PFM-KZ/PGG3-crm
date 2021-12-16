@@ -1,0 +1,160 @@
+easy_admin:
+    entities:
+        InvoiceEstimatedSettlementEnergy:
+            entityClass: InvoiceEstimatedSettlement
+            entityClassWithBundle: WecodersEnergyBundle:InvoiceEstimatedSettlement
+            class: Wecoders\EnergyBundle\Entity\InvoiceEstimatedSettlement
+            directory: '%kernel.root_dir%/../var/data/uploads/invoices-estimated-settlement-energy'
+            directoryRelative: 'var/data/uploads/invoices-estimated-settlement-energy'
+            cloneAsEntity: InvoiceEstimatedSettlementCorrectionEnergy
+            invoiceTemplateCode: 'invoice_estimated_settlement'
+            invoiceTemplateCodeForCompany: 'invoice_estimated_settlement_for_company'
+            numberSettingsCode: 'invoice_estimated_settlement'
+            generateDocumentMethod: 'generateInvoiceEstimatedSettlement'
+            permissions: ['ROLE_INVOICES']
+            show:
+                permissions: ['ROLE_INVOICES_SHOW']
+                max_results: 50
+            edit:
+                permissions: ['ROLE_INVOICES_EDIT']
+            new:
+                permissions: ['ROLE_INVOICES_NEW']
+            delete:
+                permissions: ['ROLE_INVOICES_DELETE']
+            search:
+                permissions: ['ROLE_INVOICES_SEARCH']
+            list:
+                permissions: ['ROLE_INVOICES_LIST']
+                max_results: 50
+                actions:
+                    - { name: 'clientPage', type: 'route', label: 'Karta klienta', params: { fetchClientFromEntity: 'InvoiceEstimatedSettlementEnergy' }, css_class: 'btn' }
+                    - { name: 'displayInvoiceDocument', type: 'route', label: 'Wyświetl dokument' }
+                fields:
+                    - id
+                    - { property: 'number', label: 'Numer dokumentu' }
+                    - { property: 'createdDate', label: 'Data wystawienia dokumentu' }
+                    - { property: 'dateOfPayment', label: 'Termin płatności' }
+                    - { property: 'billingPeriod', type: 'text', label: 'Okres rozliczeniowy' }
+                    - { property: 'billingPeriodFrom', label: 'Okres rozliczeniowy od' }
+                    - { property: 'billingPeriodTo', label: 'Okres rozliczeniowy do' }
+                    - { property: 'correctionNumbers', label: 'Numery korekt' }
+                    - { property: 'clientFullName', label: 'Pełna nazwa klienta' }
+                    - { property: 'summaryGrossValue', label: 'Kwota' }
+                    - { property: 'isPaid', type: 'boolean', label: 'Opłacony dokument' }
+                    - { property: 'isElectronic', type: 'boolean', label: 'Elektroniczna' }
+                    - { property: 'overdueDateOfPayment', label: 'Dni po terminie' }
+                    - { property: 'isGeneratedFileExist', type: 'boolean', label: 'Wygenerowana' }
+            form:
+                actions:
+                    - { name: 'generateInvoiceDocumentEnergy', type: 'route', label: 'Generuj dokument', css_class: 'btn btn-default' }
+                    - { name: 'cloneAsCorrectionEnergy', type: 'route', label: 'Utwórz korektę', css_class: 'btn btn-primary' }
+                    - { name: 'cloneAsCorrectionEnergyToZero', type: 'route', label: 'Utwórz korektę do 0', css_class: 'btn btn-primary' }
+                    - { name: 'displayInvoiceDocument', type: 'route', label: 'Wyświetl dokument', css_class: 'btn btn-info' }
+                fields:
+                    - { type: 'group', css_class: 'col-sm-6', label: 'Dane' }
+                    - { property: 'number', label: 'Numer dokumentu', help: 'Pozostaw puste pole w celu wygenerowania numeru przez system. Musisz jednak uzupełnić dane na podstawie których numer się wygeneruje: ustawień numeru, sprzedawcy, klienta.', type_options: { required: false } }
+                    - { property: 'invoiceTemplate', label: 'Szablon' }
+                    - { type: 'divider' }
+                    - { property: 'invoiceNumberSettings', label: 'Ustawienia numeru', help: 'Wybierz to pole aby nadpisać poniższe pola.' }
+                    - { property: 'numberStructure', label: 'Struktura numeru', help: 'Opcje: #id# - unikalny numer klienta, #ai# - auto increment, #mm# - miesiąc, #yyyy# - rok', type_options: { required: false } }
+                    - { property: 'numberLeadingZeros', label: 'Zera poprzedzające pojedyncze wartości zamiast 1 => 01 itd.', help: 'Zera poprzedzające pojedyncze wartości (przykładowo #ai# 1 => 01, #mm# - 5 => 05)' }
+                    - { property: 'numberExcludeAiFromLeadingZeros', label: 'Wyklucz #ai# z zer poprzedzających' }
+                    - { property: 'numberResetAiAtNewMonth', label: 'Resetuj wartość #ai# z nowym miesiącem', help: 'Numeracja #ai# rozpoczyna się od 1 z nowym miesiącem' }
+                    - { type: 'divider' }
+                    - { property: 'badgeId', label: 'Nr konta rozliczeniowego' }
+                    - { property: 'clientAccountNumber', label: 'Nr rachunku rozliczeniowego' }
+                    - { property: 'contractNumber', label: 'Nr umowy' }
+                    - { type: 'divider' }
+                    - { property: 'createdDate', label: 'Data wystawienia dokumentu' }
+                    - { property: 'createdIn', label: 'Miejsce wystawienia dokumentu' }
+                    - { property: 'billingPeriod', help: 'format (6 cyfr): YYYYMM (rok miesiąc)', label: 'Okres rozliczeniowy' }
+                    - { property: 'billingPeriodFrom', label: 'Okres rozliczeniowy od' }
+                    - { property: 'billingPeriodTo', label: 'Okres rozliczeniowy do' }
+                    - { property: 'dateOfPayment', help: 'Domyślnie +14 dni od daty zamówienia. Jeśli wybrane system nadpisze tą wartość.', label: 'Termin płatności', type_options: { required: false } }
+
+                    - { type: 'group', css_class: 'col-sm-6', label: 'Sprzedawca / kupujący' }
+                    - { type: 'section', label: 'Sprzedawca' }
+                    - { property: 'seller', label: 'Sprzedawca', help: 'Wybierz to pole aby wypełnić / nadpisać poniższe pola.', type_options: { required: false } }
+                    - { property: 'sellerTitle', label: 'Nazwa' }
+                    - { property: 'sellerAddress', label: 'Adres' }
+                    - { property: 'sellerZipCode', label: 'Kod pocztowy' }
+                    - { property: 'sellerCity', label: 'Miasto' }
+                    - { property: 'sellerNip', label: 'NIP' }
+                    - { property: 'sellerRegon', label: 'REGON' }
+                    - { property: 'sellerBankName', label: 'Nazwa banku' }
+                    - { property: 'sellerBankAccount', label: 'Numer konta bankowego' }
+                    - { type: 'section', label: 'Nabywca / adres zameldowania / zamieszkania' }
+                    - { property: 'client', label: 'Klient', type: 'GCRM\CRMBundle\Form\Type\LazyChoiceType', help: 'Wybierz to pole aby wypełnić / nadpisać poniższe pola.', type_options: { required: false, data_class: 'GCRM\CRMBundle\Entity\Client', attr: { data-ajax-lazyload: 'true', 'data-ajax-route': 'fetchClientData' } } }
+                    - { property: 'clientPesel', label: 'PESEL' }
+                    - { property: 'clientFullName', label: 'Pełna nazwa' }
+                    - { property: 'clientNip', label: 'NIP' }
+                    - { property: 'clientZipCode', label: 'Kod pocztowy' }
+                    - { property: 'clientCity', label: 'Miasto' }
+                    - { property: 'clientStreet', label: 'Ulica' }
+                    - { property: 'clientHouseNr', label: 'Nr domu' }
+                    - { property: 'clientApartmentNr', label: 'Nr lokalu' }
+
+                    - { type: 'section', label: 'Odbiorca' }
+                    - { property: 'recipientCompanyName', label: 'Nazwa firmy' }
+                    - { property: 'recipientNip', label: 'NIP' }
+                    - { property: 'recipientZipCode', label: 'Kod pocztowy' }
+                    - { property: 'recipientCity', label: 'Miasto' }
+                    - { property: 'recipientStreet', label: 'Ulica' }
+                    - { property: 'recipientHouseNr', label: 'Nr domu' }
+                    - { property: 'recipientApartmentNr', label: 'Nr lokalu' }
+
+                    - { type: 'section', label: 'Płatnik / adresat' }
+                    - { property: 'payerCompanyName', label: 'Nazwa firmy' }
+                    - { property: 'payerNip', label: 'NIP' }
+                    - { property: 'payerZipCode', label: 'Kod pocztowy' }
+                    - { property: 'payerCity', label: 'Miasto' }
+                    - { property: 'payerStreet', label: 'Ulica' }
+                    - { property: 'payerHouseNr', label: 'Nr domu' }
+                    - { property: 'payerApartmentNr', label: 'Nr lokalu' }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane' }
+                    - { property: 'ppName', label: 'PP nazwa' }
+                    - { property: 'ppZipCode', label: 'PP kod pocztowy' }
+                    - { property: 'ppCity', label: 'PP miasto' }
+                    - { property: 'ppStreet', label: 'PP ulica' }
+                    - { property: 'ppHouseNr', label: 'PP nr domu' }
+                    - { property: 'ppApartmentNr', label: 'PP nr lokalu' }
+                    - { property: 'ppEnergy', label: 'PPE/PPG' }
+                    - { property: 'tariff', label: 'Taryfa' }
+                    - { property: 'distributionTariff', label: 'Taryfa dystrybucji' }
+                    - { property: 'sellerTariff', label: 'Taryfa sprzedawcy' }
+                    - { property: data, type: collection, label: 'Dane', type_options: { entry_type: 'Wecoders\EnergyBundle\Form\InvoiceDataType', by_reference: false } }
+                    - { property: consumptionByDeviceData, type: collection, label: 'Podział zużycia na liczniki', type_options: { entry_type: 'Wecoders\EnergyBundle\Form\InvoiceConsumptionByDeviceDataType', by_reference: false } }
+                    - { property: includedDocuments, type: collection, label: 'Dokumenty wchodzące w skład rozliczenia', type_options: { entry_type: 'Wecoders\EnergyBundle\Form\SettlementIncludedDocumentType', by_reference: false } }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Meta dane' }
+                    - { type: 'section', label: 'Podsumowanie' }
+                    - { property: 'summaryNetValue', label: 'Wartość netto', type_options: { disabled: true } }
+                    - { property: 'summaryGrossValue', label: 'Wartość brutto', type_options: { disabled: true }  }
+                    - { property: 'summaryVatValue', label: 'Wartość VAT', type_options: { disabled: true }  }
+                    - { type: 'divider' }
+                    - { property: 'consumption', label: 'Zużycie (kWh)', type_options: { disabled: true }  }
+                    - { property: 'excise', label: 'Akcyza' }
+                    - { property: 'exciseValue', label: 'Akcyza kwota łączna', type_options: { disabled: true }  }
+                    - { type: 'divider' }
+                    - { property: 'corrections', label: 'Korekty', type_options: { disabled: true } }
+                    - { type: 'divider' }
+                    - { property: 'balanceBeforeInvoice', label: 'Przed wystawieniem dokumentu' }
+                    - { property: 'balanceAfterInvoice', label: 'Po wystawieniu dokumentu' }
+                    - { type: 'divider' }
+                    - { property: 'isElectronic', label: 'Elektroniczna' }
+                    - { property: 'isPaid', label: 'Dokument opłacony', type_options: { disabled: true } }
+                    - { property: 'type', label: 'Typ', type: 'choice', type_options: { multiple: false, expanded: false, choices: { 'ENERGY': 'ENERGY', 'GAS': 'GAS' } } }
+                    - { property: 'frozenValue', label: 'Zamrożone środki' }
+                    - { type: 'section', label: 'Procedury transakcji' }
+                    - { property: 'transactionProcedure1', label: 'SW' }
+                    - { property: 'transactionProcedure2', label: 'EE' }
+                    - { property: 'transactionProcedure3', label: 'TP' }
+                    - { property: 'transactionProcedure4', label: 'TT_WNT' }
+                    - { property: 'transactionProcedure5', label: 'TT_D' }
+                    - { property: 'transactionProcedure6', label: 'MR_T' }
+                    - { property: 'transactionProcedure7', label: 'MR_UZ' }
+                    - { property: 'transactionProcedure8', label: 'I_42' }
+                    - { property: 'transactionProcedure9', label: 'I_63' }
+                    - { property: 'transactionProcedure10', label: 'B_SPV' }
+                    - { property: 'transactionProcedure11', label: 'B_SPV_DOSTAWA' }
+                    - { property: 'transactionProcedure12', label: 'B_MPV_PROWIZJA' }
+                    - { property: 'transactionProcedure13', label: 'MPP' }

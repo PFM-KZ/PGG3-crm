@@ -1,0 +1,37 @@
+exporter_bundle:
+    tables:
+        ClientEnquiry:
+            class: GCRM\CRMBundle\Entity\ClientEnquiry
+            filter: GCRM\CRMBundle\Service\Exporter\ClientEnquiryDataFilter
+            tweaker: Wecoders\EnergyBundle\Service\Exporter\ClientEnquiryTweaker
+            alias: i
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'i.createdAt', label: 'Data ankiety' }
+                - { property: 'i.clientType', label: 'Osoba fizyczna/firma' }
+                - { property: 'i.energyType', label: 'Prąd/gaz' }
+                - { property: 'i.name', label: 'Imię' }
+                - { property: 'i.surname', label: 'Nazwisko' }
+                - { property: 'i.pesel', label: 'PESEL' }
+                - { property: 'i.email', label: 'E-mail' }
+                - { property: 'i.telephoneNr', label: 'Numer telefonu' }
+                - { property: 'i.houseNr', label: 'Nr domu' }
+                - { property: 'i.apartmentNr', label: 'Nr lokalu' }
+                - { property: 'i.street', label: 'Ulica' }
+                - { property: 'i.city', label: 'Miasto' }
+                - { property: 'i.zipCode', label: 'Kod pocztowy' }
+                - { property: 'i.postOffice', label: 'Poczta' }
+                - { property: 'i.county', label: 'Województwo' }
+                - { property: 'i.consumption', label: 'Zużycie energii' }
+                - { property: 'se.title', alias: 'seller_name', label: 'Sprzedawca' }
+                - { property: 'di.title', alias: 'distributor_name', label: 'Dystrybutor' }
+                - { property: 'i.isRebateMarketingAgreement', label: 'Zgody marketingowe' }
+                - { property: 'i.comments', label: 'Komentarz' }
+                - { property: 'i.departmentComments', label: 'Komentarz działu' }
+                - { property: "CONCAT(sr.name, ' ', sr.surname)", alias: 'seller_full_name', label: 'Handlowiec'}
+
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\User', alias: 'sr', condition: '(i.user = sr.id)' }
+                - { class: 'GCRM\CRMBundle\Entity\Seller', alias: 'se', condition: '(i.currentSellerObject = se.id)' }
+                - { class: 'GCRM\CRMBundle\Entity\Distributor', alias: 'di', condition: '(i.distributorObject = di.id)' }

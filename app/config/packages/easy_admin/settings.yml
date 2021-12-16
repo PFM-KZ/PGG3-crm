@@ -1,0 +1,15 @@
+easy_admin:
+    entities:
+        Settings:
+            class: GCRM\CRMBundle\Entity\Settings
+            permissions: ['ROLE_CONFIG']
+            disabled_actions: ['delete']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'name', label: 'Nazwa' }
+                    - { property: 'content', label: 'Zawartość', type_options: { required: false } }
+            form:
+                fields:
+                    - { property: 'name', label: 'Nazwa' }
+                    - { property: 'content', type_options: { required: false } }

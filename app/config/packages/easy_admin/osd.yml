@@ -1,0 +1,31 @@
+easy_admin:
+    entities:
+        Osd:
+            class: Wecoders\EnergyBundle\Entity\Osd
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - { property: 'option', label: 'OSD', template: '@GCRMCRMBundle/Default/admin/fields/option_array.html.twig', format: 'Wecoders\EnergyBundle\Service\OsdModel', class: 'getOptionByValue' }
+            form:
+                fields:
+                    - { property: 'option', label: 'OSD', type: 'choice', type_options: { multiple: false, expanded: false, placeholder: 'Pusta wartość', choices: {
+                      'PSG Warszawa': 1,
+                      'PSG Gdańsk': 3,
+                      'PSG Tarnów': 4,
+                      'PSG Zabrze': 5,
+                      'PSG Poznań': 6,
+                      'PSG Wrocław': 7,
+                      'Enea': 17,
+                      'Energa': 2,
+                      'Tauron': 8,
+                      'Innogy': 18,
+                      'PGE Białystok': 9,
+                      'PGE Warszawa': 10,
+                      'PGE Lublin': 11,
+                      'PGE Zamość': 12,
+                      'PGE Rzeszów': 13,
+                      'PGE Skarżysko Kamienna': 14,
+                      'PGE Łódź miasto': 15,
+                      'PGE Łódź teren': 16,
+                      } } }
+                    - { property: 'osdAndOsdDatas', label: 'Data', type: 'collection', type_options: { entry_type: 'Wecoders\EnergyBundle\Form\OsdAndOsdDataType', by_reference: false } }

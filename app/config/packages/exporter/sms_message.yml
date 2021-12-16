@@ -1,0 +1,25 @@
+exporter_bundle:
+    tables:
+        SmsMessage:
+            class: 'Wecoders\EnergyBundle\Entity\SmsMessage'
+            group_by: sm.id
+            filter: Wecoders\EnergyBundle\Service\Exporter\SmsMessageDataFilter
+            alias: sm
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'sm.id', label: 'ID' }
+                - { property: "CONCAT(c.name, ' ', c.surname)", alias: 'fullName', label: 'Imię i nazwisko' }
+                - { property: 'ani.number', alias: 'ani_number', label: 'Numer rachunku' }
+                - { property: 'scg.title', label: 'Grupa wysyłkowa' }
+                - { property: 'sm.number', label: 'Nr telefonu' }
+                - { property: 'sm.message', label: 'Treść wiadomości' }
+                - { property: 'sm.statusCode', label: 'Status', type: choice, choices: {-1: 'DO WYSŁANIA', 1: 'WYSŁANO', 0: 'ERROR' } }
+                - { property: 'sm.errorMessage', label: 'Błąd' }
+                - { property: 'sm.createdAt', label: 'Data utworzenia', type: 'date', format: 'd-m-Y, H:i' }
+                - { property: 'sm.sentAt', label: 'Data wysłania', type: 'datetime', format: 'd-m-Y, H:i' }
+                - { property: 'sm.documentNumbers', label: 'Dotyczy faktur(numery)' }
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\Client', alias: 'c', condition: 'sm.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\AccountNumberIdentifier', alias: 'ani', condition: 'c.accountNumberIdentifier = ani.id' }
+                - { class: 'Wecoders\EnergyBundle\Entity\SmsClientGroup', alias: 'scg', condition: 'sm.smsClientGroup = scg.id' }

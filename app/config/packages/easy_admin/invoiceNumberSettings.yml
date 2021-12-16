@@ -1,0 +1,20 @@
+easy_admin:
+    entities:
+        InvoiceNumberSettings:
+            class: Wecoders\InvoiceBundle\Entity\InvoiceNumberSettings
+            list:
+                fields:
+                    - id
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'structure', label: 'Struktura' }
+                    - { property: 'leadingZeros', label: 'Zera poprzedzające pojedyncze wartości zamiast 1 => 01 itd.' }
+                    - { property: 'excludeAiFromLeadingZeros', label: 'Wyklucz #ai# z zer poprzedzających' }
+                    - { property: 'resetAiAtNewMonth', label: 'Resetuj wartość #ai# z nowym miesiącem' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'structure', label: 'Struktura' }
+                    - { property: 'leadingZeros', label: 'Zera poprzedzające pojedyncze wartości zamiast 1 => 01 itd.' }
+                    - { property: 'excludeAiFromLeadingZeros', label: 'Wyklucz #ai# z zer poprzedzających' }
+                    - { property: 'resetAiAtNewMonth', label: 'Resetuj wartość #ai# z nowym miesiącem' }
+                    - { property: 'code', label: 'Kod', help: 'Dostępne wartości: invoice, correction' }

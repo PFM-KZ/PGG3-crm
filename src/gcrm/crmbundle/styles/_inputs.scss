@@ -1,0 +1,222 @@
+$labelFontSize: 1.4em;
+$inputFontSize: 1.6em;
+
+$inputHeight: 40px;
+$inputPadding: 15px;
+
+$fieldMarginBottom: 25px;
+
+label {
+    font-size: $labelFontSize;
+    margin-bottom: 3px;
+    display: block;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.input-text,
+.select,
+.checkboxes,
+.choce-item-group {
+    margin-bottom: $fieldMarginBottom;
+}
+
+.input-text {
+    input,
+    textarea {
+        border: 1px solid $borderColor;
+        border-radius: 3px;
+        color: $colorMain;
+        background-color: white;
+        width: 100%;
+        font-size: $inputFontSize;
+    }
+    input {
+        height: $inputHeight;
+        line-height: $inputHeight;
+        padding: 0 $inputPadding;
+    }
+
+    textarea {
+        width: 100%;
+        height: 200px;
+        padding: 10px $inputPadding;
+        line-height: 24px;
+    }
+}
+
+.checkboxes {
+    position: relative;
+    input {
+        position: absolute;
+        left: 0;
+        margin-top: 2px;
+    }
+    label {
+        margin-left: 20px;
+    }
+    > label {
+        margin-left: 0;
+    }
+}
+
+.choce-item-group {
+}
+
+.choice-item {
+    margin-top: 10px;
+    label {
+        margin-left: 5px;
+        display: inline;
+        letter-spacing: 0;
+        text-transform: none;
+    }
+}
+
+.flash-notice,
+.flash-success,
+.flash-error {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    font-size: 1.4em;
+    color: white;
+}
+
+.flash-success {
+    background-color: green;
+}
+
+.flash-notice {
+    background-color: #ff7900;
+}
+
+.flash-error {
+    background-color: #8c0000;
+}
+
+.error-message {
+    font-size: 1.2em;
+    color: red;
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+}
+
+
+
+
+/** Select2 */
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container--default .select2-selection--single {
+    border-color: $borderColor;
+    border-radius: 3px;
+    font-size: $inputFontSize;
+    height: $inputHeight;
+    line-height: $inputHeight;
+    padding: 0;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    padding-left: $inputPadding;
+}
+
+.select2-results {
+    font-size: $inputFontSize;
+}
+
+.select2-dropdown {
+    border-color: $borderColor;
+}
+
+.select2-search--dropdown {
+    padding: $inputPadding;
+}
+
+.select2-results__option {
+    padding: $inputPadding;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: $inputHeight;
+    width: 100%;
+}
+
+.select2-search--dropdown .select2-search__field {
+    font-size: $inputFontSize;
+}
+
+
+.date-selects {
+    > div {
+        display: flex;
+    }
+}
+
+
+
+
+
+
+.user-info-panel {
+    margin-bottom: 50px;
+    padding: 30px;
+    background-color: #eeeeee;
+    border: 1px solid $borderColor;
+    p {
+        font-size: 1.6em;
+    }
+    .title {
+        color: $colorActive;
+        font-size: 1.8em;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+    dl {
+        font-size: 1.4em;
+        line-height: 2em;
+        dt {
+            letter-spacing: 2px;
+            float: left;
+            width: 200px;
+            font-weight: bold;
+        }
+        dd {
+            font-style: italic;
+            opacity: 0.8;
+            &:after {
+                content: "";
+                height: 0;
+                width: 100%;
+                display: block;
+                clear: both;
+            }
+        }
+    }
+}
+
+
+
+.page-title {
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+    font-size: 2.8em;
+    font-weight: normal;
+    &:after {
+        margin-top: 15px;
+        content: "";
+        display: block;
+        width: 50px;
+        height: 7px;
+        background-color: $colorActive;
+    }
+}
+
+
+

@@ -1,0 +1,146 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{#{% block head_stylesheets %}#}
+    {#<link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">#}
+    {#<style>#}
+        {#{{ easyadmin_config('_internal.custom_css')|raw }}#}
+    {#</style>#}
+    {#<link rel="stylesheet" href="{{ asset('css/admin/import.css') }}">#}
+{#{% endblock %}#}
+
+{% block content %}
+    {% for label, messages in app.flashes(['notice', 'warning', 'error']) %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <div id="invoices-panel" class="content">
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        Krok 1 - Wgranie faktur e-Telko na serwer
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <form action="{{ url('invoicesSendToServer') }}" method="POST" novalidate="novalidate" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <input type="file" name="formFile[]" id="inputName1" multiple="multiple">
+                                </div>
+                                <button type="submit" name="sendFilesOnSerwer" class="btn btn-success" value="1">Wgraj</button>
+                            </form>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="field-divider">
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="">Pliki wgrane na serwerze (faktury etelko)</label>
+                                <textarea name="" id="" cols="30" class="form-control" rows="10">{{ tempInputInvoices }}</textarea>
+                            </div>
+                            <form action="{{ url('invoicesClearTempInputDir') }}" method="post" novalidate>
+                                <button type="submit" class="btn btn-danger" name="clearTempInputDir" value="1">Wyczyść</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        Krok 2 - Przetwarzanie faktur
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <form action="{{ url('invoices') }}" method="post" novalidate>
+                                {#<div class="form-group">#}
+                                    {#<label for="nextInvoiceNr" class="control-label">Zacznij numerację faktur od (XXX/MIESIĄC/ROK - wartość XXX)</label>#}
+                                    {#<input type="text" name="nextInvoiceNr" id="nextInvoiceNr" class="form-control" value="{{ nextInvoiceNr }}">#}
+                                {#</div>#}
+
+                                <div class="form-group">
+                                    <label for="invoiceDate" class="control-label">Data utworzenia faktury (YYYY-MM-DD)</label>
+                                    <input type="text" name="invoiceDate" id="invoiceDate" class="form-control" value="{{ "now"|date('Y-m-d') }}">
+                                </div>
+
+                                <button type="submit" class="btn btn-success" name="loadFilesForm" value="1">Konwertuj</button>
+                            </form>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="field-divider">
+                                <hr>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="">Pliki przetworzone na serwerze</label>
+                                <textarea name="" id="" cols="30" class="form-control" rows="10">{{ tempOutputInvoices }}</textarea>
+                            </div>
+                            <form action="{{ url('invoicesClearTempOutputDir') }}" class="form-group" method="post" novalidate>
+                                <button type="submit" class="btn btn-danger" name="clearTempOutputDir" value="1">Wyczyść</button>
+                            </form>
+                            <form action="{{ url('invoicesDownload') }}" method="post" class="form-group" novalidate>
+                                <button type="submit" class="btn btn-success" name="downloadInvoices">Pobierz przetworzone pliki</button>
+                            </form>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="field-divider">
+                                <hr>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label for="" class="control-label">Ostrzeżenia</label>
+                                        <textarea name="" id="" cols="30" class="form-control" rows="10">{{ noticeMessage }}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="form-group">
+                                        <label for="" class="control-label">Błędy</label>
+                                        <textarea name="" id="" cols="30" class="form-control" rows="10">{{ errorMessage }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="field-divider">
+                                <hr>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <p>Liczba plików do przetworzenia: {{ inputFilesCount }}</p>
+                            <p>Utworzone rekordy (powodzenia): {{ processedFilesCount }}</p>
+                            <p>Liczba nieprzetworzonych faktur (niepowodzenia): {{ notProcessedFilesCount }}</p>
+                            <p>Liczba pominiętych faktur (już istniejące): {{ alreadyExistsFilesCount }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+{% endblock %}

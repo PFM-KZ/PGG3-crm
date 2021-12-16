@@ -1,0 +1,166 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+{% endblock %}
+
+{% block bottom_post_javascript %}
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <style>
+        .management-tile {
+            height: 320px;
+            display: block;
+            background-color: #005eaa;
+            color: white;
+
+            font-size: 16px;
+            line-height: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .management-tile table {
+            width: 100%;
+            height: 100%;
+            border-spacing: 10px;
+            border-collapse: separate;
+        }
+        .management-tile table tr:first-child td {
+            background: none;
+        }
+        .management-tile table tr:first-child {
+            height: 20px;
+        }
+        .management-tile table tr td:last-child {
+            min-width: 180px;
+            width: 180px;
+        }
+        .management-tile td {
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        .management-tile .title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .management-tile .button {
+            color: white;
+            border: 2px solid white;
+            padding: 15px 15px;
+            font-weight: bold;
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+    </style>
+
+    <div class="content" id="main">
+        <section class="content-header" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1 class="title">Departament zarządu</h1>
+                </div>
+            </div>
+        </section>
+
+        <div class="box-body">
+            <div class="management-tiles">
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="management-tile">
+                            <table>
+                                <tr>
+                                    <td class="title">Aktywne punkty poboru</td>
+                                    <td class="button-cell"><a href="{{ url('managementActivePp') }}" class="button">Sprawdź</a></td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: #ffd339; color: black;"><b>Prąd:</b></td>
+                                    <td style="background-color: #ffd339; color: black;"><b>{{ activePp.raw.ENERGY|length }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: #18d6ff; color: black;"><b>Gaz:</b></td>
+                                    <td style="background-color: #18d6ff; color: black;"><b>{{ activePp.raw.GAS|length }}</b></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="management-tile">
+                            <table>
+                                <tr>
+                                    <td class="title">Wpłaty klientów</td>
+                                    <td class="button-cell"><a href="{{ url('managementPayments') }}" class="button">Sprawdź</a></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Aktualny miesiąc:</b></td>
+                                    <td><b>{{ paymentsCurrentMonth|number_format(2, ',', ' ') }} PLN</b></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Poprzedni miesiąc:</b></td>
+                                    <td><b>{{ paymentsBeforeMonth|number_format(2, ',', ' ') }} PLN</b></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Różnica:</b></td>
+                                    <td><b>{% if paymentsDiffPercentage > 0 %}+{{ paymentsDiffPercentage|number_format(2, ',', '') }}{% else %}{{ paymentsDiffPercentage|number_format(2, ',', '') }}{% endif %} %</b></td>
+                                    {#<td><b>{{ paymentsDiffPercentage|number_format(2, ',', '') }} %</b></td>#}
+                                </tr>
+                                <tr>
+                                    <td><b>Suma wpłat br.:</b></td>
+                                    <td><b>{{ payments|number_format(2, ',', ' ') }} PLN</b></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="management-tile">
+                            <table>
+                                <tr>
+                                    <td class="title">Planowane przychody faktury proforma</td>
+                                    <td class="button-cell"><a href="{{ url('managementPlannedRevenues') }}" class="button">Sprawdź</a></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Aktualny miesiąc:</b></td>
+                                    <td><b>{{ plannedRevenues|number_format(2, ',', ' ') }} PLN</b></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Poprzedni miesiąc:</b></td>
+                                    <td><b>{{ plannedRevenuesBeforeMonth|number_format(2, ',', ' ') }} PLN</b></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Różnica:</b></td>
+                                    <td><b>{% if plannedRevenuesDiffPercentage > 0 %}+{{ plannedRevenuesDiffPercentage|number_format(2, ',', '') }}{% else %}{{ plannedRevenuesDiffPercentage|number_format(2, ',', '') }}{% endif %} %</b></td>
+                                    {#<td><b>{{ plannedRevenuesDiffPercentage|number_format(2, ',', '') }} %</b></td>#}
+                                </tr>
+                                <tr>
+                                    <td><b>Suma kontraktów:</b></td>
+                                    <td><b>{{ plannedRevenuesSummary|number_format(2, ',', ' ') }} PLN</b></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

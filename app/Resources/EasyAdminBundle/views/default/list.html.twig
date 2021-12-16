@@ -1,0 +1,661 @@
+{% set _entity_config = easyadmin_entity(app.request.query.get('entity')) %}
+{% trans_default_domain _entity_config.translation_domain %}
+{% set _trans_parameters = { '%entity_name%': _entity_config.name|trans, '%entity_label%': _entity_config.label|trans } %}
+
+{% extends _entity_config.templates.layout %}
+
+{% set _request_parameters = app.request.query.all|merge(_request_parameters|default({}))|merge({
+action: app.request.get('action'),
+entity: _entity_config.name,
+menuIndex: app.request.get('menuIndex'),
+submenuIndex: app.request.get('submenuIndex'),
+sortField: app.request.get('sortField', ''),
+sortDirection: app.request.get('sortDirection', 'DESC'),
+page: app.request.get('page', 1)
+}) %}
+
+{% if 'search' == app.request.get('action') %}
+    {% set _request_parameters = _request_parameters|merge({
+    query: app.request.get('query')|default(''),
+    sortField: _entity_config.search.sort.field|default(app.request.get('sortField', '')),
+    sortDirection: _entity_config.search.sort.direction|default(app.request.get('sortDirection', 'DESC')),
+    }) %}
+{% endif %}
+
+{% set _request_parameters = _request_parameters|merge({ referer: path('easyadmin', _request_parameters)|url_encode }) %}
+
+{% block body_id 'easyadmin-list-' ~ _entity_config.name %}
+{% block body_class 'list list-' ~ _entity_config.name|lower %}
+
+{% block content_title %}
+    {% spaceless %}
+        {% if 'search' == app.request.get('action') %}
+            {% set _default_title = 'search.page_title'|transchoice(paginator.nbResults, {}, 'EasyAdminBundle') %}
+            {{ (_entity_config.search.title is defined ? _entity_config.search.title|transchoice(paginator.nbResults) : _default_title)|raw }}
+        {% else %}
+            {% set _default_title = 'list.page_title'|trans(_trans_parameters, 'EasyAdminBundle') %}
+            {{ (_entity_config.list.title is defined ? _entity_config.list.title|trans(_trans_parameters) : _default_title)|raw }}
+        {% endif %}
+    {% endspaceless %}
+{% endblock %}
+
+{% block content_header %}
+    <div class="row">
+        <div class="col-sm-5">
+            {% block content_title_wrapper %}
+                <h1 class="title">{{ block('content_title') }}</h1>
+            {% endblock %}
+        </div>
+
+        <div class="col-sm-7">
+            <div class="global-actions">
+                {% block global_actions %}
+                    {% if easyadmin_action_is_enabled_for_list_view('search', _entity_config.name) %}
+                        {% set _action = easyadmin_get_action_for_list_view('search', _entity_config.name) %}
+
+                        {% block search_action %}
+                            <div class="form-action {{ _action.css_class|default('') }}">
+                                <form method="get" action="{{ path('easyadmin') }}">
+                                    {% block search_form %}
+                                        <input type="hidden" name="action" value="search">
+                                        <input type="hidden" name="entity" value="{{ _request_parameters.entity }}">
+                                        <input type="hidden" name="sortField" value="{{ _entity_config.search.sort.field|default(_request_parameters.sortField) }}">
+                                        <input type="hidden" name="sortDirection" value="{{ _entity_config.search.sort.direction|default(_request_parameters.sortDirection) }}">
+                                        <input type="hidden" name="menuIndex" value="{{ _request_parameters.menuIndex }}">
+                                        <input type="hidden" name="submenuIndex" value="{{ _request_parameters.submenuIndex }}">
+                                        <div class="input-group">
+                                            <input class="form-control" type="search" name="query" value="{{ app.request.get('query')|default('') }}">
+                                            <span class="input-group-btn">
+                                                <button class="btn" type="submit" formtarget="{{ _action.target }}">
+                                                    <i class="fa fa-search"></i>
+                                                    <span class="hidden-xs hidden-sm">{{ _action.label|default('action.search')|trans(_trans_parameters) }}</span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    {% endblock %}
+                                </form>
+                            </div>
+                        {% endblock search_action %}
+                    {% endif %}
+
+                    {% if easyadmin_action_is_enabled_for_list_view('new', _entity_config.name) %}
+                        {% set _action = easyadmin_get_action_for_list_view('new', _entity_config.name) %}
+                        {% block new_action %}
+                            <div class="button-action">
+                                <a class="{{ _action.css_class|default('') }}" href="{{ path('easyadmin', _request_parameters|merge({ action: _action.name })) }}" target="{{ _action.target }}">
+                                    {% if _action.icon %}<i class="fa fa-{{ _action.icon }}"></i>{% endif %}
+                                    {{ _action.label is defined and not _action.label is empty ? _action.label|trans(_trans_parameters) }}
+                                </a>
+                            </div>
+                        {% endblock new_action %}
+                    {% endif %}
+                {% endblock global_actions %}
+            </div>
+        </div>
+    </div>
+{% endblock content_header %}
+
+{% block bottom_post_javascript %}
+    <script>
+        $('.button-delete-marked').on('click', function(e) {
+            e.preventDefault();
+            var form = $(this).closest('form');
+
+            $('#modal-delete').modal({ backdrop: true, keyboard: true })
+                .off('click', '#modal-delete-button')
+                .on('click', '#modal-delete-button', function () {
+                    $('#multiDeleteAction').val(1);
+                    form.trigger('submit');
+                });
+        });
+
+        var isMultiCheck = false;
+        $('#toggleMultiCheck').click(function(e) {
+            e.preventDefault();
+
+            var form = $(this).closest('form');
+            var checkboxes = form.find('input[type="checkbox"]');
+
+            if (checkboxes.length) {
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (!isMultiCheck) {
+                        checkboxes.eq(i).prop('checked', true);
+                    } else {
+                        checkboxes.eq(i).prop('checked', false);
+                    }
+                }
+                isMultiCheck = isMultiCheck ? false : true;
+                initToggleActivateMultiActionButtons();
+            }
+        });
+
+        $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]').change(function() {
+            initToggleActivateMultiActionButtons();
+        });
+        initToggleActivateMultiActionButtons();
+
+        function initToggleActivateMultiActionButtons()
+        {
+            var tableCheckboxes = $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]');
+
+            var shouldEnableMultiActionButtons = false;
+            for (var i = 0; i < tableCheckboxes.length; i++) {
+                if (tableCheckboxes.eq(i).prop('checked')) {
+                    shouldEnableMultiActionButtons = true;
+                }
+            }
+
+            shouldEnableMultiActionButtons ? enableMultiActionButtons() : disableMultiActionButtons();
+        }
+
+        function disableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', true);
+            }
+        }
+
+        function enableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', false);
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block main %}
+    {% set _list_item_actions = easyadmin_get_actions_for_list_item(_entity_config.name) %}
+
+
+
+    {#  #}
+    {% if formDocumentBankAccountChange is defined %}
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Wgraj dane</h3>
+                    <p>Wymagania dla wgrywanego pliku:</p>
+                    <ul>
+                        <li>format: .xlsx</li>
+                        <li>liczba kolumn: 1 (numer rachunku klienta - 12 ostatnich cyfr)</li>
+                        <li>wiersz rozpoczynający odczyt danych: 2</li>
+                    </ul>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form_start(formDocumentBankAccountChange, { 'action': url('documentBankAccountChange') }) }}
+                            {{ form_end(formDocumentBankAccountChange) }}
+
+
+                            {{ form_start(formButtonClick, { 'action': url('removeUnlinkedDocumentsBankAccountChange') }) }}
+                            {{ form_widget(formButtonClick.click, { 'label': 'Wyczyść nieprzypisane dokumenty' }) }}
+                            {{ form_end(formButtonClick) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+    {% endif %}
+
+
+
+
+    {# styles for table #}
+    <style>
+        td span.status-positive {
+            color: #4e914d !important;;
+        }
+        td span.status-negative {
+            color: #9c0000 !important;;
+        }
+        tr.status-negative {
+            background-color: #ffcfcf !important;
+        }
+        tr.status-positive {
+            background-color: #b9ffb8 !important;;
+        }
+        tr.status-warning {
+            background-color: #fff4af !important;;
+        }
+    </style>
+    {% if listSearchForm is defined and listSearchForm %}
+        {% include '@GCRMCRMBundle/Default/parts/list-search-panel.html.twig' %}
+    {% endif %}
+
+    {% if
+    app.request.query.has('entity') and app.request.query.get('entity') == 'Client' or
+    app.request.query.has('entity') and app.request.query.get('entity') == 'ClientFinances'
+    %}
+        {#{% include '@GCRMCRMBundle/Default/parts/list-info-panel.html.twig' %}#}
+    {% endif %}
+
+    {#{% if app.request.query.has('entity') and app.request.query.get('entity') == 'Invoice' and invoicesDownloadForm is defined %}#}
+    {#{% include '@GCRMCRMBundle/Default/parts/list-invoices-download-panel.html.twig' %}#}
+    {#{% endif %}#}
+
+    {#{% if app.request.query.has('entity') and app.request.query.get('entity') == 'InvoiceCorrection' and invoicesDownloadForm is defined %}#}
+    {#{% include '@GCRMCRMBundle/Default/parts/list-invoices-download-panel.html.twig' %}#}
+    {#{% endif %}#}
+
+    {#{% if app.request.query.has('entity') and app.request.query.get('entity') == 'InvoiceProforma' and invoicesDownloadForm is defined %}#}
+    {#{% include '@GCRMCRMBundle/Default/parts/list-invoices-download-panel.html.twig' %}#}
+    {#{% endif %}#}
+
+
+
+
+
+
+
+    {#{{ isSearchModule }}#}
+
+
+
+    {# max results form #}
+    {% if entity_max_results is defined %}
+        <div id="max-results-form">
+            <style>
+                #max-results-form {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 2px;
+                }
+                #max-results-form label {
+                    font-size: 12px;
+                }
+                #max-results-form input {
+                    width: 60px;
+                    padding: 0 5px;
+                }
+                #max-results-form button {
+                    height: 24px;
+                    padding: 0 8px;
+                    border-radius: 0;
+                    position: relative;
+                    top: -1px;
+                }
+            </style>
+            {{ form_start(entity_max_results) }}
+                {{ form_label(entity_max_results.number) }}
+                {{ form_widget(entity_max_results.number) }}{{ form_widget(entity_max_results.save, { attr: { 'class': 'btn btn-success' } }) }}
+            {{ form_end(entity_max_results) }}
+        </div>
+    {% endif %}
+
+
+    {#<form action="{{ url('listPostAction') }}?{{ app.request.querystring }}" method="post" novalidate>#}
+    <form action="{{ app.request.requestUri }}" method="post" enctype="multipart/form-data" novalidate>
+        {{ include(_entity_config.templates.paginator) }}
+
+
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                {% block table_head %}
+                    <tr>
+                        {# ****************
+                        adds additional checkbox td
+                        *******************  #}
+                        {% if fields|length %}
+                            <th style="text-align: center; width: 65px !important;">
+                                <a href="#" id="toggleMultiCheck">Zaznacz</a>
+                            </th>
+                        {% endif %}
+                        {# ****************
+                        end code of adding checkbox
+                        ******************* #}
+
+                        {% if _list_item_actions|length > 0 %}
+                            <th>
+                                <span>{{ 'list.row_actions'|trans(_trans_parameters, 'EasyAdminBundle') }}</span>
+                            </th>
+                        {% endif %}
+
+                        {#<th>#}
+                        {#<span>Lp.</span>#}
+                        {#</th>#}
+
+                        {% for field, metadata in fields %}
+                            {% set isSortingField = metadata.property == app.request.get('sortField')|split('.')|first %}
+                            {% set nextSortDirection = isSortingField ? (app.request.get('sortDirection') == 'DESC' ? 'ASC' : 'DESC') : 'DESC' %}
+                            {% set _column_label = (metadata.label ?: field|humanize)|trans(_trans_parameters) %}
+                            {% set _column_icon = isSortingField ? (nextSortDirection == 'DESC' ? 'fa-caret-up' : 'fa-caret-down') : 'fa-sort' %}
+
+                            <th data-property-name="{{ metadata.property }}" class="{{ isSortingField ? 'sorted' }} {{ metadata.virtual ? 'virtual' }} {{ metadata.dataType|lower }} {{ metadata.css_class }}">
+                                {% if metadata.sortable %}
+                                    <a href="{{ path('easyadmin', _request_parameters|merge({ page: 1, sortField: metadata.property, sortDirection: nextSortDirection })) }}">
+                                        <i class="fa {{ _column_icon }}"></i>
+                                        {{ _column_label|raw }}
+                                    </a>
+                                {% else %}
+                                    <span>{{ _column_label|raw }}</span>
+                                {% endif %}
+                            </th>
+                        {% endfor %}
+
+                        {#{% if _list_item_actions|length > 0 %}#}
+                        {#<th>#}
+                        {#<span>{{ 'list.row_actions'|trans(_trans_parameters, 'EasyAdminBundle') }}</span>#}
+                        {#</th>#}
+                        {#{% endif %}#}
+                    </tr>
+                {% endblock table_head %}
+                </thead>
+
+
+
+
+
+
+                <tbody>
+                {% block table_body %}
+
+                    {% if app.request.query.has('entity') and
+                    ((app.request.query.get('entity') == 'Client' or app.request.query.get('entity') == 'ClientFinances') or
+                    ((app.request.query.get('entity') == 'Invoice' or app.request.query.get('entity') == 'InvoiceCorrection' or app.request.query.get('entity') == 'InvoiceProforma') and invoicesDownloadForm is defined))
+                    %}
+                        {% set records = pageResults %}
+                    {% else %}
+                        {% set records = paginator.currentPageResults %}
+                    {% endif %}
+
+                    {% for item in records %}
+
+                        {# the empty string concatenation is needed when the primary key is an object (e.g. an Uuid object) #}
+                        {% set _item_id = '' ~ attribute(item, _entity_config.primary_key_field_name) %}
+                        {#{% if item.clientAndGasContracts is defined %}#}
+                        {#<tr data-id="{{ _item_id }}" class="status-{{ item|clientStatus() }}">#}
+                        {#<tr data-id="{{ _item_id }}">#}
+                        {#{% else %}#}
+                        <tr data-id="{{ _item_id }}" {% if _request_parameters.entity == 'PackageToSend' %}{% if item.isProcessed %} style="opacity: 0.5;" {% endif %}{% endif %}>
+                            {#{% endif %}#}
+                            {# ****************
+                            adds additional checkbox td
+                            *******************  #}
+                            {% if fields|length %}
+                                <td style="text-align: center; background-color: #f5f5f5;" class="multi-checkbox-action-column">
+                                    <input type="checkbox" name="selectedRows[]" value="{{ _item_id }}">
+                                </td>
+                            {% endif %}
+                            {# ****************
+                            end code of adding checkbox
+                            ******************* #}
+                            {% if _list_item_actions|length > 0 %}
+                                {% set _column_label =  'list.row_actions'|trans(_trans_parameters, 'EasyAdminBundle') %}
+                                <td data-label="{{ _column_label }}" class="actions">
+                                    {{ include('@EasyAdmin/default/includes/_actions.html.twig', {
+                                        actions: _list_item_actions,
+                                        request_parameters: _request_parameters,
+                                        translation_domain: _entity_config.translation_domain,
+                                        trans_parameters: _trans_parameters,
+                                        item_id: _item_id,
+                                        item: item
+                                    }, with_context = false) }}
+                                </td>
+                            {% endif %}
+
+                            {#<td>#}
+                            {#<span>{{ loop.index }}</span>#}
+                            {#</td>#}
+
+                            {% for field, metadata in fields %}
+                                {% set isSortingField = metadata.property == app.request.get('sortField') %}
+                                {% set _column_label =  (metadata.label ?: field|humanize)|trans(_trans_parameters)  %}
+
+
+
+                                {# custom display statuses #}
+                                {% if field == 'clientAndGasContracts' %}
+                                    {% if referer is not defined %}
+                                        {% set referer = app.request.query.get('referer') ?: app.request.requestUri|url_encode  %}
+                                    {% endif %}
+
+                                    <td data-label="{{ _column_label }}" class="{{ isSortingField ? 'sorted' }} {{ metadata.dataType|lower }} {{ metadata.css_class }}">
+                                        {% for contract in item.contractsList %}
+
+                                            {% set contractTypeTitle = contract.typeTitle %}
+                                            {% set contractTypeCode = contract.typeCode %}
+                                            {% include '@GCRMCRMBundle/Default/parts/list-column-contract.html.twig' %}
+
+                                        {% endfor %}
+
+                                    </td>
+                                {% else %}
+                                    <td data-label="{{ _column_label }}" class="{{ isSortingField ? 'sorted' }} {{ metadata.dataType|lower }} {{ metadata.css_class }}">
+                                        {{ easyadmin_render_field_for_list_view(_entity_config.name, item, metadata) }}
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+
+                            {#{% if _list_item_actions|length > 0 %}#}
+                            {#{% set _column_label =  'list.row_actions'|trans(_trans_parameters, 'EasyAdminBundle') %}#}
+                            {#<td data-label="{{ _column_label }}" class="actions">#}
+                            {#{% block item_actions %}#}
+                            {#{{ include('@EasyAdmin/default/includes/_actions.html.twig', {#}
+                            {#actions: _list_item_actions,#}
+                            {#request_parameters: _request_parameters,#}
+                            {#translation_domain: _entity_config.translation_domain,#}
+                            {#trans_parameters: _trans_parameters,#}
+                            {#item_id: _item_id#}
+                            {#}, with_context = false) }}#}
+                            {#{% endblock item_actions %}#}
+                            {#</td>#}
+                            {#{% endif %}#}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td class="no-results" colspan="{{ _list_item_actions|length > 0 ? fields|length + 2 : fields|length + 1 }}">
+                                {{ 'search.no_results'|trans(_trans_parameters, 'EasyAdminBundle') }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endblock table_body %}
+                </tbody>
+            </table>
+
+
+
+
+
+
+
+
+
+            {% if (app.request.query.has('entity') and app.request.query.get('entity') != 'Payment') %}
+                <div id="multi-action-buttons" style="margin-bottom: 15px;">
+                    {# after click, modal is enabled - when click 'yes' on modal hidden input multideleteaction is filled and form is processed #}
+                    <button type="submit" class="btn btn-danger button-delete-marked">Usuń zaznaczone</button>
+                    <input type="hidden" name="multiDeleteAction" id="multiDeleteAction">
+
+                    <button type="submit" class="btn btn-action" name="multiCloneAction" value="1">Klonuj zaznaczone</button>
+
+                    {% if listSearchForm is defined and listSearchForm %}
+                        <button type="submit" class="btn btn-action btn-success" name="multiDownloadXlsxAction" value="1">Pobierz do Xslx</button>
+                    {% endif %}
+
+                    {#{% if (app.request.query.has('entity') and app.request.query.get('entity') == 'Invoice') %}#}
+                    {#<button type="submit" class="btn btn-action btn-success" name="multiDownloadInvoiceAction" value="1">Pobierz zaznaczone</button>#}
+                    {#{% endif %}#}
+                    {#{% if (app.request.query.has('entity') and app.request.query.get('entity') == 'InvoiceCorrection') %}#}
+                    {#<button type="submit" class="btn btn-action btn-success" name="multiDownloadInvoiceCorrectionAction" value="1">Pobierz zaznaczone</button>#}
+                    {#{% endif %}#}
+                </div>
+            {% endif %}
+
+            {#{% if not app.request.query.has('listSearch') %}#}
+            {#{% if app.request.query.has('salesDepartment') or (app.request.query.has('statusDepartment') and (app.request.query.has('entity') and app.request.query.get('entity') != 'PackageToSend')) %}#}
+            {#{% include '@GCRMCRMBundle/Default/parts/multi-export-panel.html.twig' %}#}
+            {#{% endif %}#}
+            {#{% endif %}#}
+
+
+            {#{{ form_start(massCorrectionForm) }}#}
+            {% if massCorrectionForm is defined %}
+                {% if massCorrectionForm.file is defined %}
+                    {{ form_widget(massCorrectionForm.file) }}
+                {% endif %}
+                {{ form_widget(massCorrectionForm.save) }}
+            {% endif %}
+            {% if massCustomDocumentForm is defined %}
+                {{ form_widget(massCustomDocumentForm.file) }}
+                {{ form_widget(massCustomDocumentForm.customDocumentTemplate) }}
+                {{ form_widget(massCustomDocumentForm.save) }}
+            {% endif %}
+            {% if packagesToGenerate is defined %}
+                <h3>Paczki</h3>
+
+                <form action="#" method="post" novalidate>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th style="text-align: center; width: 65px !important;">
+                                <a href="#" class="toggleMultiCheck">Zaznacz</a>
+                            </th>
+                            <th><span>Akcje</span></th>
+                            <th><span>Lp.</span></th>
+                            <th><span>Dodane przez</span></th>
+                            <th><span>Data wystawienia</span></th>
+                            <th><span>Ilość</span></th>
+                            <th><span>I: oczekiwanie na procesowanie</span></th>
+                            <th><span>I: procesowanych</span></th>
+                            <th><span>I: oczekiwanie na generowanie</span></th>
+                            <th><span>I: generowanych</span></th>
+                            <th><span>I: zakończonych</span></th>
+                            <th><span>I: błędnych</span></th>
+                            <th><span>Data utworzenia</span></th>
+                            <th><span>Komunikat błędu</span></th>
+                            <th><span>Status</span></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for record in packagesToGenerate %}
+                            <tr data-id="{{ record.id }}">
+                                <td style="text-align: center; background-color: #f5f5f5;" class="multi-checkbox-action-column">
+                                    <input type="checkbox" name="selectedRowsPackages[]" value="{{ record.id }}">
+                                </td>
+                                <td width="10" class="actions" style="white-space: nowrap;">
+                                    <a href="{{ url('documentPackageToGenerate', { id: record.id }) }}?entity={{ app.request.get('entity') }}">Pokaż zawartość</a>&nbsp;&nbsp;
+                                    {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\DocumentPackageToGenerateModel::STATUS_WAITING_TO_PROCESS') %}
+                                        <button type="submit" name="changeStatusToProcessAction" value="{{ record.id }}" class="btn btn-sm">Procesuj</button>
+                                    {% endif %}
+                                    <button type="submit" name="generateEnveloAction" value="{{ record.id }}" class="btn btn-sm">Pobierz envelo</button>
+                                </td>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ record.addedBy }}</td>
+                                <td>{{ record.createdDate|date('Y-m-d') }}</td>
+
+                                <td>{{ record.packageRecords|length }}</td>
+                                <td>{{ record.countWaitingToProcess }}</td>
+                                <td>{{ record.countToProcess }}</td>
+                                <td>{{ record.countWaitingToGenerate }}</td>
+                                <td>{{ record.countToGenerate }}</td>
+                                <td>{{ record.countCompleted }}</td>
+                                <td>{{ record.countError }}</td>
+                                <td>{{ record.createdAt|date('Y-m-d') }}</td>
+
+                                <td>{{ record.errorMessage }}</td>
+                                <td>{{ record.status|getOptionByValue('Wecoders\\EnergyBundle\\Service\\DocumentPackageToGenerateModel') }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div id="multi-action-buttons" style="margin-bottom: 15px;">
+                        <button type="submit" name="multiRollBack" value="1" class="btn btn-danger">Usuń cofając zmiany</button>
+                    </div>
+                </form>
+
+            {% endif %}
+
+            {#{{ form_end(massCorrectionForm) }}#}
+
+
+
+
+
+        </div>
+
+        <input type="hidden" name="entityName" value="{{ _request_parameters.entity }}">
+        <input type="hidden" name="entityClass" value="{{ _entity_config.class }}">
+    </form>
+
+    {% block paginator %}
+        {{ include(_entity_config.templates.paginator) }}
+    {% endblock paginator %}
+
+    {% block delete_form %}
+        {% set referer = paginator.currentPage == paginator.nbPages and 1 != paginator.currentPage and 1 == paginator.currentPageResults|length
+        ? path('easyadmin', app.request.query|merge({ page: app.request.query.get('page') - 1 }))
+        : app.request.requestUri
+        %}
+
+        {{ include('@EasyAdmin/default/includes/_delete_form.html.twig', {
+            view: 'list',
+            referer: referer|url_encode,
+            delete_form: delete_form_template,
+            _translation_domain: _entity_config.translation_domain,
+            _trans_parameters: _trans_parameters,
+            _entity_config: _entity_config,
+        }, with_context = false) }}
+    {% endblock delete_form %}
+{% endblock main %}
+
+{% block body_javascript %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        $(function() {
+            $('#main').find('table .toggle input[type="checkbox"]').change(function() {
+                var toggle = $(this);
+                var newValue = toggle.prop('checked');
+                var oldValue = !newValue;
+
+                var columnIndex = $(this).closest('td').index() + 1;
+                var propertyName = $('table th.toggle:nth-child(' + columnIndex + ')').data('property-name');
+
+                var toggleUrl = "{{ path('easyadmin', { action: 'edit', entity: _entity_config.name, view: 'list' })|raw }}"
+                    + "&id=" + $(this).closest('tr').data('id')
+                    + "&property=" + propertyName
+                    + "&newValue=" + newValue.toString();
+
+                var toggleRequest = $.ajax({ type: "GET", url: toggleUrl, data: {} });
+
+                toggleRequest.done(function(result) {});
+
+                toggleRequest.fail(function() {
+                    // in case of error, restore the original value and disable the toggle
+                    toggle.bootstrapToggle(oldValue == true ? 'on' : 'off');
+                    toggle.bootstrapToggle('disable');
+                });
+            });
+
+            $('.action-delete').on('click', function(e) {
+                e.preventDefault();
+                var id = $(this).parents('tr').first().data('id');
+
+                $('#modal-delete').modal({ backdrop: true, keyboard: true })
+                    .off('click', '#modal-delete-button')
+                    .on('click', '#modal-delete-button', function () {
+                        var deleteForm = $('#delete-form');
+                        deleteForm.attr('action', deleteForm.attr('action').replace('__id__', id));
+                        deleteForm.trigger('submit');
+                    });
+            });
+        });
+    </script>
+
+    {% if 'search' == app.request.get('action') %}
+        <script type="text/javascript">
+            var _search_query = "{{ app.request.get('query')|default('')|e('js') }}";
+            // the original query is prepended to allow matching exact phrases in addition to single words
+            $('#main').find('table tbody').highlight($.merge([_search_query], _search_query.split(' ')));
+        </script>
+    {% endif %}
+{% endblock %}

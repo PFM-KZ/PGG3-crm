@@ -1,0 +1,76 @@
+easy_admin:
+    entities:
+        SmsTemplate:
+            class: Wecoders\EnergyBundle\Entity\SmsTemplate
+            controller: 'Wecoders\EnergyBundle\Controller\SmsController'
+            permissions: ['ROLE_SUPERADMIN']
+            new:
+                title: 'Dodaj szablon SMS'
+            edit:
+                title: 'Szablon SMS (%%entity_id%%)'
+                fields:
+                    - { property: 'title', label: 'Nazwa szablonu' }
+                    - { property: 'message', label: 'Wiadomość' }
+                    - { property: 'tokens', label: 'Tokeny', help: 'Wartości podmieniane automatycznie, w celu użycia należy umieścić token pomiędzy {_*_}, np. {_id_}', type: textarea, type_options: { attr: { readonly: true } } }
+                    - { property: 'code', label: 'Kod szablonu', help: 'Pole dla developera' }
+            list:
+                title: 'Szablony SMS'
+                actions:
+                    - { name: 'new', label: 'Dodaj nowy szablon' }
+                fields:
+                    - id
+                    - { property: 'title', label: 'Nazwa szablonu' }
+                    - { property: 'message', label: 'Wiadomość' }
+                    - { property: 'createdAt', label: 'Data utworzenia' }
+                    - { property: 'updatedAt', label: 'Data modyfikacji' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Nazwa szablonu' }
+                    - { property: 'message', label: 'Wiadomość' }
+                    - { property: 'code', label: 'Kod szablonu' }
+        SmsMessage:
+            class: 'Wecoders\EnergyBundle\Entity\SmsMessage'
+            controller: 'Wecoders\EnergyBundle\Controller\SmsController'
+            permissions: ['ROLE_SUPERADMIN']
+            disabled_actions: ['new', 'edit']
+            list:
+                title: 'Wysłane SMS'
+                fields:
+                    - id
+                    - { property: 'smsClientGroup', label: 'Grupa wysyłkowa' }
+                    - { property: 'client', label: 'Klient' }
+                    - { property: 'number', label: 'Numer telefonu' }
+                    - { property: 'message', label: 'Wiadomość' }
+                    - { property: 'statusCode', label: 'Status', template: 'admin/smsMessageStatus.html.twig' }
+                    - { property: 'errorMessage', label: 'Błąd' }
+                    - { property: 'errorCode', label: 'Kod błędu' }
+                    - { property: 'createdAt', label: 'Data utworzenia' }
+                    - { property: 'sentAt', label: 'Data wysłania' }
+        SmsClientGroup:
+            class: 'Wecoders\EnergyBundle\Entity\SmsClientGroup'
+            permissions: ['ROLE_SUPERADMIN']
+            controller: 'Wecoders\EnergyBundle\Controller\SmsController'
+            new:
+                title: 'Nowa groupa wysyłkowa SMS'
+            edit:
+                title: 'Grupa wysyłkowa SMS (%%entity_id%%)'
+            list:
+                title: 'Grupy wysyłkowe SMS'
+                actions:
+                   - { name: show, label: 'Pokaż' }
+                fields:
+                    - { property: 'isSuspended', label: 'Wstrzymane' }
+                    - id
+                    - { property: 'smsTemplate', label: 'Szablon' }
+                    - { property: 'title', label: 'Nazwa' }
+                    - { property: 'code', label: 'Identyfikator', template: 'admin/smsGroupCode.html.twig' }
+                    - { property: 'statusCode', label: 'Status', template: 'admin/smsGroupStatus.html.twig' }
+                    - { property: 'totalToSendCount', label: 'Łączna liczba do wysłania', template: 'admin/label.html.twig' }
+                    - { property: 'sentCount', label: 'Wysłano', template: 'admin/successLabel.html.twig' }
+                    - { property: 'errorCount', label: 'Nie wysłano', template: 'admin/errorLabel.html.twig' }
+                    - { property: 'createdAt', label: 'Data utworzenia' }
+                    - { property: 'completedAt', label: 'Data ukończenia' }
+            # form:
+            #     fields:
+            #         - { property: 'title', label: 'Nazwa' }
+            #         - { property: 'smsTemplate', label: 'Szablon', type_options: { required: true } }

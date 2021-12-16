@@ -1,0 +1,54 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% trans_default_domain 'WeCodersEnergyBundle' %}
+
+{% block content %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <section id="main" class="content">
+        {{ form_start(clientGroupFormWithPaymentDate, { attr: { 'class': 'form-horizontal edit-form'}, 'translation_domain': 'WeCodersEnergyBundle' }) }}
+            <div class="row">
+                <div class="field-group col-xs-12">
+                    <div class="box box-default">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Utwórz grupę SMS z terminami płatności</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group field-text">
+                                        <label for="{{ clientGroupFormWithPaymentDate.groupName.vars.id }}" class="col-sm-2 control-label">
+                                            {{ clientGroupFormWithPaymentDate.groupName.vars.label|trans }}
+                                        </label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(clientGroupFormWithPaymentDate.groupName, { attr: { 'class': 'form-control'}}) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="form-group field-date">
+                                        <label for="{{ clientGroupFormWithPaymentDate.paymentDate.vars.id }}" class="col-sm-2 control-label">
+                                            {{ clientGroupFormWithPaymentDate.paymentDate.vars.label|trans }}
+                                        </label>
+                                        <div class="col-sm-10">
+                                            {{ form_widget(clientGroupFormWithPaymentDate.paymentDate, { attr: { 'class': 'datepicker form-control'}}) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12" style="text-align: right">
+                                    {{ form_widget(clientGroupFormWithPaymentDate.submit, { attr: { 'class': 'btn btn-primary' }, 'translation_domain': 'WeCodersEnergyBundle'}) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{ form_end(clientGroupFormWithPaymentDate) }}
+    </section>
+{% endblock %}

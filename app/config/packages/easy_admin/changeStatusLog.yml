@@ -1,0 +1,24 @@
+easy_admin:
+    entities:
+        ChangeStatusLog:
+            class: GCRM\CRMBundle\Entity\ChangeStatusLog
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                actions:
+                    - { name: '-edit' }
+                    - { name: '-delete' }
+                fields:
+                    - id
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'fromStatus', label: 'Status początkowy' }
+                    - { property: 'toStatus', label: 'Status końcowy' }
+                    - { property: 'department', label: 'Departament' }
+                    - { property: 'changedBy', label: 'Zmodyfikowano przez' }
+                    - { property: 'createdAt', label: 'Data zmiany' }
+            form:
+                fields:
+                    - { property: 'contractNumber', label: 'Numer umowy', type_options: { disabled: true } }
+                    - { property: 'fromStatus', label: 'Status początkowy', type_options: { disabled: true } }
+                    - { property: 'toStatus', label: 'Status końcowy', type_options: { disabled: true } }
+                    - { property: 'department', label: 'Departament', type_options: { disabled: true } }
+                    - { property: 'changedBy', label: 'Zmodyfikowano przez', type_options: { disabled: true } }

@@ -1,0 +1,65 @@
+<!-- Styles -->
+<style>
+    #chartdiv {
+        width: 100%;
+        max-width: 800px;
+        height: 500px;
+    }
+</style>
+
+<!-- Resources -->
+<script src="https://www.amcharts.com/lib/4/core.js"></script>
+<script src="https://www.amcharts.com/lib/4/charts.js"></script>
+<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
+<!-- Chart code -->
+<script>
+    var preparedData = {{ data|json_encode|raw }};
+
+    am4core.ready(function() {
+
+// Themes begin
+        am4core.useTheme(am4themes_animated);
+// Themes end
+
+// Create chart instance
+        var chart = am4core.create("chartdiv", am4charts.XYChart);
+
+// Add data
+        chart.data = preparedData;
+
+// Create axes
+
+        var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "{{ config.X }}";
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.minGridDistance = 30;
+
+        categoryAxis.renderer.labels.template.adapter.add("dy", function(dy, target) {
+            if (target.dataItem && target.dataItem.index & 2 == 2) {
+                return dy + 25;
+            }
+            return dy;
+        });
+
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+// Create series
+        var series = chart.series.push(new am4charts.ColumnSeries());
+        series.dataFields.valueY = "{{ config.Y }}";
+        series.dataFields.categoryX = "{{ config.X }}";
+        series.name = "{{ config.Y }}";
+        series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+        series.columns.template.fillOpacity = .8;
+
+//        series.columns.0.template.fill = am4core.color("yellow");
+
+        var columnTemplate = series.columns.template;
+        columnTemplate.strokeWidth = 0;
+        columnTemplate.strokeOpacity = 0;
+
+    }); // end am4core.ready()
+</script>
+
+<!-- HTML -->
+<div id="chartdiv"></div>

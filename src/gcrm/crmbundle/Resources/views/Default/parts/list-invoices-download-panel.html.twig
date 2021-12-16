@@ -1,0 +1,37 @@
+<div class="list-search-form-panel">
+    <script src="/bundles/easyadmin/javascript/select2/i18n/pl.js?v1"></script>
+    <script type="text/javascript">
+        $(function() {
+            // Select2 widget is only enabled for the <select> elements which
+            // explicitly ask for it
+            $('#main').find('form select[data-widget="select2"], #search-form .apply-select select').select2({
+                theme: 'bootstrap',
+                language: 'pl',
+                minimumResultsForSearch: -1
+            });
+        });
+    </script>
+
+    {{ form_start(invoicesDownloadForm, {'attr': { 'id': 'search-form', 'novalidate': 'novalidate' }}) }}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 selects-date-col">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <div class="input-text apply-select">
+                        {{ form_label(invoicesDownloadForm.createdDateFrom) }}
+                        {{ form_widget(invoicesDownloadForm.createdDateFrom) }}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="input-text apply-select">
+                        {{ form_label(invoicesDownloadForm.createdDateTo) }}
+                        {{ form_widget(invoicesDownloadForm.createdDateTo) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ form_end(invoicesDownloadForm) }}
+</div>

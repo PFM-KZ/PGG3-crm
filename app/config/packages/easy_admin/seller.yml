@@ -1,0 +1,16 @@
+easy_admin:
+    entities:
+        Seller:
+            class: GCRM\CRMBundle\Entity\Seller
+            permissions: ['ROLE_CONFIG']
+            list:
+                fields:
+                    - { property: 'title', label: 'Nazwa' }
+                    - { property: 'option', label: 'Typ', template: '@GCRMCRMBundle/Default/admin/fields/option_array.html.twig', format: 'GCRM\CRMBundle\Service\SellerModel', class: 'getOptionByValue' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Nazwa' }
+                    - { property: 'option', label: 'Typ', type: 'choice', type_options: { multiple: false, expanded: false, placeholder: 'Pusta wartość', choices: {
+                      'Prąd': 1,
+                      'Gaz': 2,
+                      } } }

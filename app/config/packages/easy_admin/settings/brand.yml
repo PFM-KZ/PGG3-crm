@@ -1,0 +1,15 @@
+easy_admin:
+    entities:
+        BrandSettings:
+            class: GCRM\CRMBundle\Entity\Settings\Brand
+            permissions: ['ROLE_CONFIG']
+            disabled_actions: ['delete', 'new', 'show']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'name', label: 'Nazwa' }
+                    - { property: 'value', label: 'Wartość tekstowa' }
+            form:
+                fields:
+                    - { property: 'name', label: 'Nazwa', type_options: { disabled: true } }
+                    - { property: 'value', label: 'Wartość tekstowa', type_options: { required: false } }

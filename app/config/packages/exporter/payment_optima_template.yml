@@ -1,0 +1,46 @@
+exporter_bundle:
+    tables:
+        PaymentOptimaTemplate:
+            class: GCRM\CRMBundle\Entity\Payment
+            alias: p
+            tweaker: Wecoders\EnergyBundle\Service\Exporter\PaymentsOptimaTweaker
+            filter: GCRM\CRMBundle\Service\Exporter\PaymentDataFilter
+            groupBy: p.id
+            options:
+                inc_row_number: false
+            fields:
+                - { property: "'0'", label: '0' }
+                - { property: 'p.date', label: 'Data wpłaty', format: 'd-m-Y' }
+                - { property: 'p.value', label: 'Kwota płatności' }
+                - { property: "'0'", label: '0' }
+                - { property: "''", label: '' }
+                - { property: "''", label: '' }
+                - { property: "''", label: '' }
+                - { property: "'0'", label: '0' }
+                - { property: "'0'", label: '0' }
+                - { property: "'0'", label: '0' }
+                - { property: "'1'", label: 'Kierunek: Przychód = 1/ Rozchód = -1' }
+                - { property: "''", label: '' }
+                - { property: "''", label: 'Numer dokumentu' }
+                - { property: "''", label: '' }
+                - { property: "''", label: '' }
+                - { property: 'c.id', alias: 'client_id', label: 'Kod kontrahenta - ID' } # managed field by tweaker
+                - { property: 'c.name', alias: 'client_client_name', label: 'Nazwa kontrahenta' } # managed field by tweaker
+                - { property: "''", alias: 'energy_type', label: 'Opis' }
+                #additional fields to delete in tweaker after fetch data
+                - { property: 'c.isCompany', alias: 'client_is_company', label: 'CZY FIRMA' }
+                - { property: 'cg.id', alias: 'cg_id', label: 'ID UMOWY GAZ' }
+                - { property: 'ce.id', alias: 'ce_id', label: 'ID UMOWY PRAD' }
+                - { property: 'c.surname', alias: 'client_client_surname', label: 'NAZWISKO' } # managed field by tweaker
+                - { property: 'c.companyName', alias: 'client_client_company_name', label: 'NAZWA FIRMY' } # managed field by tweaker
+                - { property: 'ic.id', alias: 'ic_id', label: 'ID FAKTURY ZBIORCZEJ' } # managed field by tweaker
+                - { property: 'ic.type', alias: 'ic_type', label: 'TYP FAKTURY ZBIORCZEJ' } # managed field by tweaker
+
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\AccountNumberIdentifier', alias: 'ani', condition: 'p.badgeId = ani.number' }
+                - { class: 'GCRM\CRMBundle\Entity\Client', alias: 'c', condition: 'c.accountNumberIdentifier = ani.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractGas', alias: 'ccg', condition: 'ccg.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractGas', alias: 'cg', condition: 'ccg.contract = cg.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractEnergy', alias: 'cce', condition: 'cce.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergy', alias: 'ce', condition: 'cce.contract = ce.id' }
+                - { class: 'Wecoders\EnergyBundle\Entity\InvoiceCollective', alias: 'ic', condition: 'ic.accountNumberIdentifier = ani.id' }

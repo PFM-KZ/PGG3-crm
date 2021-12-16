@@ -1,0 +1,5 @@
+{% if field_options.class %}
+{{ value|getOptionByValue(field_options.format, field_options.class) }}
+{% else %}
+{{ value|getOptionByValue(field_options.format) }}
+{% endif %}

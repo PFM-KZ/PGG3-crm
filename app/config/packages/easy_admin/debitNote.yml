@@ -1,0 +1,57 @@
+easy_admin:
+    entities:
+        DebitNote:
+            class: Wecoders\EnergyBundle\Entity\DebitNote
+            directory: '%kernel.root_dir%/../var/data/uploads/debit-note'
+            directoryRelative: 'var/data/uploads/debit-note'
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                actions:
+                    - { name: 'clientPage', type: 'route', label: 'Karta klienta', params: { fetchClientFromEntity: 'DebitNote' }, css_class: 'btn' }
+                    - { name: 'displayDebitNoteDocumentEnergy', type: 'route', label: 'Wyświetl dokument' }
+                fields:
+                    - id
+                    - { property: 'createdDate', label: 'Data wystawienia dokumentu' }
+                    - { property: 'contractNumber', label: 'Nr umowy' }
+                    - { property: 'dateOfPayment', label: 'Termin płatności' }
+                    - { property: 'clientName', label: 'Imię' }
+                    - { property: 'clientSurname', label: 'Nazwisko' }
+                    - { property: 'summaryGrossValue', label: 'Kwota' }
+                    - { property: 'isPaid', type: 'boolean', label: 'Opłacony dokument' }
+            form:
+                actions:
+                    - { name: 'generateDebitNoteDocumentEnergy', type: 'route', label: 'Generuj dokument', css_class: 'btn btn-default' }
+                    - { name: 'displayDebitNoteDocumentEnergy', type: 'route', label: 'Wyświetl dokument', css_class: 'btn btn-info' }
+                fields:
+                    - { property: 'client', label: 'Klient', type: 'GCRM\CRMBundle\Form\Type\LazyChoiceType', type_options: { required: false, data_class: 'GCRM\CRMBundle\Entity\Client', attr: { data-ajax-lazyload: 'true', 'data-ajax-route': 'fetchClientDataForDebitNote' } } }
+                    - { property: 'contractNumber', label: 'Nr umowy' }
+                    - { property: 'createdDate', label: 'Data wystawienia dokumentu', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'dateOfPayment', label: 'Termin płatności', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker', data-action: 'updateDateByAnotherDateField', data-field-id: 'debitnote_createdDate', data-value: 21 } } }
+                    - { property: 'content', label: 'Opis' }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane klienta' }
+                    - { property: 'badgeId', label: 'ID rachunku' }
+                    - { property: 'clientAccountNumber', label: 'Nr rachunku rozliczeniowego' }
+                    - { type: 'divider' }
+                    - { property: 'clientName', label: 'Imię' }
+                    - { property: 'clientSurname', label: 'Nazwisko' }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane adresowe klienta' }
+                    - { property: 'clientZipCode', label: 'Kod pocztowy' }
+                    - { property: 'clientCity', label: 'Miasto' }
+                    - { property: 'clientStreet', label: 'Ulica' }
+                    - { property: 'clientHouseNr', label: 'Nr domu' }
+                    - { property: 'clientApartmentNr', label: 'Nr lokalu' }
+                    - { property: 'clientPostOffice', label: 'Poczta' }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dodatkowe dane' }
+                    - { property: 'contractSignDate', label: 'Data podpisania umowy', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'contractFromDate', label: 'Umowa od', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'contractToDate', label: 'Umowa do', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'monthsNumber', label: 'Ilość miesięcy' }
+                    - { property: 'penaltyAmountPerMonth', label: 'Opłata za miesiąc' }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Podsumowanie' }
+                    - { property: 'summaryGrossValue', label: 'Wartość brutto' }
+                    - { property: 'isPaid', label: 'Dokument opłacony', type_options: { disabled: true } }
+                    - { property: 'frozenValue', label: 'Zamrożone środki' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Meta dane' }
+#                    - { property: 'documentTemplate', type: 'GCRM\CRMBundle\Form\Type\EntityWithDefaultOptionType', label: 'Szablon dokumentu', type_options: { required: true, class: 'Wecoders\InvoiceBundle\Entity\InvoiceTemplate', data: 15 } }
+                    - { property: 'documentTemplate', label: 'Szablon dokumentu' }

@@ -1,0 +1,55 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{#{% block head_stylesheets %}#}
+    {#<link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">#}
+    {#<style>#}
+        {#{{ easyadmin_config('_internal.custom_css')|raw }}#}
+    {#</style>#}
+    {#<link rel="stylesheet" href="{{ asset('css/admin/import.css') }}">#}
+{#{% endblock %}#}
+
+{% block content %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <div id="invoices-panel" class="content">
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        Importer - klienci i dane (główny importer)
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {{ form_start(form) }}
+                            {{ form_end(form) }}
+
+                            <br>
+                            <br>
+
+                            {# Cleaner for testing #}
+                            {#{{ form_start(formCleaner) }}#}
+                            {#{{ form_end(formCleaner) }}#}
+                            {#<br>#}
+                            {#<br>#}
+                        </div>
+                        <div class="col-xs-12">
+                            Wynik:
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

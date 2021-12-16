@@ -1,0 +1,10 @@
+easy_admin:
+    entities:
+        ContractType:
+            class: GCRM\CRMBundle\Entity\ContractType
+            list:
+                - { property: 'title', label: 'Tytuł' }
+                - { property: 'code', label: 'Kod' }
+            form:
+                - { property: 'title', label: 'Tytuł' }
+                - { property: 'code', label: 'Kod' }

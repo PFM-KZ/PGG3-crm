@@ -1,0 +1,7 @@
+{% if value == -1 %}
+    <div class="label" style="background-color: #9ea300 !important; display: block; padding: 8px;">W KOLEJCE</div>
+{% elseif value == 0 %}
+    <div class="label" style="background-color: #a30000 !important; display: block; padding: 8px;">ERROR</div>
+{% elseif value == 1 %}
+    <div class="label" style="background-color: #20a300 !important; display: block; padding: 8px;">WYSŁANO</div>
+{% endif %}

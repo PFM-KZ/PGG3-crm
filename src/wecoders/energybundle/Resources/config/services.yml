@@ -1,0 +1,332 @@
+services:
+    Wecoders\EnergyBundle\:
+        resource: '../../*'
+        exclude: '../../{Entity,Repository,Tests}'
+
+    Wecoders\EnergyBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+    Wecoders\EnergyBundle\Service\DocumentPackageToGenerateModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\DocumentPackageToGenerateRecordModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\Importer:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\EnergyDataModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\InvoiceModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\DocumentTableModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\PackageToGenerateModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\PaymentRequestPackageToGenerateModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\SettlementModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\BrandModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\OsdModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\EnveloModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\ColonnadeModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\PaymentRequestModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\ContractModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\ContractAccessor:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\SettlementPackageModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\SettlementPackageRecordModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\MergeInvoicesPackageModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\MergeInvoicesPackageRecordModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\DocumentPathReader:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\CustomDocumentTemplateModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Event\BillingRecordGeneratedSubscriber:
+        autowire: true
+        tags:
+            - { name: kernel.event_subscriber }
+
+    Wecoders\EnergyBundle\Repository\SmsClientGroupRepository:
+        class: Doctrine\ORM\EntityRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - 'Wecoders\EnergyBundle\Entity\SmsClientGroup'
+
+    Wecoders\EnergyBundle\Repository\SmsTemplateRepository:
+        class: Doctrine\ORM\EntityRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - 'Wecoders\EnergyBundle\Entity\SmsTemplate'
+
+    wecoders.energybundle.command.insert_predefined_data:
+        class: Wecoders\EnergyBundle\Command\InsertPredefinedDataCommand
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    wecoders.energybundle.command.mark_users_to_generate_invoices:
+        class: Wecoders\EnergyBundle\Command\MarkUsersToGenerateInvoicesCommand
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    wecoders.energybundle.command.stop_generating_invoices:
+        class: Wecoders\EnergyBundle\Command\StopGeneratingInvoicesCommand
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    wecoders.energybundle.command.generate_invoices_for_marked_clients:
+        class: Wecoders\EnergyBundle\Command\GenerateInvoicesForMarkedClientsCommand
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    wecoders.energybundle.command.envelo_write_data:
+        class: Wecoders\EnergyBundle\Command\EnveloWriteDataCommand
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    wecoders.energybundle.command.envelo_settlement_write_data:
+        class: Wecoders\EnergyBundle\Command\EnveloSettlementWriteDataCommand
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    wecoders.energybundle.command.update_invoices_pesel:
+        class: Wecoders\EnergyBundle\Command\UpdateInvoicesPeselCommand
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\AlertRecordingsCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\PackageToGenerateStatusProcess:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\PaymentRequestPackageToGenerateStatusProcess:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\PackageToGenerateStatusGenerate:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\PackageToGenerateRenewGenerate:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\PaymentRequestPackageToGenerateStatusGenerate:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\PaymentRequestRenewGenerate:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\InitialUpdateNextInvoicingPeriodDateCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\ContractsToProcessChangeDepartmentCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\MergeInvoicesPackageStatusProcess:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Form\AuthorizationType:
+        autowire: true
+        tags: [form.type]
+
+    Wecoders\EnergyBundle\Form\SettlementType:
+        autowire: true
+        tags: [form.type]
+
+    Wecoders\EnergyBundle\Form\Statistics\ActiveClientsType:
+        autowire: true
+        tags: [form.type]
+
+    Wecoders\EnergyBundle\Form\Statistics\ConfigType:
+        autowire: true
+        tags: [form.type]
+
+    Wecoders\EnergyBundle\Form\PriceListAndServiceDataType:
+        autowire: true
+        tags: [form.type]
+
+    Wecoders\EnergyBundle\Command\UpdateClientsDataCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\PaymentRequestUpdateIsPaidState:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\SettlementPackageStatusProcess:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\SettlementPackageStatusGenerate:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\InitialInsertDebitNotesCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Service\SmsClientGroupModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Controller\SmsController:
+        autowire: true
+
+    Wecoders\EnergyBundle\Command\CreatePaymentGroups:
+        autowire: true
+        tags:
+            - { name: console.command }
+        arguments:
+            $smsClientGroupModel: '@Wecoders\EnergyBundle\Service\SmsClientGroupModel'
+
+    Wecoders\EnergyBundle\Command\SendPaymentSmsCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+        arguments:
+            $smsClientGroupModel: '@Wecoders\EnergyBundle\Service\SmsClientGroupModel'
+
+    Wecoders\EnergyBundle\Service\ExciseModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\PriceListModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\DebitNoteModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\StatisticsModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\DocumentModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\DocumentBankAccountChangeModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\DebitNotePackageModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\DebitNotePackageRecordModel:
+        autowire: true
+
+    Wecoders\EnergyBundle\Service\Facade\InvoiceUpdaterFacade:
+        autowire: true
+
+    wecoders.energybundle.sms_client_group_repository: '@Wecoders\EnergyBundle\Repository\SmsClientGroupRepository'
+    wecoders.energybundle.sms_template_repository: '@Wecoders\EnergyBundle\Repository\SmsTemplateRepository'
+
+    Wecoders\EnergyBundle\Command\UpdateClientGasContractPricelistCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Controller\EnergyDataController:
+        autowire: true
+
+    Wecoders\EnergyBundle\Command\DocumentBankAccountGenerate:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\InitialUpdateInvoiceProformaOnSettlementsCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\InitialUpdateInvoiceProformaOnSettlementsCorrectionsCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\InitialUpdateInvoiceProformaExciseValueOnSettlementsCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\DebitNotePackageStatusGenerate:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\DebitNotePackageStatusProcess:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\DocumentPackageToGenerateProcess:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Command\DocumentPackageToGenerateGenerate:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    Wecoders\EnergyBundle\Twig\IncludedDocumentExtension:
+        autowire: true
+        tags:
+            - { name: twig.extension }

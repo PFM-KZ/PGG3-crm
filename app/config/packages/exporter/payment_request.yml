@@ -1,0 +1,39 @@
+exporter_bundle:
+    tables:
+        PaymentRequest:
+            class: Wecoders\EnergyBundle\Entity\PaymentRequest
+            tweaker: Wecoders\EnergyBundle\Service\Exporter\PaymentRequestTweaker
+            filter: Wecoders\EnergyBundle\Service\Exporter\PaymentRequestDataFilter
+            alias: pr
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'pr.id', label: 'ID' }
+                - { property: 'pr.createdDate', label: 'Data wystawienia', type: 'date', format: 'Y-m-d' }
+                - { property: 'pr.dateOfPayment', label: 'Termin płatności', type: 'date', format: 'Y-m-d' }
+                - { property: 'pr.contractNumber', label: 'Numer umowy' }
+                - { property: 'pr.badgeId', label: 'Numer konta rozliczeniowego' }
+                - { property: 'pr.clientAccountNumber', label: 'Numer rachunku rozliczeniowego' }
+                - { property: 'pr.clientName', label: 'Klient - imię' }
+                - { property: 'pr.clientSurname', label: 'Klient - nazwisko' }
+                - { property: 'pr.clientPesel', label: 'Klient - Pesel' }
+                - { property: 'pr.clientNip', label: 'Klient - NIP' }
+                - { property: 'pr.clientZipCode', label: 'Klient - kod pocztowy' }
+                - { property: 'pr.clientCity', label: 'Klient - miasto' }
+                - { property: 'pr.clientStreet', label: 'Klient - ulica' }
+                - { property: 'pr.clientHouseNr', label: 'Klient - numer domu' }
+                - { property: 'pr.clientApartmentNr', label: 'Klient - numer lokalu' }
+                - { property: 'pr.clientPostOffice', label: 'Klient - poczta' }
+                - { property: 'pr.ppZipCode', label: 'PP - kod pocztowy' }
+                - { property: 'pr.ppCity', label: 'PP - miasto' }
+                - { property: 'pr.ppStreet', label: 'PP - ulica' }
+                - { property: 'pr.ppHouseNr', label: 'PP - numer domu' }
+                - { property: 'pr.ppApartmentNr', label: 'PP - numer lokalu' }
+                - { property: 'pr.ppPostOffice', label: 'PP - poczta' }
+                - { property: 'pr.summaryGrossValue', label: 'Kwota brutto' }
+                - { property: 'pr.isPaid', label: 'Opłacony dokument', type: 'yesno' }
+                - { property: "''", alias: 'days_overdue', label: 'Dni po terminie płatności' }
+                - { property: 'FIRST(SELECT prad.documentNumber FROM Wecoders\EnergyBundle\Entity\PaymentRequestAndDocument prad WHERE prad.paymentRequest = pr.id ORDER BY length(prad.daysOverdue), prad.daysOverdue ASC)', alias: 'last_document', label: 'Ostatni dokument' }
+                - { property: 'FIRST(SELECT COUNT(prad1) FROM Wecoders\EnergyBundle\Entity\PaymentRequestAndDocument prad1 WHERE prad1.paymentRequest = pr.id GROUP BY prad1.daysOverdue HAVING COUNT(prad1) > 1)', alias: 'days_overdue_duplicates', label: 'Duplikaty - dni po terminie' }
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\Client', alias: 'c', condition: 'pr.client = c.id' }

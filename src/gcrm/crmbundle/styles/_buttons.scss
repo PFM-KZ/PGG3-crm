@@ -1,0 +1,26 @@
+.button {
+    display: inline-block;
+    height: 40px;
+    padding: 0 25px;
+    text-align: center;
+    background-color: $colorActive;
+    line-height: 40px;
+    font-size: 1.4em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    &.big {
+        height: 50px;
+        line-height: 50px;
+    }
+    @include transition(all);
+    &:hover {
+        background-color: $colorActiveSecond;
+        color: white;
+    }
+    &.colored {
+        background-color: $colorActiveSecond;
+    }
+}

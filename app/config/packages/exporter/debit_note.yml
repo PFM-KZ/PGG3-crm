@@ -1,0 +1,38 @@
+exporter_bundle:
+    tables:
+        DebitNote:
+            class: Wecoders\EnergyBundle\Entity\DebitNote
+            tweaker: Wecoders\EnergyBundle\Service\Exporter\DebitNoteTweaker
+            filter: Wecoders\EnergyBundle\Service\Exporter\DebitNoteDataFilter
+            alias: d
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'd.id', label: 'ID' }
+                - { property: 'd.createdDate', label: 'Data wystawienia', type: 'date', format: 'Y-m-d' }
+                - { property: 'd.dateOfPayment', label: 'Termin płatności', type: 'date', format: 'Y-m-d' }
+                - { property: 'd.contractNumber', label: 'Numer umowy' }
+                - { property: "''", alias: 'contract_type', label: 'Typ umowy' }
+                - { property: 'd.badgeId', label: 'Numer konta rozliczeniowego' }
+                - { property: 'd.clientAccountNumber', label: 'Numer rachunku rozliczeniowego' }
+                - { property: 'd.clientName', label: 'Klient - imię' }
+                - { property: 'd.clientSurname', label: 'Klient - nazwisko' }
+#                - { property: 'd.clientPesel', label: 'Klient - Pesel' }
+#                - { property: 'd.clientNip', label: 'Klient - NIP' }
+                - { property: 'd.clientZipCode', label: 'Klient - kod pocztowy' }
+                - { property: 'd.clientCity', label: 'Klient - miasto' }
+                - { property: 'd.clientStreet', label: 'Klient - ulica' }
+                - { property: 'd.clientHouseNr', label: 'Klient - numer domu' }
+                - { property: 'd.clientApartmentNr', label: 'Klient - numer lokalu' }
+                - { property: 'd.clientPostOffice', label: 'Klient - poczta' }
+                - { property: 'd.summaryGrossValue', label: 'Kwota brutto' }
+                - { property: 'd.isPaid', label: 'Opłacony dokument', type: 'yesno' }
+                - { property: 'cg.type', alias: 'contract_gas_type', label: 'TYP UMOWY GAZ' }
+                - { property: 'ce.type', alias: 'contract_energy_type', label: 'TYP UMOWY PRAD' }
+
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\Client', alias: 'c', condition: 'd.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractEnergy', alias: 'cace', condition: 'cace.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergy', alias: 'ce', condition: '(cace.contract = ce.id AND d.contractNumber = ce.contractNumber)' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractGas', alias: 'cacg', condition: 'cacg.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractGas', alias: 'cg', condition: '(cacg.contract = cg.id AND d.contractNumber = cg.contractNumber)' }

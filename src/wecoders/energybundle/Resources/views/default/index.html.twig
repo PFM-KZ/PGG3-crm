@@ -1,0 +1,58 @@
+{% if app.request.hasPreviousSession %}
+    {% for type, messages in app.session.flashbag.all() %}
+        {% for message in messages %}
+            <div class="flash-{{ type }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+{% endif %}
+
+
+<br>
+<br>
+
+<h3>Wgraj pliki</h3>
+
+{{ form_start(form) }}
+{{ form_end(form) }}
+
+<br>
+
+<p>Dodane rekordy: {% if recordsAdded %}{{ recordsAdded|length }}{% else %}brak{% endif %}</p>
+
+
+
+<br>
+<br>
+
+<h3>Wgrane pliki z odczytami</h3>
+<p>Poniższe dane tworzone są na podstawie bazy danych. <br>System pobiera unikalne nazwy plików, które zapisywane są przy rekordach "EnergyData" podczas wgrywania, a następnie grupuje je po (przyjętych przez system) kodach operatorów.</p>
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+    th, td {
+        border: 1px solid gray;
+        padding: 5px;
+    }
+</style>
+<table>
+    <tr>
+        <th>Nazwa</th>
+        <th>Kod</th>
+        <th>Ilość unikalnych plików</th>
+        <th>Pobierz listę plików</th>
+    </tr>
+    {% for key, item in filesData %}
+        <tr>
+            <td>{{ item.title }}</td>
+            <td>{{ key }}</td>
+            <td>{{ item.number }}</td>
+            <td style="width: 10%;"><a href="{{ url('energyDataPanelDownloadUniqueFilesByCode', { code: key }) }}">pobierz</a></td>
+        </tr>
+    {% endfor %}
+</table>

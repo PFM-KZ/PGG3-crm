@@ -1,0 +1,335 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+    - { resource: config/fos_user.yml }
+    - { resource: config/easy_admin.yml }
+    - { resource: config/vich_uploader.yml }
+    - { resource: config/exporter.yml }
+    - { resource: app.yml }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: pl
+
+    is_crm_energy_system: 1
+
+    map.document_const_id_with_easyadmin_entity:
+        1: 'InvoiceEnergy'
+        2: 'InvoiceCorrectionEnergy'
+        3: 'InvoiceProformaEnergy'
+        4: 'InvoiceProformaCorrectionEnergy'
+        5: 'InvoiceSettlementEnergy'
+        6: 'InvoiceSettlementCorrectionEnergy'
+        7: 'InvoiceEstimatedSettlementEnergy'
+        8: 'InvoiceEstimatedSettlementCorrectionEnergy'
+        9: 'InvoiceCollective'
+        10: ''
+        11: 'DebitNote'
+        12: ''
+        13: 'PaymentRequest'
+        14: ''
+        15: 'CustomDocumentTemplate'
+
+    # settings for make balance calculations for clients in order - most important
+    # name (structure name): can be invoiceProforma, invoiceProformaCorrection
+    # title - display title that can be used in views
+    # orderBy
+    # orderPosition
+    # label - (type) used in excel formats as column name
+    # isCorrection
+    # correctionNameTarget - links together documents and corrections
+    billing_document: [
+        {
+          class: 'Wecoders\EnergyBundle\Service\BillingDocument\Document\DebitNote',
+          name: 'debitNote',
+          title: 'Noty obciążeniowe',
+          label: 'Nota obciążeniowa',
+          orderBy: 'createdDate',
+          orderPosition: 'DESC',
+          isSettlement: false,
+          matchBySettlement: false,
+          isCorrection: false,
+          balance: {
+            title: 'Do zapłaty - noty obciążeniowe'
+          }
+        }
+        {
+          class: 'Wecoders\EnergyBundle\Service\BillingDocument\Document\InvoiceSettlement',
+          name: 'invoiceSettlement',
+          title: 'Faktury rozliczeniowe',
+          label: 'Rozliczenie',
+          orderBy: 'billingPeriodFrom',
+          orderPosition: 'DESC',
+          isSettlement: true,
+          matchBySettlement: false,
+          isCorrection: false,
+          correctionNameTarget: 'invoiceSettlementCorrection',
+          balance: {
+            title: 'Do zapłaty - rozliczenia'
+          }
+        }
+        {
+          class: 'Wecoders\EnergyBundle\Service\BillingDocument\Document\InvoiceSettlementCorrection',
+          name: 'invoiceSettlementCorrection',
+          title: 'Faktury rozliczeniowe korekty',
+          label: 'Rozliczenie korekta',
+          orderBy: 'billingPeriodFrom',
+          orderPosition: 'DESC',
+          isSettlement: true,
+          matchBySettlement: false,
+          isCorrection: true,
+          balance: {
+            title: 'Do zapłaty - rozliczenia korekty'
+          }
+        }
+        {
+          class: 'Wecoders\EnergyBundle\Service\BillingDocument\Document\InvoiceEstimatedSettlement',
+          name: 'invoiceEstimatedSettlement',
+          title: 'Faktury rozliczeniowe szacunkowe',
+          label: 'Rozliczenie szacunkowe',
+          orderBy: 'billingPeriodFrom',
+          orderPosition: 'DESC',
+          isSettlement: true,
+          matchBySettlement: false,
+          isCorrection: false,
+          correctionNameTarget: 'invoiceEstimatedSettlementCorrection',
+          balance: {
+            title: 'Do zapłaty - rozliczenia szacunkowe'
+          }
+        }
+        {
+          class: 'Wecoders\EnergyBundle\Service\BillingDocument\Document\InvoiceEstimatedSettlementCorrection',
+          name: 'invoiceEstimatedSettlementCorrection',
+          title: 'Faktury rozliczeniowe szacunkowe korekty',
+          label: 'Rozliczenie szacunkowe korekta',
+          orderBy: 'billingPeriodFrom',
+          orderPosition: 'DESC',
+          isSettlement: true,
+          matchBySettlement: false,
+          isCorrection: true,
+          balance: {
+            title: 'Do zapłaty - rozliczenia szacunkowe korekty'
+          }
+        }
+        {
+          class: 'Wecoders\EnergyBundle\Service\BillingDocument\Document\InvoiceProforma',
+          name: 'invoiceProforma',
+          title: 'Faktury proformy',
+          label: 'Proforma',
+          orderBy: 'billingPeriod',
+          orderPosition: 'DESC',
+          isSettlement: false,
+          matchBySettlement: true,
+          isCorrection: false,
+          correctionNameTarget: 'invoiceProformaCorrection',
+          isProformaType: true,
+          balance: {
+            title: 'Do zapłaty - proformy'
+          }
+        }
+        {
+          class: 'Wecoders\EnergyBundle\Service\BillingDocument\Document\InvoiceProformaCorrection',
+          name: 'invoiceProformaCorrection',
+          title: 'Faktury proformy korekty',
+          label: 'Proforma korekta',
+          orderBy: 'billingPeriod',
+          orderPosition: 'DESC',
+          isSettlement: false,
+          matchBySettlement: true,
+          isCorrection: true,
+          isProformaType: true,
+          balance: {
+            title: 'Do zapłaty - proformy korekty'
+          }
+        }
+        {
+          class: 'Wecoders\EnergyBundle\Service\BillingDocument\Document\Invoice',
+          name: 'invoice',
+          title: 'Faktury VAT',
+          label: 'Faktura VAT',
+          orderBy: 'createdDate',
+          orderPosition: 'DESC',
+          isSettlement: false,
+          matchBySettlement: false,
+          isCorrection: false,
+          correctionNameTarget: 'invoiceCorrection',
+          isProformaType: false,
+          balance: {
+            title: 'Do zapłaty - faktury VAT'
+          }
+        }
+        {
+          class: 'Wecoders\EnergyBundle\Service\BillingDocument\Document\InvoiceCorrection',
+          name: 'invoiceCorrection',
+          title: 'Faktury VAT korekty',
+          label: 'Faktura VAT korekta',
+          orderBy: 'createdDate',
+          orderPosition: 'DESC',
+          isSettlement: false,
+          matchBySettlement: false,
+          isCorrection: true,
+          isProformaType: false,
+          balance: {
+            title: 'Do zapłaty - faktury VAT korekty'
+          }
+        }
+        ]
+
+    list_data_exporter.cells: [
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+        'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ',
+        'BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BK', 'BL', 'BM', 'BN', 'BO', 'BP', 'BQ', 'BR', 'BS', 'BT', 'BU', 'BV', 'BW', 'BX', 'BY', 'BZ',
+        'CA', 'CB', 'CC', 'CD', 'CE', 'CF', 'CG', 'CH', 'CI', 'CJ', 'CK', 'CL', 'CM', 'CN', 'CO', 'CP', 'CQ', 'CR', 'CS', 'CT', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ' ]
+
+    maintenance_file_path: '%kernel.root_dir%/../web/.maintenance'
+    maintenance_allowed_cookie_name_pass: 'admin-mode-maintenance'
+
+    gcrmcrmbundle.invoices_logo_path: '%kernel.root_dir%/../web/images/invoices/logo-cum.png'
+    gcrmcrmbundle.invoices_logo_width: 200
+    gcrmcrmbundle.invoices_logo_omg_path: '%kernel.root_dir%/../web/images/invoices/logo-omg.png'
+
+    upload_invoices_path: '%kernel.root_dir%/../var/data/uploads/invoices'
+    upload_invoices_temp_input_path: '%kernel.root_dir%/../var/data/uploads/invoicesTempInput'
+    upload_invoices_temp_output_path: '%kernel.root_dir%/../var/data/uploads/invoicesTempOutput'
+
+    payment_file_bank_types: # types must exist and ID's must be equal with const GCRM\CRMBundle\Form\ImporterPaymentsType
+        2: 'PEKAO'
+
+    vich.path.relative.invoice_templates: '/uploads/invoice-templates'
+    vich.path.absolute.private.invoice_templates: '%kernel.root_dir%/../var/data/uploads/invoice-templates'
+
+    vich.path.absolute.private: '%kernel.root_dir%/../var/data/uploads'
+    vich.path.relative.contracts: '/uploads/contracts'
+    vich.path.relative.contracts_gas: '/uploads/contracts-gas'
+    vich.path.relative.contracts_energy: '/uploads/contracts-energy'
+    vich.path.absolute.private.contracts: '%kernel.root_dir%/../var/data/uploads/contracts'
+    vich.path.absolute.private.contracts_gas: '%kernel.root_dir%/../var/data/uploads/contracts-gas'
+    vich.path.absolute.private.contracts_energy: '%kernel.root_dir%/../var/data/uploads/contracts-energy'
+
+    vich.path.relative.recordings: '/uploads/recordings'
+    vich.path.relative.recordings_gas: '/uploads/recordings-gas'
+    vich.path.relative.recordings_energy: '/uploads/recordings-energy'
+    vich.path.absolute.private.recordings: '%kernel.root_dir%/../var/data/uploads/recordings'
+    vich.path.absolute.private.recordings_gas: '%kernel.root_dir%/../var/data/uploads/recordings-gas'
+    vich.path.absolute.private.recordings_energy: '%kernel.root_dir%/../var/data/uploads/recordings-energy'
+
+    # Client enquiry files
+    vich.path.relative.client_enquiry_file: '/uploads/client-enquiry'
+    vich.path.absolute.private.client_enquiry_file: '%kernel.root_dir%/../var/data/uploads/client-enquiry'
+
+    # Correspondence Attachments Vich paths
+    vich.path.absolute.private.correspondence_attachment: '%kernel.root_dir%/../var/data/uploads/correspondence-attachments'
+    vich.path.relative.correspondence_attachment: '/uploads/correspondence-attachments'
+
+    vich.path.relative.system_settings: '/vich/system'
+    vich.path.absolute.system_settings: '%kernel.root_dir%/../web/%vich.path.relative.system_settings%'
+    vich.path.relative.province: '/vich/province'
+    vich.path.absolute.province: '%kernel.root_dir%/../web/%vich.path.relative.province%'
+    vich.path.relative.custom_document_template_and_document: '/vich/custom-document-template'
+    vich.path.absolute.custom_document_template_and_document: '%kernel.root_dir%/../web/%vich.path.relative.custom_document_template_and_document%'
+
+framework:
+    #esi: ~
+    translator: { fallbacks: ['%locale%'] }
+    secret: '%secret%'
+    router:
+        resource: '%kernel.project_dir%/app/config/routing.yml'
+        strict_requirements: ~
+    form: ~
+    csrf_protection: ~
+    validation: { enable_annotations: true }
+    #serializer: { enable_annotations: true }
+    templating:
+        engines: ['twig']
+    default_locale: '%locale%'
+    trusted_hosts: ~
+    session:
+        # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
+        handler_id: session.handler.native_file
+        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
+    fragments: ~
+    http_method_override: true
+    assets:
+        version: v13
+    php_errors:
+        log: true
+
+# Twig Configuration
+twig:
+    debug: '%kernel.debug%'
+    exception_controller: GCRMCRMBundle:Exception:showException
+    strict_variables: '%kernel.debug%'
+    paths:
+        '%kernel.project_dir%/app/Resources/views': AppBundle
+        '%kernel.project_dir%/vendor/javiereguiluz/easyadmin-bundle/src/Resources/views': EasyAdminBundle
+        '%kernel.project_dir%/src/gcrm/crmbundle/Resources/views': GCRMCRMBundle
+        '%kernel.project_dir%/src/wecoders/energybundle/Resources/views': WecodersEnergyBundle
+    globals:
+        vich_path_relative_system_settings: %vich.path.relative.system_settings%
+        vich_path_relative_province: %vich.path.relative.province%
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver: pdo_mysql
+        host: '%database_host%'
+        port: '%database_port%'
+        dbname: '%database_name%'
+        user: '%database_user%'
+        password: '%database_password%'
+        charset: UTF8
+        # if using pdo_sqlite as your database driver:
+        #   1. add the path in parameters.yml
+        #     e.g. database_path: '%kernel.project_dir%/var/data/data.sqlite'
+        #   2. Uncomment database_path in parameters.yml.dist
+        #   3. Uncomment next line:
+        #path: '%database_path%'
+
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        dql:
+            string_functions:
+                GROUP_CONCAT: TZiebura\ExporterBundle\DBAL\GroupConcat
+                FIRST: TZiebura\ExporterBundle\DBAL\FirstFunction
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: '%mailer_transport%'
+    host: '%mailer_host%'
+    username: '%mailer_user%'
+    password: '%mailer_password%'
+    spool: { type: memory }
+
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn: redis://localhost
+        cache:
+            type: predis
+            alias: cache
+#            dsn: redis://secret@localhost/1
+            dsn: redis://localhost
+            options:
+                profile: 2.2
+                connection_timeout: 10
+                read_write_timeout: 30
+    doctrine:
+        metadata_cache:
+            client: cache
+            entity_manager: default          # the name of your entity_manager connection
+            document_manager: default        # the name of your document_manager connection
+        result_cache:
+            client: cache
+            entity_manager: [default, read]  # you may specify multiple entity_managers
+        query_cache:
+            client: cache
+            entity_manager: default
+        second_level_cache:
+            client: cache
+            entity_manager: default

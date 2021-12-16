@@ -1,0 +1,18 @@
+easy_admin:
+    entities:
+        Warehouse:
+            class: GCRM\CRMBundle\Entity\Warehouse
+            permissions: ['ROLE_WAREHOUSE']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'stock', label: 'Łączna ilość' }
+                    - { property: 'reservations', label: 'Rezerwacje' }
+                    - { property: 'available', label: 'Dostępna ilość' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'stock', label: 'Łączna ilość' }
+                    - { property: 'reservations', label: 'Rezerwacje' }
+                    - { property: 'available', label: 'Dostępna ilość' }

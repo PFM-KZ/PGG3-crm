@@ -1,0 +1,72 @@
+exporter_bundle:
+    tables:
+        InvoiceCorrectionEnergy:
+            class: Wecoders\EnergyBundle\Entity\InvoiceCorrection
+            tweaker: Wecoders\EnergyBundle\Service\Exporter\InvoiceTweaker
+            filter: Wecoders\EnergyBundle\Service\Exporter\InvoiceDataFilter
+            alias: i
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'i.id', label: 'ID' }
+                - { property: 'i.number', label: 'Numer faktury' }
+                - { property: 'i.createdDate', label: 'Data wystawienia', type: 'date', format: 'Y-m-d' }
+                - { property: 'i.dateOfPayment', label: 'Termin płatności', type: 'date', format: 'Y-m-d' }
+                - { property: 'i.createdIn', label: 'Miejsce wystawienia' }
+                - { property: 'i.billingPeriod', label: 'Okres rozliczeniowy' }
+                - { property: 'i.sellerTitle', label: 'Sprzedawca nazwa' }
+                - { property: 'i.sellerAddress', label: 'Sprzedawca adres' }
+                - { property: 'i.sellerZipCode', label: 'Sprzedawca kod pocztowy' }
+                - { property: 'i.sellerCity', label: 'Sprzedawca miasto' }
+                - { property: 'i.sellerNip', label: 'Sprzedawca NIP' }
+                - { property: 'i.sellerBankName', label: 'Sprzedawca nazwa banku' }
+                - { property: 'i.sellerBankAccount', label: 'Sprzedawca numer rachunku' }
+                - { property: 'i.clientFullName', label: 'Nabywca pełna nazwa' }
+                - { property: 'i.clientNip', label: 'Nabywca NIP' }
+                - { property: 'i.clientHouseNr', label: 'Nabywca numer domu' }
+                - { property: 'i.clientApartmentNr', label: 'Nabywca numer lokalu' }
+                - { property: 'i.clientZipCode', label: 'Nabywca kod pocztowy' }
+                - { property: 'i.clientCity', label: 'Nabywca miasto' }
+                - { property: 'i.balanceBeforeInvoice', label: 'Stan przed wystawieniem faktury' }
+                - { property: 'i.summaryNetValue', alias: 'summary_net_value', label: 'Kwota netto' }
+                - { property: 'i.summaryVatValue', alias: 'summary_vat_value', label: 'Kwota VAT' }
+                - { property: 'i.summaryGrossValue', alias: 'summary_gross_value', label: 'Kwota brutto' }
+                - { property: 'i.isElectronic', label: 'Elektroniczna', type: 'yesno' }
+                - { property: 'i.isPaid', label: 'Opłacona faktura', type: 'yesno' }
+                - { property: 'i.consumption', label: 'Zużycie' }
+                - { property: 'i.excise', label: 'Wysokość akcyzy' }
+                - { property: 'i.exciseValue', alias: 'excise_value', label: 'Wartość akcyzy' }
+                - { property: 'i.contractNumber', label: 'Numer umowy' }
+                - { property: 'i.tariff', label: 'Taryfa' }
+                - { property: 'i.distributionTariff', label: 'Taryfa dystrybucyjna' }
+                - { property: 'i.sellerTariff', label: 'Taryfa sprzedawcy' }
+                - { property: 'i.badgeId', label: 'Nr konta rozliczeniowego' }
+                - { property: 'i.clientAccountNumber', label: 'Nr rachunku rozliczeniowego' }
+                - { property: 'i.type', label: 'Typ' }
+
+                - { property: 'i.gtu1', label: 'GTU_01' }
+                - { property: 'i.gtu2', label: 'GTU_02' }
+                - { property: 'i.gtu3', label: 'GTU_03' }
+                - { property: 'i.gtu4', label: 'GTU_04' }
+                - { property: 'i.gtu5', label: 'GTU_05' }
+                - { property: 'i.gtu6', label: 'GTU_06' }
+                - { property: 'i.gtu7', label: 'GTU_07' }
+                - { property: 'i.gtu8', label: 'GTU_08' }
+                - { property: 'i.gtu9', label: 'GTU_09' }
+                - { property: 'i.gtu10', label: 'GTU_10' }
+                - { property: 'i.gtu11', label: 'GTU_11' }
+                - { property: 'i.gtu12', label: 'GTU_12' }
+                - { property: 'i.gtu13', label: 'GTU_13' }
+                - { property: 'i.transactionProcedure1', label: 'SW' }
+                - { property: 'i.transactionProcedure2', label: 'EE' }
+                - { property: 'i.transactionProcedure3', label: 'TP' }
+                - { property: 'i.transactionProcedure4', label: 'TT_WNT' }
+                - { property: 'i.transactionProcedure5', label: 'TT_D' }
+                - { property: 'i.transactionProcedure6', label: 'MR_T' }
+                - { property: 'i.transactionProcedure7', label: 'MR_UZ' }
+                - { property: 'i.transactionProcedure8', label: 'I_42' }
+                - { property: 'i.transactionProcedure9', label: 'I_63' }
+                - { property: 'i.transactionProcedure10', label: 'B_SPV' }
+                - { property: 'i.transactionProcedure11', label: 'B_SPV_DOSTAWA' }
+                - { property: 'i.transactionProcedure12', label: 'B_MPV_PROWIZJA' }
+                - { property: 'i.transactionProcedure13', label: 'MPP' }

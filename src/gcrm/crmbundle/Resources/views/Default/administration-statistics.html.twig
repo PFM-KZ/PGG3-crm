@@ -1,0 +1,172 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+{% endblock %}
+
+{% block content %}
+    <script src="{{ asset('bundles/gcrmcrm/js/scripts.js') }}"></script>
+
+    {% for label, messages in app.flashes(['notice', 'warning', 'error']) %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+
+    <div class="form-stats">
+    {{ form_start(formStats) }}
+        <div class="inline-row">
+            <div class="date-selects">
+                {{ form_label(formStats.options) }}
+                {{ form_widget(formStats.options) }}
+                {{ form_errors(formStats.options) }}
+            </div>
+            <div class="date-selects">
+                {{ form_label(formStats.dateFrom) }}
+                {{ form_widget(formStats.dateFrom) }}
+                {{ form_errors(formStats.dateFrom) }}
+            </div>
+            <div class="date-selects">
+                {{ form_label(formStats.dateTo) }}
+                {{ form_widget(formStats.dateTo) }}
+                {{ form_errors(formStats.dateTo) }}
+            </div>
+            {{ form_widget(formStats.calculate, { 'attr': { 'class': 'button' } }) }}
+        </div>
+    {{ form_end(formStats) }}
+        <div class="result">
+            Rezultat: {% if dateStatsResult is not null %}<strong>{{ dateStatsResult }}</strong>{% else %}brak wyszukiwań{% endif %}
+        </div>
+    </div>
+
+
+
+    <script src="{{ asset('bundles/gcrmcrm/js/moment.min.js') }}"></script>
+    <script src="{{ asset('bundles/gcrmcrm/js/Chart.min.js') }}"></script>
+    <div style="width: 100%; padding: 30px; height: 400px;">
+        <canvas id="myChart" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    <script>
+        var timeFormat = 'MM/DD/YYYY';
+
+        var ctx = document.getElementById("myChart").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [ // Date Objects
+                    {% for item in chartData.monthBack.dates %}
+                        new Date('{{ item }}').setHours(0,0,0,0),
+                    {% endfor %}
+                ],
+                datasets: [
+                    {% for item in chartData.monthBack.values %}
+                        {
+                            label: '{{ item.title }}',
+                            backgroundColor: '#dddddd',
+                            borderColor: '{{ item.color }}',
+                            fill: false,
+                            data: [
+                                {{ item.valuesMergedToString }}
+                            ],
+                        }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            },
+            options: {
+                title: {
+                    text: 'Chart.js Time Scale'
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            format: timeFormat,
+                            // round: 'day'
+                            tooltipFormat: 'll'
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'value'
+                        }
+                    }]
+                },
+            }
+        });
+    </script>
+
+    <div id="invoices-panel" class="content">
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <b>Statystyki dzienne</b>
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-4">
+                            <div class="box-bordered">
+                                <h3>Umowy</h3>
+                                <p>Ilość wprowadzonych umów: <span class="number">{{ contracts.dailyCount }}</span></p>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-4">
+                            <div class="box-bordered">
+                                <h3>Klienci</h3>
+                                <p>Ilość wprowadzonych klientów: <span class="number">{{ clients.dailyCount }}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <b>Statystyki ogólne</b>
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-4">
+                            <div class="box-bordered">
+                                <h3>Umowy</h3>
+                                <p>Ilość wprowadzonych umów: <span class="number">{{ contracts.summaryCount }}</span></p>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-4">
+                            <div class="box-bordered">
+                                <h3>Klienci</h3>
+                                <p>Ilość wprowadzonych klientów: <span class="number">{{ clients.summaryCount }}</span></p>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-4">
+                            <div class="box-bordered">
+                                <h3>Przedstawiciele handlowi (aktywni)</h3>
+                                <p>Ilość: <span class="number">{{ salesRepresentatives.summaryCount }}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

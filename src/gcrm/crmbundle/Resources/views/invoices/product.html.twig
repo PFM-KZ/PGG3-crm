@@ -1,0 +1,36 @@
+{% if product.isCorrection is defined and product.isCorrection %} {# Product in correction #}
+<tr>
+<td style="width: 4%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ loop.index }}</td>
+<td style="width: 48%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.productData.title }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.productData.netValue|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{% if product.productData.vatPercentage %}{{ product.productData.vatPercentage }}%{% else %}z. w.{% endif %}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.productData.vatValue|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.productData.grossValue|number_format(2, ',', '.') }}</td>
+</tr>
+<tr>
+<td style="width: 4%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>&nbsp;</td>
+<td style="width: 48%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>Korekta:</td>
+{% if product.afterCorrectionData.netValue > 0 %}{% set correctPlusOrMinusSign = '+' %}{% else %}{% set correctPlusOrMinusSign = '-' %}{% endif %}
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ correctPlusOrMinusSign }}{{ product.afterCorrectionData.netValue|abs|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{% if product.vatPercentage %}{{ product.vatPercentage }}%{% else %}z. w.{% endif %}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ correctPlusOrMinusSign }}{{ product.afterCorrectionData.vatValue|abs|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ correctPlusOrMinusSign }}{{ product.afterCorrectionData.grossValue|abs|number_format(2, ',', '.') }}</td>
+</tr>
+<tr>
+<td style="width: 4%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>&nbsp;</td>
+<td style="width: 48%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>Po korekcie:</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.netValue|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{% if product.vatPercentage %}{{ product.vatPercentage }}%{% else %}z. w.{% endif %}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.vatValue|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.grossValue|number_format(2, ',', '.') }}</td>
+</tr>
+{% else %}{# Product in invoice #}
+<tr>
+<td style="width: 4%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ loop.index }}</td>
+<td style="width: 48%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.title }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.netValue|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{% if product.vatPercentage %}{{ product.vatPercentage }}%{% else %}z. w.{% endif %}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.vatValue|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.grossValue|number_format(2, ',', '.') }}</td>
+</tr>
+{% endif %}

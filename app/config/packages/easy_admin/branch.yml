@@ -1,0 +1,16 @@
+easy_admin:
+    entities:
+        Branch:
+            class: GCRM\CRMBundle\Entity\Branch
+            permissions: ['ROLE_BRANCHES']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Oddział' }
+                    - { property: 'typeCode', label: 'Kod biura' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Oddział' }
+                    - { property: 'typeCode', help: 'BC, BR, BO', label: 'Kod biura' }

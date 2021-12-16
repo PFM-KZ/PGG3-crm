@@ -1,0 +1,29 @@
+easy_admin:
+    entities:
+        Rabate:
+            class: GCRM\CRMBundle\Entity\Rabate
+            permissions: ['ROLE_INVOICE_RABATES']
+            show:
+                permissions: ['ROLE_INVOICE_RABATES_SHOW']
+            edit:
+                permissions: ['ROLE_INVOICE_RABATES_EDIT']
+            new:
+                permissions: ['ROLE_INVOICE_RABATES_NEW']
+            delete:
+                permissions: ['ROLE_INVOICE_RABATES_DELETE']
+            search:
+                permissions: ['ROLE_INVOICE_RABATES_SEARCH']
+            list:
+                permissions: ['ROLE_INVOICE_RABATES_LIST']
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'netValue', label: 'Wartość netto' }
+                    - { property: 'grossValue', label: 'Wartość brutto' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'netValue', label: 'Wartość netto' }
+                    - { property: 'grossValue', label: 'Wartość brutto' }

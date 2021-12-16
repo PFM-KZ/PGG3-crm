@@ -1,0 +1,38 @@
+easy_admin:
+    entities:
+        PaymentOldEnrex:
+            class: GCRM\CRMBundle\Entity\PaymentOldEnrex
+            permissions: ['ROLE_INVOICES']
+            list:
+                actions:
+#                    - { name: '-delete' }
+                permissions: ['ROLE_INVOICES_LIST']
+                fields:
+                    - id
+                    - { property: 'badgeId', label: 'ID rachunku' }
+                    - { property: 'value', label: 'Kwota' }
+                    - { property: 'senderBranchNumber', label: 'Numer oddziału nadawcy' }
+                    - { property: 'receiverBranchNumber', label: 'Numer oddziału odbiorcy' }
+                    - { property: 'senderAccountNumber', label: 'Numer rachunku nadawcy' }
+                    - { property: 'receiverAccountNumber', label: 'Numer rachunku odbiorcy' }
+                    - { property: 'senderName', label: 'Nazwa nadawcy' }
+                    - { property: 'receiverName', label: 'Nazwa odbiorcy' }
+                    - { property: 'date', label: 'Data płatności' }
+                    - { property: 'createdAt', label: 'Utworzono' }
+            form:
+                actions:
+#                    - { name: '-delete' }
+#                    - { name: '-edit' }
+#                    - { name: '-save' }
+                fields:
+                    - { property: 'badgeId', label: 'ID rachunku' }
+                    - { property: 'value', label: 'Kwota' }
+                    - { property: 'senderBranchNumber', label: 'Numer oddziału nadawcy' }
+                    - { property: 'receiverBranchNumber', label: 'Numer oddziału odbiorcy' }
+                    - { property: 'senderAccountNumber', label: 'Numer rachunku nadawcy' }
+                    - { property: 'receiverAccountNumber', label: 'Numer rachunku odbiorcy' }
+                    - { property: 'senderName', label: 'Nazwa nadawcy' }
+                    - { property: 'receiverName', label: 'Nazwa odbiorcy' }
+                    - { property: 'date', label: 'Data płatności' }
+                    - { property: 'data', label: 'Zrzut danych' }
+                    - { property: 'createdAt', label: 'Utworzono' }

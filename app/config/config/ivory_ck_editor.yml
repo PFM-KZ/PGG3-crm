@@ -1,0 +1,7 @@
+ivory_ck_editor:
+    input_sync: true
+    default_config: advanced_config
+    configs:
+        advanced_config:
+            toolbar:
+                [{ name: 'document', items : [ 'Source','-','DocProps','-','Templates' ] },{ name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText','-','Undo','Redo' ] },{ name: 'editing', items : [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ] },'/',{ name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },{ name: 'paragraph', items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },{ name: 'links', items : [ 'Link','Unlink','Anchor' ] },{ name: 'insert', items : [ 'Image','Table','HorizontalRule','SpecialChar','Iframe' ] },'/',{ name: 'styles', items : [ 'Styles','Format','Font','FontSize' ] },{ name: 'colors', items : [ 'TextColor','BGColor' ] },{ name: 'tools', items : [ 'Maximize', 'ShowBlocks','-','About' ] }]

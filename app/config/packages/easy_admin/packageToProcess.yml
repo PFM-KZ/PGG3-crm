@@ -1,0 +1,24 @@
+easy_admin:
+    entities:
+        PackageToProcess:
+            class: GCRM\CRMBundle\Entity\PackageToProcess
+            permissions: ['ROLE_PROCESS_DEPARTMENT']
+            disabled_actions: [new, delete, edit]
+            list:
+                actions:
+                    - { name: 'showPackageToProcess', type: 'route', label: 'Zobacz' }
+                    - { name: 'downloadPackageToProcess', type: 'route', label: 'Pobierz', css_class: 'btn btn-default' }
+                    - { name: 'cancelPackageToProcess', type: 'route', label: 'Anuluj', css_class: 'btn btn-danger' }
+                fields:
+                    - { property: 'number', label: 'Numer' }
+                    - { property: 'contractType', label: 'Typ umów' }
+                    - { property: 'addedBy', label: 'Dodane przez' }
+                    - { property: 'isCancelled', label: 'Anulowane' }
+                    - { property: 'cancelledBy', label: 'Anulowane przez' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                fields:
+                    - { property: 'number', label: 'Numer', type_options: { disabled: true } }
+                    - { property: 'contractIds', label: 'ID umów w paczce', type_options: { disabled: true } }
+                    - { property: 'contractType', label: 'Typ umów', type_options: { disabled: true } }

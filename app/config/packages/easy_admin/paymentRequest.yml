@@ -1,0 +1,59 @@
+easy_admin:
+    entities:
+        PaymentRequest:
+            class: Wecoders\EnergyBundle\Entity\PaymentRequest
+            directory: '%kernel.root_dir%/../var/data/uploads/payment-request-energy'
+            directoryRelative: 'var/data/uploads/payment-request-energy'
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                actions:
+                    - { name: 'clientPage', type: 'route', label: 'Karta klienta', params: { fetchClientFromEntity: 'PaymentRequest' }, css_class: 'btn' }
+                    - { name: 'displayPaymentRequestDocument', type: 'route', label: 'Wyświetl dokument' }
+                fields:
+                    - id
+                    - { property: 'createdDate', label: 'Data wystawienia dokumentu' }
+                    - { property: 'contractNumber', label: 'Nr umowy' }
+                    - { property: 'ppCode', label: 'Kod PP' }
+                    - { property: 'dateOfPayment', label: 'Termin płatności' }
+                    - { property: 'clientName', label: 'Imię' }
+                    - { property: 'clientSurname', label: 'Nazwisko' }
+                    - { property: 'summaryGrossValue', label: 'Kwota' }
+                    - { property: 'isPaid', type: 'boolean', label: 'Opłacony dokument' }
+            form:
+                actions:
+                    - { name: 'generatePaymentRequestDocument', type: 'route', label: 'Generuj dokument', css_class: 'btn btn-default' }
+                    - { name: 'displayPaymentRequestDocument', type: 'route', label: 'Wyświetl dokument', css_class: 'btn btn-info' }
+                fields:
+                    - { property: 'documentTemplate', label: 'Szablon dokumentu', type_options: { required: true } }
+                    - { property: 'contractNumber', label: 'Nr umowy' }
+                    - { property: 'ppCode', label: 'Kod PP' }
+                    - { property: 'createdDate', label: 'Data wystawienia dokumentu', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'dateOfPayment', label: 'Termin płatności', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane klienta' }
+                    - { property: 'badgeId', label: 'Nr konta rozliczeniowego' }
+                    - { property: 'clientAccountNumber', label: 'Nr rachunku rozliczeniowego' }
+                    - { type: 'divider' }
+                    - { property: 'client', label: 'Klient', type: 'GCRM\CRMBundle\Form\Type\LazyChoiceType', type_options: { required: false, data_class: 'GCRM\CRMBundle\Entity\Client', attr: { data-ajax-lazyload: 'true', 'data-ajax-route': 'fetchClientData' } } }
+                    - { property: clientNip, label: 'NIP' }
+                    - { property: clientPesel, label: 'PESEL' }
+                    - { property: 'clientName', label: 'Imię' }
+                    - { property: 'clientSurname', label: 'Nazwisko' }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane adresowe klienta' }
+                    - { property: 'clientZipCode', label: 'Kod pocztowy' }
+                    - { property: 'clientCity', label: 'Miasto' }
+                    - { property: 'clientStreet', label: 'Ulica' }
+                    - { property: 'clientHouseNr', label: 'Nr domu' }
+                    - { property: 'clientApartmentNr', label: 'Nr lokalu' }
+                    - { property: 'clientPostOffice', label: 'Poczta' }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane adresowe PP' }
+                    - { property: 'ppZipCode', label: 'Kod pocztowy' }
+                    - { property: 'ppCity', label: 'Miasto' }
+                    - { property: 'ppStreet', label: 'Ulica' }
+                    - { property: 'ppHouseNr', label: 'Nr domu' }
+                    - { property: 'ppApartmentNr', label: 'Nr lokalu' }
+                    - { property: 'ppPostOffice', label: 'Poczta' }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dokumenty' }
+                    - { property: 'paymentRequestAndDocuments', label: 'Do dokumentów' ,type: 'collection', type_options: { entry_type: 'Wecoders\EnergyBundle\Form\PaymentRequestAndDocumentType', by_reference: false } }
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Podsumowanie' }
+                    - { property: 'summaryGrossValue', label: 'Wartość brutto' }
+                    - { property: 'isPaid', label: 'Dokument opłacony' }

@@ -1,0 +1,17 @@
+easy_admin:
+    entities:
+        SystemSettings:
+            class: GCRM\CRMBundle\Entity\Settings\System
+            permissions: ['ROLE_CONFIG']
+            disabled_actions: ['delete', 'new', 'show']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'name', label: 'Nazwa' }
+                    - { property: 'value', label: 'Wartość tekstowa' }
+                    - { property: 'filePath', label: 'Plik', type: 'image', base_path: '/vich/system/' }
+            form:
+                fields:
+                    - { property: 'name', label: 'Nazwa', type_options: { disabled: true } }
+                    - { property: 'value', label: 'Wartość tekstowa', type_options: { required: false } }
+                    - { property: 'file', label: 'Plik', type: 'vich_file', public: true, type_options: { required: false } }

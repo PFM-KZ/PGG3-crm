@@ -1,0 +1,101 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-2">
+        {#<div class="row">#}
+            {#<div class="col-xs-12 col-sm-6">#}
+                {#<div class="input-text">#}
+                    {#{{ form_label(listSearchForm.lsName) }}#}
+                    {#{{ form_widget(listSearchForm.lsName) }}#}
+                {#</div>#}
+            {#</div>#}
+            {#<div class="col-xs-12 col-sm-6">#}
+                {#<div class="input-text">#}
+                    {#{{ form_label(listSearchForm.lsSurname) }}#}
+                    {#{{ form_widget(listSearchForm.lsSurname) }}#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+
+        {#<div class="row">#}
+            {#<div class="col-xs-12 col-sm-6">#}
+                {#<div class="input-text">#}
+                    {#{{ form_label(listSearchForm.lsPesel) }}#}
+                    {#{{ form_widget(listSearchForm.lsPesel) }}#}
+                {#</div>#}
+            {#</div>#}
+            {#<div class="col-xs-12 col-sm-6">#}
+                {#<div class="input-text">#}
+                    {#{{ form_label(listSearchForm.lsNip) }}#}
+                    {#{{ form_widget(listSearchForm.lsNip) }}#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+
+        <div class="row">
+            {#<div class="col-xs-12 col-sm-6">#}
+                {#<div class="input-text">#}
+                    {#{{ form_label(listSearchForm.lsTelephoneNr) }}#}
+                    {#{{ form_widget(listSearchForm.lsTelephoneNr) }}#}
+                {#</div>#}
+            {#</div>#}
+            <div class="col-xs-12 col-sm-12">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsBadgeId) }}
+                    {{ form_widget(listSearchForm.lsBadgeId) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-4 selects-date-col">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsCreatedAtFrom) }}
+                    {{ form_widget(listSearchForm.lsCreatedAtFrom) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsCreatedAtTo) }}
+                    {{ form_widget(listSearchForm.lsCreatedAtTo) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsDateFrom) }}
+                    {{ form_widget(listSearchForm.lsDateFrom) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsDateTo) }}
+                    {{ form_widget(listSearchForm.lsDateTo) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsValueFrom) }}
+                    {{ form_widget(listSearchForm.lsValueFrom) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsValueTo) }}
+                    {{ form_widget(listSearchForm.lsValueTo) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsSenderAccountNumber) }}
+                    {{ form_widget(listSearchForm.lsSenderAccountNumber) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

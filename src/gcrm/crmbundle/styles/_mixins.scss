@@ -1,0 +1,12 @@
+@mixin transition($style, $duration: 0.2s, $type: ease-in-out) {
+    -webkit-transition: $style $duration $type;
+    -moz-transition: $style $duration $type;
+    -ms-transition: $style $duration $type;
+    transition: $style $duration $type;
+}
+
+@mixin rotate($deg) {
+    -ms-transform: rotate($deg);
+    -webkit-transform: rotate($deg);
+    transform: rotate($deg);
+}

@@ -1,0 +1,14 @@
+easy_admin:
+    entities:
+        Excise:
+            class: Wecoders\EnergyBundle\Entity\Excise
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - id
+                    - { property: 'fromDate', label: 'Obowiązuje od' }
+                    - { property: 'exciseValue', label: 'Wartość akcyzy' }
+            form:
+                fields:
+                    - { property: 'fromDate', label: 'Obowiązuje od', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'exciseValue', label: 'Wartość akcyzy' }

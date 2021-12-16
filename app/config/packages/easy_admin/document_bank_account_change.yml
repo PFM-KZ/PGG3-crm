@@ -1,0 +1,20 @@
+easy_admin:
+    entities:
+        DocumentBankAccountChange:
+            class: Wecoders\EnergyBundle\Entity\DocumentBankAccountChange
+            permissions: ['ROLE_SUPERADMIN']
+            disabled_actions: ['new', 'show']
+            list:
+                actions:
+                    - show
+                    - { name: 'displayDocumentBankAccountChange', type: 'route', label: 'Wyświetl dokument' }
+                fields:
+                    - id
+                    - { property: 'badgeId', label: 'Indywidualny numer klienta' }
+                    - { property: 'filePath', label: 'Ścieżka do pliku' }
+                    - { property: 'documentNumber', label: 'Numer dokumentu' }
+            form:
+                fields:
+                    - { property: 'badgeId', label: 'Indywidualny numer klienta' }
+                    - { property: 'filePath', label: 'Ścieżka do pliku' }
+                    - { property: 'documentNumber', help: 'Numer dokumentu do którego system przypisze wygenerowany plik z informacją o zmianie numeru w momencie pobrania Envelo.', label: 'Numer dokumentu' }

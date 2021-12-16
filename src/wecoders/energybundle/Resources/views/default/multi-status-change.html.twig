@@ -1,0 +1,160 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+    <style>
+        table {
+            background: #FFFFFF;
+            border: 1px solid #CCC;
+        }
+        th {
+            background: #EEE;
+            border-bottom: 2px solid #CCC !important;
+            padding: 0 !important;
+        }
+        th > * {
+            color: #222222;
+            display: block;
+            padding: 10px 6px;
+            white-space: nowrap;
+        }
+        td {
+            vertical-align: middle !important;
+            border-top: 1px solid #DDD;
+        }
+        tr:hover td {
+            background: #F5F5F5;
+        }
+    </style>
+{% endblock %}
+
+{% block bottom_post_javascript %}
+    <script>
+        var isMultiCheck = false;
+        $('.toggleMultiCheck').click(function(e) {
+            e.preventDefault();
+
+            var form = $(this).closest('form');
+            var checkboxes = form.find('input[type="checkbox"]');
+
+            if (checkboxes.length) {
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (!isMultiCheck) {
+                        checkboxes.eq(i).prop('checked', true);
+                    } else {
+                        checkboxes.eq(i).prop('checked', false);
+                    }
+                }
+                isMultiCheck = isMultiCheck ? false : true;
+                initToggleActivateMultiActionButtons();
+            }
+        });
+
+        $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]').change(function() {
+            initToggleActivateMultiActionButtons();
+        });
+        initToggleActivateMultiActionButtons();
+
+        function initToggleActivateMultiActionButtons()
+        {
+            var tableCheckboxes = $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]');
+
+            var shouldEnableMultiActionButtons = false;
+            for (var i = 0; i < tableCheckboxes.length; i++) {
+                if (tableCheckboxes.eq(i).prop('checked')) {
+                    shouldEnableMultiActionButtons = true;
+                }
+            }
+
+            shouldEnableMultiActionButtons ? enableMultiActionButtons() : disableMultiActionButtons();
+        }
+
+        function disableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', true);
+            }
+        }
+
+        function enableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', false);
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <div class="content" id="main">
+
+        <section class="content-header" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1 class="title">Masowa zmiana statusów</h1>
+                </div>
+            </div>
+        </section>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-body" style="padding: 15px;">
+                    <p>Wymagania dla wgrywanego pliku:</p>
+                    <ul>
+                        <li>format: .xlsx</li>
+                        <li>liczba kolumn: 1 (numer rachunku klienta - 12 ostatnich cyfr)</li>
+                        <li>wiersz rozpoczynający odczyt danych: 2</li>
+                    </ul>
+                    <hr>
+                    <div class="col-xs-12">
+                        {{ form_start(formInputFile) }}
+
+                        <div class="form-group field-text">
+                            <div>
+                                {{ form_label(formInputFile.statusDepartment) }}
+                            </div>
+                            <div class="col-sm-6" style="padding: 0; float: none;">
+                                {{ form_widget(formInputFile.statusDepartment, { attr: { 'class': 'form-control' }}) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group field-text">
+                            <div>
+                                {{ form_label(formInputFile.statusContract) }}
+                            </div>
+                            <div class="col-sm-6" style="padding: 0; float: none;">
+                                {{ form_widget(formInputFile.statusContract, { attr: { 'class': 'form-control' }}) }}
+                            </div>
+                        </div>
+
+                        {{ form_widget(formInputFile.file) }}
+                        <br>
+                        {{ form_widget(formInputFile.save, { attr: { 'class': 'btn-primary btn-danger' } }) }}
+
+                        {{ form_end(formInputFile) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+{% endblock %}

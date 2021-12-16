@@ -1,0 +1,29 @@
+easy_admin:
+    entities:
+        EnergyData:
+            class: Wecoders\EnergyBundle\Entity\EnergyData
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                max_results: 100
+                fields:
+                    - id
+                    - { property: 'ppCode', label: 'Kod PPE/PPG' }
+                    - { property: 'deviceId', label: 'Kod licznika' }
+                    - { property: 'tariff', label: 'Taryfa' }
+                    - { property: 'area', label: 'Strefa' }
+                    - { property: 'billingPeriodFrom', label: 'Data odczytu poprzedniego' }
+                    - { property: 'stateStart', label: 'Odczyt poprzedni [m3]' }
+#                    - { property: 'stateStart', label: 'Odczyt poprzedni [kWh]' }
+                    - { property: 'billingPeriodTo', label: 'Data odczytu bieżącego' }
+                    - { property: 'stateEnd', label: 'Odczyt bieżący [m3]' }
+#                    - { property: 'stateEnd', label: 'Odczyt bieżący [kWh]' }
+                    - { property: 'consumptionM', label: 'Zużycie [m3]' }
+                    - { property: 'ratio', label: 'Współczynnik konwersji' }
+                    - { property: 'consumptionKwh', label: 'Zużycie [kWh]' }
+                    - { property: 'readingType', label: 'Typ odczytu' }
+                    - { property: 'readingTypeOriginal', label: 'Typ odczytu - oryginalny' }
+                    - { property: 'code', label: 'Z', template: '@GCRMCRMBundle/Default/admin/fields/option_array.html.twig', format: 'Wecoders\EnergyBundle\Service\OsdModel', class: 'getOptionByValue' }
+                    - { property: 'filename', label: 'Plik' }
+#            form:
+#                fields:
+#                    - { property: 'title', label: 'Marka' }

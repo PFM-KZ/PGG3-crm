@@ -1,0 +1,124 @@
+{
+    "name": "kzacha/eddtelco",
+    "license": "proprietary",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "AppBundle\\": "src/AppBundle",
+            "GCRM\\CRMBundle\\": "src/gcrm/crmbundle",
+            "Wecoders\\EnergyBundle\\": "src/wecoders/energybundle",
+            "Wecoders\\InvoiceBundle\\": "src/invoicebundle"
+        },
+        "classmap": [
+            "app/AppKernel.php",
+            "app/AppCache.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        },
+        "files": [
+            "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
+        ]
+    },
+    "require": {
+        "php": ">=5.5.9",
+        "doctrine/doctrine-bundle": "^1.6",
+        "doctrine/orm": "^2.5",
+        "egeloen/ckeditor-bundle": "^6.0",
+        "friendsofsymfony/user-bundle": "^2.0",
+        "gufy/pdftohtml-php": "~2",
+        "incenteev/composer-parameter-handler": "^2.0",
+        "javiereguiluz/easyadmin-bundle": "1.17.12",
+        "pagerfanta/pagerfanta": "1.1.0",
+        "pear/numbers_words": "^0.18.2",
+        "phpoffice/phpspreadsheet": "^1.4",
+        "phpoffice/phpword": "dev-develop",
+        "picqer/php-barcode-generator": "^0.3.0",
+        "predis/predis": "^1.0",
+        "sensio/distribution-bundle": "^5.0.19",
+        "sensio/framework-extra-bundle": "^3.0.2",
+        "setasign/fpdf": "1.8.1",
+        "setasign/fpdi": "^2.2",
+        "smsapi/php-client": "^2.5",
+        "snc/redis-bundle": "2.*",
+        "symfony/monolog-bundle": "^3.1.0",
+        "symfony/polyfill-apcu": "^1.0",
+        "symfony/swiftmailer-bundle": "^2.3.10",
+        "symfony/symfony": "3.3.*",
+        "tecnickcom/tcpdf": "^6.2",
+        "twig/twig": "^1.0||^2.0",
+        "tziebura/correspondencebundle": "dev-master",
+        "tziebura/exporterbundle": "dev-master",
+        "tziebura/smsbundle": "dev-master",
+        "vich/uploader-bundle": "1.5",
+        "wecoders/easyadminfilepanelbundle": "dev-master",
+        "wecoders/easyadminlistmultiactionbundle": "dev-master",
+      "ext-bcmath": "*"
+    },
+    "require-dev": {
+        "sensio/generator-bundle": "^3.0",
+        "symfony/phpunit-bridge": "^3.0"
+    },
+    "scripts": {
+        "symfony-scripts": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ],
+        "post-install-cmd": [
+            "@symfony-scripts"
+        ],
+        "post-update-cmd": [
+            "@symfony-scripts"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "7.0.33"
+        }
+    },
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-bin-dir": "bin",
+        "symfony-var-dir": "var",
+        "symfony-web-dir": "web",
+        "symfony-tests-dir": "tests",
+        "symfony-assets-install": "relative",
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml"
+        },
+        "branch-alias": null
+    },
+    "repositories": {
+        "0": {
+            "type": "vcs",
+            "url": "git@github.com:PFM-KZ/easyadminlistmultiactionbundle.git"
+        },
+        "1": {
+            "type": "vcs",
+            "url": "git@github.com:PFM-KZ/easyadminfilepanelbundle.git"
+        },
+        "2": {
+            "type": "vcs",
+            "url": "git@github.com:PFM-KZ/invoicebundle.git"
+        },
+        "smsbundle": {
+            "type": "vcs",
+            "url": "git@github.com:PFM-KZ/smsbundle.git"
+        },
+        "exporterbundle": {
+            "type": "vcs",
+            "url": "git@github.com:PFM-KZ/exporterbundle.git"
+        },
+        "correspondencebundle": {
+            "type": "vcs",
+            "url": "git@github.com:PFM-KZ/correspondencebundle.git"
+        }
+    }
+}

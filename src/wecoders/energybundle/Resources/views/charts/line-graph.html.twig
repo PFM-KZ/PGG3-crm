@@ -1,0 +1,63 @@
+<!-- Styles -->
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+    }
+</style>
+<!-- Resources -->
+<script src="https://www.amcharts.com/lib/4/core.js"></script>
+<script src="https://www.amcharts.com/lib/4/charts.js"></script>
+<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+<script src="//www.amcharts.com/lib/4/lang/pl_PL.js"></script>
+
+<!-- Chart code -->
+<script>
+    var preparedData = {{ data|json_encode|raw }};
+
+    am4core.ready(function() {
+
+// Themes begin
+        am4core.useTheme(am4themes_animated);
+// Themes end
+
+        var chart = am4core.create("chartdiv", am4charts.XYChart);
+        chart.language.locale = window.am4lang_pl_PL;
+
+        var data = [];
+        for(var i = 0; i < preparedData.length; i++){
+            var date = new Date(preparedData[i].type);
+            date.setHours(0,0,0,0);
+//            date.setDate();
+            var value = preparedData[i].count;
+            data.push({date:date, value: value});
+        }
+
+        chart.data = data;
+
+// Create axes
+        var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+        dateAxis.renderer.minGridDistance = 60;
+
+        var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+// Create series
+        var series = chart.series.push(new am4charts.LineSeries());
+        series.dataFields.valueY = "value";
+        series.dataFields.dateX = "date";
+        series.tooltipText = "{value}"
+
+        series.tooltip.pointerOrientation = "vertical";
+
+        chart.cursor = new am4charts.XYCursor();
+        chart.cursor.snapToSeries = series;
+        chart.cursor.xAxis = dateAxis;
+
+//chart.scrollbarY = new am4core.Scrollbar();
+//        chart.scrollbarX = new am4core.Scrollbar();
+
+    }); // end am4core.ready()
+</script>
+
+<!-- HTML -->
+<div id="chartdiv"></div>

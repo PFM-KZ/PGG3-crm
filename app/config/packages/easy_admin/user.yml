@@ -1,0 +1,122 @@
+easy_admin:
+    entities:
+        User:
+            class: GCRM\CRMBundle\Entity\User
+            export_path: '%kernel.root_dir/../var/export/user'
+            password_encoding: { algorithm: 'bcrypt', cost: 12 }
+            label: 'Users'
+            permissions: ['ROLE_USERADMIN']
+            list:
+                actions: ['show']
+                fields:
+                    - id
+                    - { property: 'username', label: 'Nazwa użytkownika' }
+                    - { property: 'name', label: 'Imię' }
+                    - { property: 'surname', label: 'Nazwisko' }
+                    - { property: 'email', label: 'E-mail' }
+                    - { property: 'telephone', label: 'Telefon' }
+                    - { property: 'branch', label: 'Oddział' }
+                    - { property: 'lastLogin', label: 'Ostatnie logowanie' }
+                    - { property: 'isSalesRepresentative', label: 'Przedstawiciel handlowy' }
+                    - { property: 'proxyNumber', label: 'Numer pełnomocnictwa' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+                    - { property: 'enabled', label: 'Aktywny' }
+            form:
+                fields:
+                    - { property: 'username', label: 'Nazwa użytkownika' }
+                    - { property: 'name', label: 'Imię' }
+                    - { property: 'surname', label: 'Nazwisko' }
+                    - { property: 'email', label: 'E-mail' }
+                    - { property: 'telephone', label: 'Telefon' }
+                    - { property: 'branch', label: 'Oddział' }
+                    - { property: 'userAndBranches', label: 'Oddziały', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\UserAndBranchType', by_reference: false } }
+                    - { property: 'plainPassword', label: 'Hasło', help: 'Po zapisaniu hasło zostanie zaszyfrowane, a pole do wpisywania hasła wyczyszczone.', type: 'text', type_options: { required: false } }
+                    - { property: 'password', label: 'Szyfrowane hasło', type: 'text', type_options: { disabled: true, required: false } }
+                    - { property: 'proxyNumber', label: 'Numer pełnomocnictwa' }
+                    - { property: 'isSalesRepresentative', label: 'Przedstawiciel handlowy' }
+                    - { property: 'enabled', label: 'Aktywny' }
+                    - { property: 'roles', label: 'Uprawnienia', type: 'choice', type_options: { multiple: true, expanded: true, choices: {
+                        'ROLE_USER': 'ROLE_USER',
+                        'ROLE_ADMIN': 'ROLE_ADMIN',
+                        'ROLE_SUPERADMIN': 'ROLE_SUPERADMIN',
+                        'ROLE_WEBSITE': 'ROLE_WEBSITE',
+                        'ROLE_AUTHORIZATION_DEPARTMENT': 'ROLE_AUTHORIZATION_DEPARTMENT',
+                        'ROLE_VERIFICATION_DEPARTMENT': 'ROLE_VERIFICATION_DEPARTMENT',
+                        'ROLE_ADMINISTRATION_DEPARTMENT': 'ROLE_ADMINISTRATION_DEPARTMENT',
+                        'ROLE_CONTROL_DEPARTMENT': 'ROLE_CONTROL_DEPARTMENT',
+                        'ROLE_PROCESS_DEPARTMENT': 'ROLE_PROCESS_DEPARTMENT',
+                        'ROLE_FINANCES_DEPARTMENT': 'ROLE_FINANCES_DEPARTMENT',
+                        'ROLE_LEGAL_DEPARTMENT': 'ROLE_LEGAL_DEPARTMENT',
+                        'ROLE_SALES_DEPARTMENT': 'ROLE_SALES_DEPARTMENT',
+                        'ROLE_MANAGEMENT_DEPARTMENT': 'ROLE_MANAGEMENT_DEPARTMENT',
+                        'ROLE_FINANCES_STATISTICS': 'ROLE_FINANCES_STATISTICS',
+                        'ROLE_INVOICE_PARSER': 'ROLE_INVOICE_PARSER',
+                        'ROLE_INVOICES': 'ROLE_INVOICES',
+                        'ROLE_INVOICES_SHOW': 'ROLE_INVOICES_SHOW',
+                        'ROLE_INVOICES_EDIT': 'ROLE_INVOICES_EDIT',
+                        'ROLE_INVOICES_NEW': 'ROLE_INVOICES_NEW',
+                        'ROLE_INVOICES_DELETE': 'ROLE_INVOICES_DELETE',
+                        'ROLE_INVOICES_LIST': 'ROLE_INVOICES_LIST',
+                        'ROLE_INVOICES_SEARCH': 'ROLE_INVOICES_SEARCH',
+                        'ROLE_INVOICE_RABATES': 'ROLE_INVOICE_RABATES',
+                        'ROLE_INVOICE_RABATES_SHOW': 'ROLE_INVOICE_RABATES_SHOW',
+                        'ROLE_INVOICE_RABATES_EDIT': 'ROLE_INVOICE_RABATES_EDIT',
+                        'ROLE_INVOICE_RABATES_NEW': 'ROLE_INVOICE_RABATES_NEW',
+                        'ROLE_INVOICE_RABATES_DELETE': 'ROLE_INVOICE_RABATES_DELETE',
+                        'ROLE_INVOICE_RABATES_LIST': 'ROLE_INVOICE_RABATES_LIST',
+                        'ROLE_INVOICE_RABATES_SEARCH': 'ROLE_INVOICE_RABATES_SEARCH',
+                        'ROLE_FINANCES_DOWNLOAD': 'ROLE_FINANCES_DOWNLOAD',
+                        'ROLE_ADMINISTRATION_STATISTICS': 'ROLE_ADMINISTRATION_STATISTICS',
+                        'ROLE_CLIENTS':                 'ROLE_CLIENTS',
+                        'ROLE_CLIENTS_SHOW':            'ROLE_CLIENTS_SHOW',
+                        'ROLE_CLIENTS_EDIT':            'ROLE_CLIENTS_EDIT',
+                        'ROLE_CLIENTS_NEW':             'ROLE_CLIENTS_NEW',
+                        'ROLE_CLIENTS_DELETE':          'ROLE_CLIENTS_DELETE',
+                        'ROLE_CLIENTS_LIST':            'ROLE_CLIENTS_LIST',
+                        'ROLE_CLIENTS_SEARCH':          'ROLE_CLIENTS_SEARCH',
+                        'ROLE_CONTRACTS':           'ROLE_CONTRACTS',
+                        'ROLE_CONTRACTS_SHOW':      'ROLE_CONTRACTS_SHOW',
+                        'ROLE_CONTRACTS_EDIT':      'ROLE_CONTRACTS_EDIT',
+                        'ROLE_CONTRACTS_NEW':       'ROLE_CONTRACTS_NEW',
+                        'ROLE_CONTRACTS_DELETE':    'ROLE_CONTRACTS_DELETE',
+                        'ROLE_CONTRACTS_LIST':      'ROLE_CONTRACTS_LIST',
+                        'ROLE_CONTRACTS_SEARCH':    'ROLE_CONTRACTS_SEARCH',
+                        'ROLE_TARIFF': 'ROLE_TARIFF',
+                        'ROLE_TARIFF_SHOW': 'ROLE_TARIFF_SHOW',
+                        'ROLE_TARIFF_EDIT': 'ROLE_TARIFF_EDIT',
+                        'ROLE_TARIFF_NEW': 'ROLE_TARIFF_NEW',
+                        'ROLE_TARIFF_DELETE': 'ROLE_TARIFF_DELETE',
+                        'ROLE_TARIFF_LIST': 'ROLE_TARIFF_LIST',
+                        'ROLE_TARIFF_SEARCH': 'ROLE_TARIFF_SEARCH',
+                        'ROLE_SERVICES': 'ROLE_SERVICES',
+                        'ROLE_SERVICES_SHOW': 'ROLE_SERVICES_SHOW',
+                        'ROLE_SERVICES_EDIT': 'ROLE_SERVICES_EDIT',
+                        'ROLE_SERVICES_NEW': 'ROLE_SERVICES_NEW',
+                        'ROLE_SERVICES_DELETE': 'ROLE_SERVICES_DELETE',
+                        'ROLE_SERVICES_LIST': 'ROLE_SERVICES_LIST',
+                        'ROLE_SERVICES_SEARCH': 'ROLE_SERVICES_SEARCH',
+                        'ROLE_USERADMIN': 'ROLE_USERADMIN',
+                        'ROLE_PH': 'ROLE_PH',
+                        'ROLE_WAREHOUSE': 'ROLE_WAREHOUSE',
+                        'ROLE_CONFIG': 'ROLE_CONFIG',
+                        'ROLE_PREDEFINED_VALUES': 'ROLE_PREDEFINED_VALUES',
+                        'ROLE_COMPANY': 'ROLE_COMPANY',
+                        'ROLE_BRANDS': 'ROLE_BRANDS',
+                        'ROLE_BRANCHES': 'ROLE_BRANCHES',
+                        'ROLE_CALLS': 'ROLE_CALLS',
+                        'ROLE_PACKAGES': 'ROLE_PACKAGES',
+                        'ROLE_MENU_OPTION_COMPANY_MARK_BRANCH': 'ROLE_MENU_OPTION_COMPANY_MARK_BRANCH',
+                        'ROLE_MENU_OPTION_IMPORTER': 'ROLE_MENU_OPTION_IMPORTER',
+                        'ROLE_IMPORT_MAIN_DATA': 'ROLE_IMPORT_MAIN_DATA',
+                        'ROLE_CLIENT_PAGE': 'ROLE_CLIENT_PAGE',
+                        'ROLE_CORRESPONDENCE': 'ROLE_CORRESPONDENCE',
+                        'ROLE_CORRESPONDENCE_SHOW': 'ROLE_CORRESPONDENCE_SHOW',
+                        'ROLE_CORRESPONDENCE_EDIT': 'ROLE_CORRESPONDENCE_EDIT',
+                        'ROLE_CORRESPONDENCE_NEW': 'ROLE_CORRESPONDENCE_NEW',
+                        'ROLE_CORRESPONDENCE_DELETE': 'ROLE_CORRESPONDENCE_DELETE',
+                        'ROLE_CORRESPONDENCE_SEARCH': 'ROLE_CORRESPONDENCE_SEARCH',
+                        'ROLE_CORRESPONDENCE_LIST': 'ROLE_CORRESPONDENCE_LIST',
+                        'ROLE_CORRESPONDENCE_ADD_REPLY': 'ROLE_CORRESPONDENCE_ADD_REPLY',
+                        'ROLE_CORRESPONDENCE_CLOSE': 'ROLE_CORRESPONDENCE_CLOSE',
+                        } } }

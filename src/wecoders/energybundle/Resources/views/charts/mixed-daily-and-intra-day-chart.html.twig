@@ -1,0 +1,77 @@
+<!-- Styles -->
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+    }
+
+</style>
+
+<!-- Resources -->
+<script src="https://www.amcharts.com/lib/4/core.js"></script>
+<script src="https://www.amcharts.com/lib/4/charts.js"></script>
+<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+<script src="//www.amcharts.com/lib/4/lang/pl_PL.js"></script>
+
+<!-- Chart code -->
+<script>
+    var preparedData = {{ data|json_encode|raw }};
+
+    am4core.ready(function() {
+
+// Themes begin
+        am4core.useTheme(am4themes_animated);
+// Themes end
+
+// Create chart instance
+        var chart = am4core.create("chartdiv", am4charts.XYChart);
+        chart.language.locale = window.am4lang_pl_PL;
+
+// Create daily series and related axes
+        var dateAxis1 = chart.xAxes.push(new am4charts.DateAxis());
+        dateAxis1.renderer.grid.template.location = 0;
+        dateAxis1.renderer.minGridDistance = 40;
+
+        var valueAxis1 = chart.yAxes.push(new am4charts.ValueAxis());
+
+        var series1 = chart.series.push(new am4charts.ColumnSeries());
+        series1.dataFields.valueY = "value";
+        series1.dataFields.dateX = "date";
+        series1.data = generateDailyData();
+        series1.xAxis = dateAxis1;
+        series1.yAxis = valueAxis1;
+        series1.tooltipText = "[bold]{valueY}[/]";
+
+// Create hourly series and related axes
+        var dateAxis2 = chart.xAxes.push(new am4charts.DateAxis());
+        dateAxis2.renderer.grid.template.location = 0;
+        dateAxis2.renderer.minGridDistance = 40;
+        dateAxis2.renderer.labels.template.disabled = true;
+        dateAxis2.renderer.grid.template.disabled = true;
+        dateAxis2.renderer.tooltip.disabled = true;
+
+        var valueAxis2 = chart.yAxes.push(new am4charts.ValueAxis());
+        valueAxis2.renderer.opposite = true;
+        valueAxis2.renderer.grid.template.disabled = true;
+        valueAxis2.renderer.labels.template.disabled = true;
+        valueAxis2.renderer.tooltip.disabled = true;
+
+// Add cursor
+        chart.cursor = new am4charts.XYCursor();
+
+        function generateDailyData() {
+            var data = [];
+            for(var i = 0; i < preparedData.length; i++){
+                var date = new Date(preparedData[i].type);
+                date.setHours(0,0,0,0);
+                var value = preparedData[i].count;
+                data.push({date:date, value: value});
+            }
+
+            return data;
+        }
+    }); // end am4core.ready()
+</script>
+
+<!-- HTML -->
+<div id="chartdiv"></div>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale|split('_')|first|default('en') }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noodp, noimageindex, notranslate, nocache" />
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta name="generator" content="EasyAdmin" />
+
+    <title>{% block page_title %}{{ block('content_title')|striptags|raw }}{% endblock %}</title>
+
+    {% block head_stylesheets %}
+        <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+        <style>
+            {{ easyadmin_config('_internal.custom_css')|raw }}
+        </style>
+    {% endblock %}
+
+    {% for css_asset in easyadmin_config('design.assets.css') %}
+        <link rel="stylesheet" href="{{ asset(css_asset) }}">
+    {% endfor %}
+
+    {% block head_favicon %}
+        {% set favicon = easyadmin_config('design.assets.favicon') %}
+        {% set tmp_favicon = settings.system|getSetting('favicon', 'getFilePath') %}
+        {% if tmp_favicon %}
+            <link rel="icon" type="{{ favicon.mime_type }}" href="{{ vich_path_relative_system_settings }}/{{ tmp_favicon }}" />
+        {% else %}
+            <link rel="icon" href="{{ favicon.mime_type }}" href="" />
+        {% endif %}
+
+        {#{% set favicon = easyadmin_config('design.assets.favicon') %}#}
+        {#<link rel="icon" type="{{ favicon.mime_type }}" href="{{ asset(favicon.path) }}" />#}
+    {% endblock %}
+
+    {% block head_javascript %}
+        {% block adminlte_options %}
+            <script type="text/javascript">
+                var AdminLTEOptions = {
+                    animationSpeed: 'normal',
+                    sidebarExpandOnHover: false,
+                    enableBoxRefresh: false,
+                    enableBSToppltip: false,
+                    enableFastclick: false,
+                    enableControlSidebar: false,
+                    enableBoxWidget: false
+                };
+            </script>
+        {% endblock %}
+
+        <script src="{{ asset('bundles/easyadmin/javascript/easyadmin-all.min.js') }}"></script>
+        <script src="/bundles/easyadmin/javascript/select2/i18n/pl.js?v1"></script>
+    {% endblock head_javascript %}
+</head>
+
+{% block body %}
+    <body id="{% block body_id %}{% endblock %}" class="easyadmin sidebar-mini {% block body_class %}{% endblock %} {{ app.request.cookies.has('_easyadmin_navigation_iscollapsed') ? 'sidebar-collapse' }}">
+    <div class="wrapper">
+        {% block wrapper %}
+            <header class="main-header">
+                {% block header %}
+                    <nav class="navbar" role="navigation">
+                        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                            <span class="sr-only">{{ 'toggle_navigation'|trans(domain = 'EasyAdminBundle') }}</span>
+                        </a>
+
+                        {% set tmp_logo_header_file = settings.system|getSetting('logo_header', 'getFilePath') %}
+                        {% set tmp_logo_header_text = settings.system|getSetting('logo_header', 'getValue') %}
+                        <div id="header-logo">
+                            {% block header_logo %}
+                                {% if tmp_logo_header_file %}
+                                    <a class="logo" {% if tmp_logo_header_text %}title="{{ tmp_logo_header_text|striptags }}"{% endif %} href="{{ path('easyadmin') }}">
+                                        <img src="{{ vich_path_relative_system_settings }}/{{ tmp_logo_header_file }}" height="36px" style="margin-top: 1px;" alt="{% if tmp_logo_header_text %}{{ tmp_logo_header_text }}{% endif %}">
+                                        {#{{ easyadmin_config('site_name')|raw }}#}
+                                    </a>
+                                {% elseif tmp_logo_header_text %}
+                                    <a class="logo" title="{{ tmp_logo_header_text|striptags }}" href="{{ path('easyadmin') }}">
+                                        {{ tmp_logo_header_text }}
+                                    </a>
+                                {% endif %}
+                            {% endblock header_logo %}
+                        </div>
+
+                        {% if tmp_logo_header_text|striptags %}
+                        <div id="header-title">
+                            <p style="line-heigth: 24px;">{{ tmp_logo_header_text|striptags }}</p>
+                        </div>
+                        {% endif %}
+
+                        {# CUSTOM CLIENT SEARCH #}
+                        {#<style>#}
+                        {##client-page-search-form {#}
+                        {#float: left;#}
+                        {#width: 20%;#}
+                        {#margin-top: 9px;#}
+                        {#display: flex;#}
+                        {#justify-content: flex-start;#}
+                        {#}#}
+                        {##client-page-search-form input {#}
+                        {#width: 100%;#}
+                        {#height: 30px;#}
+                        {#line-height: 30px;#}
+                        {#border: none;#}
+                        {#padding: 0 10px;#}
+                        {#color: black;#}
+                        {#}#}
+                        {##client-page-search-form button {#}
+                        {#height: 30px;#}
+                        {#border-radius: 0;#}
+                        {#}#}
+                        {#</style>#}
+                        {#<form action="{{ url('searchClientPage') }}" id="client-page-search-form">#}
+                        {#<input type="text" name="clientPageSearch" placeholder="Podaj pesel klienta" style="">#}
+                        {#<button type="submit" class="btn" style=";"><i class="fa fa-search"></i></button>#}
+                        {#<input type="hidden" name="uri" value="{{ app.request.uri }}">#}
+                        {#</form>#}
+                        {# END OF CUSTOM CODE#}
+
+                        <div class="navbar-custom-menu">
+                            {% block header_custom_menu %}
+                                {% set _logout_path = easyadmin_logout_path() %}
+                                <ul class="nav navbar-nav">
+                                    <li class="dropdown user user-menu">
+                                        {% block user_menu %}
+                                            <span class="sr-only">{{ 'user.logged_in_as'|trans(domain = 'EasyAdminBundle') }}</span>
+
+                                            {% if app.user|default(false) == false %}
+                                                <i class="hidden-xs fa fa-user-times"></i>
+                                                {{ 'user.anonymous'|trans(domain = 'EasyAdminBundle') }}
+                                            {% elseif not _logout_path %}
+                                                <i class="hidden-xs fa fa-user"></i>
+                                                {{ app.user.username|default('user.unnamed'|trans(domain = 'EasyAdminBundle')) }}
+                                            {% else %}
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn" data-toggle="dropdown">
+                                                        <i class="hidden-xs fa fa-user"></i>
+                                                        {{ app.user.username|default('user.unnamed'|trans(domain = 'EasyAdminBundle')) }}
+                                                    </button>
+                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" role="menu">
+                                                        {% block user_menu_dropdown %}
+                                                            <li>
+                                                                <a href="{{ _logout_path }}"><i class="fa fa-sign-out"></i> {{ 'user.signout'|trans(domain = 'EasyAdminBundle') }}</a>
+                                                            </li>
+                                                            {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
+                                                                <li>
+                                                                    <a href="?_switch_user=_exit"><i class="fa fa-sign-out"></i> {{ 'user.exit_impersonation'|trans(domain = 'EasyAdminBundle') }}</a>
+                                                                </li>
+                                                            {% endif %}
+                                                        {% endblock user_menu_dropdown %}
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
+                                        {% endblock user_menu %}
+                                    </li>
+                                </ul>
+                            {% endblock header_custom_menu %}
+                        </div>
+                    </nav>
+                {% endblock header %}
+            </header>
+
+            <aside class="main-sidebar">
+                {% block sidebar %}
+                    <section class="sidebar">
+                        {% block main_menu_wrapper %}
+                            {{ include([
+                            _entity_config is defined ? _entity_config.templates.menu,
+                            easyadmin_config('design.templates.menu'),
+                            '@EasyAdmin/default/menu.html.twig'
+                            ]) }}
+                        {% endblock main_menu_wrapper %}
+
+                        <div style="color: white; font-size: 12px; padding: 15px 5px;">
+                            v{{ appVersion() }}
+                        </div>
+
+                    </section>
+                {% endblock sidebar %}
+
+
+            </aside>
+
+            <div class="content-wrapper">
+                {% block content %}
+                    {#{% block flash_messages %}#}
+                    {#{{ include(_entity_config is defined ? _entity_config.templates.flash_messages : '@EasyAdmin/default/flash_messages.html.twig') }}#}
+                    {#{% endblock flash_messages %}#}
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="flash-{{ label }}">
+                                {{ message|raw }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+
+
+                    <section class="content-header">
+                        {% block content_header %}
+                            <h1 class="title">{% block content_title %}{% endblock %}</h1>
+                        {% endblock content_header %}
+                        {% block content_help %}
+                            {% if _entity_config is defined and _entity_config[app.request.query.get('action')]['help']|default(false) %}
+                                <div class="box box-widget help-entity">
+                                    <div class="box-body">
+                                        {{ _entity_config[app.request.query.get('action')]['help']|trans|raw }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endblock content_help %}
+                    </section>
+
+                    <section id="main" class="content">
+                        {% block main %}{% endblock %}
+                    </section>
+                {% endblock content %}
+            </div>
+        {% endblock wrapper %}
+    </div>
+
+
+
+    {% block body_javascript %}
+        <script type="text/javascript">
+            $(function() {
+                // Select2 widget is only enabled for the <select> elements which
+                // explicitly ask for it
+                $('#main').find('form select[data-widget="select2"], #search-form .apply-select select').select2({
+                    theme: 'bootstrap',
+                    language: 'pl',
+                    minimumResultsForSearch: 5
+                });
+            });
+
+            $('.mark-all').click(function() {
+                var box = $(this).closest('.box-bordered');
+
+                if (box.length) {
+                    var checkboxes = box.find('input[type="checkbox"]');
+                } else {
+                    var checkboxes = $('.roles-target').find('input[type="checkbox"]');
+                }
+                checkboxes.prop('checked', 'checked');
+            });
+
+            $('.box-bordered .top-line').click(function() {
+                var box = $(this).closest('.box-bordered');
+
+                box.toggleClass('active');
+            });
+
+            document.addEventListener("DOMContentLoaded", function() {
+                // OSD Additional Deadlines
+                var select = determineAvailability("select", "_isPostponed");
+                var collection = determineAvailability("div", "_postponedDeadlines");
+
+                if(select != null && collection != null) {
+                    var selectValue = getSelectValue(select);
+                    var collectionRoot = collection.parentNode.parentNode.parentNode; // all the way up to col-xs-12
+                    var addButton = collectionRoot.querySelector(".field-collection-action a");
+
+                    if(selectValue == 0) {
+                        collection.innerHTML = "";
+                        collectionRoot.style.display = "none";
+                    } else {
+                        collectionRoot.style.display = "block";
+                    }
+
+                    addButton.addEventListener("click", function() {
+                        $(".datepicker").datepicker({
+                            dateFormat: "yy-mm-dd"
+                        });
+                    })
+
+                    select.addEventListener("change", function() {
+                        selectValue = getSelectValue(select);
+                        if(selectValue == 0) {
+                            collection.innerHTML = "";
+                            collectionRoot.style.display = "none";
+                        } else {
+                            collectionRoot.style.display = "block";
+                        }
+                    })
+                }
+
+                function getSelectValue(select) {
+                    var options = select.querySelectorAll("option");
+                    for(var i = 0; i < options.length; i++) {
+                        if(options[i].selected) {
+                            return options[i].value;
+                        }
+                    }
+                    return 0;
+                }
+
+                function determineAvailability(element ,idSubstring) {
+                    var elements = document.querySelectorAll(element)
+                    for(var i = 0; i < elements.length; i++) {
+                        if(elements[i].id.match(idSubstring)) {
+                            return elements[i];
+                        }
+                    }
+
+                    return null;
+                }
+            });
+        </script>
+    {% endblock body_javascript %}
+
+    {% for js_asset in easyadmin_config('design.assets.js') %}
+        <script src="{{ asset(js_asset) }}"></script>
+    {% endfor %}
+
+    {% block bottom_post_javascript %}{% endblock %}
+    </body>
+{% endblock body %}
+</html>

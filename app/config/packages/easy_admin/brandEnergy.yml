@@ -1,0 +1,18 @@
+easy_admin:
+    entities:
+        BrandEnergy:
+            class: Wecoders\EnergyBundle\Entity\Brand
+            permissions: ['ROLE_BRANDS']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'title', label: 'Marka' }
+                    - { property: 'code', label: 'Kod' }
+                    - { property: 'filePath', label: 'Logo', type: 'image', base_path: 'vich/province' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Marka' }
+                    - { property: 'code', label: 'Kod', help: 'Nie zmieniać, pole dla developera!' }
+                    - { property: 'file', label: 'Logo', type: 'vich_file', public: true, type_options: { required: false } }

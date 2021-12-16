@@ -1,0 +1,14 @@
+easy_admin:
+    entities:
+        CustomDocumentTemplate:
+            class: Wecoders\EnergyBundle\Entity\CustomDocumentTemplate
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - id
+                    - { property: 'title', label: 'Nazwa szablonu' }
+
+            form:
+                fields:
+                    - { property: 'title', label: 'Nazwa szablonu' }
+                    - { property: 'customDocumentTemplateAndDocuments', label: 'Dokumenty', type: 'collection', type_options: { entry_type: 'Wecoders\EnergyBundle\Form\CustomDocumentTemplateType', by_reference: false } }

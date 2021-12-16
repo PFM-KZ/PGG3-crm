@@ -1,0 +1,3 @@
+#gcrmcrm:
+#    resource: "@GCRMCRMBundle/Controller/"
+#    prefix:   /

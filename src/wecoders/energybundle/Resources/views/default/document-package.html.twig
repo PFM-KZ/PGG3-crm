@@ -1,0 +1,232 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+    <style>
+        table {
+            background: #FFFFFF;
+            border: 1px solid #CCC;
+        }
+        th {
+            background: #EEE;
+            border-bottom: 2px solid #CCC !important;
+            padding: 0 !important;
+        }
+        th > * {
+            color: #222222;
+            display: block;
+            padding: 10px 6px;
+            white-space: nowrap;
+        }
+        td {
+            vertical-align: middle !important;
+            border-top: 1px solid #DDD;
+        }
+        tr:hover td {
+            background: #F5F5F5;
+        }
+    </style>
+{% endblock %}
+
+{% block bottom_post_javascript %}
+    <script>
+        var isMultiCheck = false;
+        $('.toggleMultiCheck').click(function(e) {
+            e.preventDefault();
+
+            var form = $(this).closest('form');
+            var checkboxes = form.find('input[type="checkbox"]');
+
+            if (checkboxes.length) {
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (!isMultiCheck) {
+                        checkboxes.eq(i).prop('checked', true);
+                    } else {
+                        checkboxes.eq(i).prop('checked', false);
+                    }
+                }
+                isMultiCheck = isMultiCheck ? false : true;
+                initToggleActivateMultiActionButtons();
+            }
+        });
+
+        $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]').change(function() {
+            initToggleActivateMultiActionButtons();
+        });
+        initToggleActivateMultiActionButtons();
+
+        function initToggleActivateMultiActionButtons()
+        {
+            var tableCheckboxes = $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]');
+
+            var shouldEnableMultiActionButtons = false;
+            for (var i = 0; i < tableCheckboxes.length; i++) {
+                if (tableCheckboxes.eq(i).prop('checked')) {
+                    shouldEnableMultiActionButtons = true;
+                }
+            }
+
+            shouldEnableMultiActionButtons ? enableMultiActionButtons() : disableMultiActionButtons();
+        }
+
+        function disableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', true);
+            }
+        }
+
+        function enableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', false);
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <div class="content" id="main">
+
+
+        <section class="content-header" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1 class="title">Do rozliczeń - paczka: #{{ package.id }}</h1>
+                    <a href="/admin?entity={{ app.request.get('entity') }}&action=list">< Wróć do listy paczek</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Rekordy</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+
+
+
+
+                            {# required packages #}
+                            <form action="#" method="post" novalidate>
+
+                                <div class="table-responsive">
+
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th style="text-align: center; width: 65px !important;">
+                                                <a href="#" class="toggleMultiCheck">Zaznacz</a>
+                                            </th>
+                                            <th><span>Akcje</span></th>
+                                            <th><span>Lp.</span></th>
+                                            <th><span>PP</span></th>
+                                            <th><span>Klient</span></th>
+                                            <th><span>Data od</span></th>
+                                            <th><span>Data do</span></th>
+                                            <th><span>Dokument ID</span></th>
+                                            <th><span>Wygenerowany Dokument ID</span></th>
+                                            <th><span>Komunikat błędu</span></th>
+                                            <th><span>Status</span></th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        {% for record in records %}
+                                            <tr data-id="{{ record.id }}">
+                                                <td style="text-align: center; background-color: #f5f5f5;" class="multi-checkbox-action-column">
+                                                    <input type="checkbox" name="selectedRows[]" value="{{ record.id }}">
+                                                </td>
+                                                <td width="10" class="actions" style="white-space: nowrap;">
+                                                    {% if record.dateFrom %}
+                                                        {% set dateFrom = record.dateFrom|date('d-m-Y')  %}
+                                                    {% else %}
+                                                        {% set dateFrom = ''  %}
+                                                    {% endif %}
+                                                    {% if record.dateTo %}
+                                                        {% set dateTo = record.dateTo|date('d-m-Y')  %}
+                                                    {% else %}
+                                                        {% set dateTo = ''  %}
+                                                    {% endif %}
+
+                                                    {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\DocumentPackageToGenerateRecordModel::STATUS_WAITING_TO_PROCESS') %}
+                                                        <button type="submit" name="changeStatusToProcessAction" value="{{ record.id }}" class="btn btn-sm">Procesuj</button>
+                                                    {% endif %}
+                                                    {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\DocumentPackageToGenerateRecordModel::STATUS_WAITING_TO_GENERATE') %}
+                                                        <button type="submit" name="changeStatusToGenerateAction" value="{{ record.id }}" class="btn btn-sm">Generuj dokumenty</button>
+                                                    {% endif %}
+                                                    {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\DocumentPackageToGenerateRecordModel::STATUS_GENERATE_ERROR') %}
+                                                        <button type="submit" name="changeStatusToGenerateAction" value="{{ record.id }}" class="btn btn-sm">Spróbuj ponownie</button>
+                                                    {% endif %}
+                                                    {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\DocumentPackageToGenerateRecordModel::STATUS_PROCESS_ERROR') %}
+                                                        <button type="submit" name="changeStatusToProcessAction" value="{{ record.id }}" class="btn btn-sm">Spróbuj ponownie</button>
+                                                    {% endif %}
+                                                    {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\DocumentPackageToGenerateRecordModel::STATUS_COMPLETE') %}
+                                                        {#{% if record.invoiceSettlement %}#}
+                                                            {#<a class="action-displayInvoice" title="" href="{{ url('displayInvoiceFromCustomList') }}?entity=InvoiceSettlementEnergy&id={{ record.invoiceSettlement.id }}" target="_self">Wyświetl plik</a>&nbsp;&nbsp;#}
+                                                        {#{% elseif record.invoiceEstimatedSettlement %}#}
+                                                            {#<a class="action-displayInvoice" title="" href="{{ url('displayInvoiceFromCustomList') }}?entity=InvoiceEstimatedSettlementEnergy&id={{ record.invoiceEstimatedSettlement.id }}" target="_self">Wyświetl plik</a>&nbsp;&nbsp;#}
+                                                        {#{% endif %}#}
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ loop.index }}</td>
+                                                <td>{{ record.pp }}</td>
+                                                <td>{{ record.client }}</td>
+                                                <td>{% if record.dateFrom %}{{ record.dateFrom|date('Y-m-d') }}{% endif %}</td>
+                                                <td>{% if record.dateTo %}{{ record.dateTo|date('Y-m-d') }}{% endif %}</td>
+                                                <td>{{ record.documentId }}</td>
+                                                <td>{{ record.generatedDocumentId }}</td>
+                                                <td>{{ record.errorMessage }}</td>
+                                                <td>{{ record.status|getOptionByValue('Wecoders\\EnergyBundle\\Service\\DocumentPackageToGenerateRecordModel') }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+
+
+
+
+                                    <div id="multi-action-buttons" style="margin-bottom: 15px;">
+                                        {# after click, modal is enabled - when click 'yes' on modal hidden input multideleteaction is filled and form is processed #}
+                                        <button type="submit" name="multiClick" value="1" class="btn btn-success">Symulacja kliknięcia w akcję</button>
+                                        <button type="submit" name="multiRollBack" value="1" class="btn btn-danger">Usuń cofając zmiany</button>
+                                    </div>
+
+
+                                </div>
+
+                            </form>
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

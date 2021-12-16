@@ -1,0 +1,324 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{#{% block head_stylesheets %}#}
+    {#<link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">#}
+    {#<style>#}
+        {#{{ easyadmin_config('_internal.custom_css')|raw }}#}
+    {#</style>#}
+    {#<link rel="stylesheet" href="{{ asset('css/admin/import.css') }}">#}
+{#{% endblock %}#}
+
+{% block content %}
+    {% if app.request.hasPreviousSession %}
+        {% for type, messages in app.session.flashbag.all() %}
+            {% for message in messages %}
+                <div class="flash-{{ type }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th {
+            white-space: nowrap;
+        }
+        table td, th {
+            border: 1px solid black;
+            padding: 3px;
+            width: 20%;
+        }
+        table td:first-child, th:first-child {
+            width: 40%;
+        }
+        .box-client {
+            margin-bottom: 50px;
+            padding: 10px;
+            background-color: rgba(169, 169, 169, 0.19);
+        }
+        .box-invoice-data {
+            margin: 0 -10px -10px -10px;
+            padding: 10px;
+            background: rgba(19, 255, 0, 0.29);
+        }
+        .box-client p b {
+            font-size: 18px;
+        }
+    </style>
+
+
+    <div id="invoices-panel" class="content">
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        Generuj faktury na podstawie CDR'ów
+                    </h3>
+
+                    <p>
+                        Zanim wygenerujesz dokumenty, ustaw date utworzenia w zakładce ustawienia -> nazwa "cum_generate_invoice_created_date" -> format wartości to: <strong>YYYY-MM-DD</strong> (rok-miesiąc-dzień -> przykładowo: 2020-01-01). <br>W przypadku gdy pozostawisz to pole puste, podstawi się dzisiejsza data.<br>
+                        Data ustawiona na: <strong>{{ createdDate|date('Y-m-d') }}</strong>
+                    </p>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <form action="{{ url('CDRInvoices') }}" method="POST" novalidate="novalidate" enctype="multipart/form-data">
+                                <button type="submit" name="outputCalculations" class="btn btn-success" value="1">Podgląd</button>
+                                <button type="submit" name="generateCDRInvoices" class="btn btn-danger" value="1">Generuj faktury</button>
+                                <button type="submit" name="stopGenerateInvoices" class="btn btn-danger" value="1">Zatrzymaj generowanie</button>
+                                <br><br>
+                                <label for="calculateCdrsForClientByPesel">Pesel:</label>
+                                <input type="text" name="calculateCdrsForClientByPesel" id="calculateCdrsForClientByPesel">
+                                <p>Wypełniając pole PESEL, a następnie klikając "Podgląd" - wygenerujesz wynik dla wybranego klienta</p>
+                            </form>
+
+                            <div>
+                                <br>
+                                <p>Do wygenerowania: {% if clientsMarkedToGenerateInvoice %}{{ clientsMarkedToGenerateInvoice|length }}{% else %}0{% endif %}</p>
+                                <p>Wygenerowano dla: {% if clientsWithGeneratedInvoice %}{{ clientsWithGeneratedInvoice|length }}{% else %}0{% endif %}</p>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="field-divider">
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            Wynik:
+                            <br>
+                            <br>
+
+                            {% for client in output %}
+                                <div class="box box-client">
+                                    <h2>{{ client.client.name }} {{ client.client.surname }}</h2>
+                                    Pesel: {{ client.client.pesel }}<br><br><br>
+
+                                    <p><b>Dodatkowe usługi / abonamenty:</b></p>
+                                    {% if client.servicesAdditional|length %}
+                                        <table>
+                                            <tr>
+                                                <th>nazwa</th>
+                                                <th>cena netto / miesiąc</th>
+                                                <th>czas trwania (miesiące)</th>
+                                                <th>obliczanie częściowe</th>
+                                                <th>data aktywacji</th>
+                                            </tr>
+                                            {% for item in client.servicesAdditional %}
+                                                <tr>
+                                                    <td>{{ item.title }}</td>
+                                                    <td>{{ item.netPricePerMonth }}</td>
+                                                    <td>{{ item.durationInMonths }}</td>
+                                                    <td>{% if item.isPartialBilling %}Tak{% else %}Nie{% endif %}</td>
+                                                    <td>{{ item.activationDate|date('Y-m-d') }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    {% else %}
+                                        brak<br>
+                                    {% endif %}
+                                    <br><br>
+
+                                    <p><b>Pakiety na podstawie telefonu:</b></p>
+                                    <ul>
+                                        {% for key,packagesByTelephone in client.packagesByTelephone %}
+                                            <li>{{ key }}
+                                                {% if packagesByTelephone|length %}
+                                                    <table>
+                                                        <tr>
+                                                            <th>nazwa</th>
+                                                            <th>od</th>
+                                                            <th>do</th>
+                                                            <th>sekundy</th>
+                                                            <th>wykorzystane sekundy</th>
+                                                            <th>odnowienie po</th>
+                                                            <th>typ odnowienia</th>
+                                                        </tr>
+                                                        {% for item in packagesByTelephone %}
+                                                            <tr>
+                                                                <td>{{ item.title }}</td>
+                                                                <td>{{ item.dateFrom|date('Y-m-d') }}</td>
+                                                                <td>{{ item.dateTo|date('Y-m-d') }}</td>
+                                                                <td>{{ item.seconds }}</td>
+                                                                <td>{{ item.usedSeconds }}</td>
+                                                                <td>{{ item.renewalMonths }}</td>
+                                                                <td>{{ item.renewalType }}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                {% else %}
+                                                    <br>brak<br>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <br><br>
+
+                                    <p><b>Usługi na podstawie telefonu:</b></p>
+                                    <ul>
+                                        {% for key,servicesByTelephone in client.servicesByTelephone %}
+                                            <li>{{ key }}
+                                                {% if servicesByTelephone|length %}
+                                                    <table>
+                                                        <tr>
+                                                            <th>nazwa</th>
+                                                            <th>cena netto / miesiąc</th>
+                                                            <th>czas trwania (miesiące)</th>
+                                                            <th>obliczanie częściowe</th>
+                                                            <th>data aktywacji</th>
+                                                        </tr>
+                                                        {% for item in servicesByTelephone %}
+                                                            <tr>
+                                                                <td>{{ item.title }}</td>
+                                                                <td>{{ item.netPricePerMonth }}</td>
+                                                                <td>{{ item.durationInMonths }}</td>
+                                                                <td>{% if item.isPartialBilling %}Tak{% else %}Nie{% endif %}</td>
+                                                                <td>{{ item.activationDate|date('Y-m-d') }}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                {% else %}
+                                                    <br>brak<br>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <br><br>
+
+                                    <p><b>Obliczenia na podstawie telefonu:</b></p>
+                                    {% if client.calculateByTelephone|length %}
+                                    <ul>
+                                        {% for key,calculateByTelephone in client.calculateByTelephone %}
+                                            <li>{{ key }}
+                                                <ol>
+                                                    {% for item in calculateByTelephone %}
+                                                        <li>
+                                                            nazwa: {{ item.title }}<br>
+                                                            wartość netto: {{ item.netValue }}<br>
+                                                            czas trwania (sekundy): {{ item.durationOriginal }}<br>
+                                                            czas trwania (nowy): {{ item.durationCalculated }}<br>
+                                                            <br>
+                                                            <b>zaktualizowane pakiety:</b>
+                                                            {% if item.packagesUpdated|length %}
+                                                                <table>
+                                                                    <tr>
+                                                                        <th>nazwa</th>
+                                                                        <th>od</th>
+                                                                        <th>do</th>
+                                                                        <th>sekundy</th>
+                                                                        <th>wykorzystane sekundy</th>
+                                                                        <th>odnowienie po(miesiące)</th>
+                                                                        <th>typ odnowienia</th>
+                                                                    </tr>
+                                                                    {% for updatedPackage in item.packagesUpdated %}
+                                                                        <tr>
+                                                                            <td>{{ updatedPackage.title }}</td>
+                                                                            <td>{{ updatedPackage.dateFrom|date('Y-m-d') }}</td>
+                                                                            <td>{{ updatedPackage.dateTo|date('Y-m-d') }}</td>
+                                                                            <td>{{ updatedPackage.seconds }}</td>
+                                                                            <td>{{ updatedPackage.usedSeconds }}</td>
+                                                                            <td>{{ updatedPackage.renewalMonths }}</td>
+                                                                            <td>{{ updatedPackage.renewalType }}</td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                </table>
+                                                            {% else %}
+                                                                <br>brak<br>
+                                                            {% endif %}
+                                                            <br>
+                                                            <b>CDR'y</b>:</br>
+                                                            {% if item.cdrs|length %}
+                                                                <table>
+                                                                    <tr>
+                                                                        <th>z numeru</th>
+                                                                        <th>na numer</th>
+                                                                        <th>typ polaczenia</th>
+                                                                        <th>start</th>
+                                                                        <th>koniec</th>
+                                                                        <th>czas polaczenia</th>
+                                                                        <th>rodzaj polaczenia</th>
+                                                                    </tr>
+                                                                    {% for cdr in item.cdrs %}
+                                                                        <tr>
+                                                                            <td>{{ cdr.telephoneNumber }}</td>
+                                                                            <td>{{ cdr.destinationTelephoneNumber }}</td>
+                                                                            <td>{{ cdr.typeCode }}</td>
+                                                                            <td style="white-space: nowrap;">{{ cdr.startDate|date('Y:m:d H:i:s') }}</td>
+                                                                            <td style="white-space: nowrap;">{{ cdr.endDate|date('Y:m:d H:i:s') }}</td>
+                                                                            <td>{{ cdr.duration }}</td>
+                                                                            <td>{{ cdr.accessNumber }}</td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                </table>
+                                                            {% else %}
+                                                                <br>brak<br>
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ol>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                        brak<br>
+                                    {% endif %}
+                                    <br><br>
+
+                                    <div class="box-invoice-data">
+                                        <p><b>Dane do faktury:</b></p>
+                                        <ul>
+                                            {% for key,product in client.products.byTelephone %}
+                                                {% if product is iterable %}
+                                                    <li>
+                                                        {% if product|length %}
+                                                            {{ key }}
+                                                            <ul>
+                                                                {% for item in product %}
+                                                                    <li>
+                                                                        nazwa: {{ item.title }}<br>
+                                                                        wartość netto: {{ item.netValue }}<br>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        {% endif %}
+                                                    </li>
+                                                {% else %}
+                                                    <li>
+                                                        nazwa: {{ product.title }}<br>
+                                                        wartość netto: {{ product.netValue }}<br>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% for product in client.products.additional %}
+                                                {% if product is iterable %}
+                                                    {% for item in product %}
+                                                        <li>
+                                                            nazwa: {{ item.title }}<br>
+                                                            wartość netto: {{ item.netValue }}<br>
+                                                        </li>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <li>
+                                                        nazwa: {{ product.title }}<br>
+                                                        wartość netto: {{ product.netValue }}<br>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+easy_admin:
+    entities:
+        Alert:
+            class: GCRM\CRMBundle\Entity\Alert
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                actions: ['show']
+                fields:
+                    - id
+                    - { property: 'code', label: 'Kod' }
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+            form:
+                fields:
+                    - { property: 'code', label: 'Kod' }
+                    - { property: 'title', label: 'Tytuł' }
+                    - { property: 'content', label: 'Zawartość' }

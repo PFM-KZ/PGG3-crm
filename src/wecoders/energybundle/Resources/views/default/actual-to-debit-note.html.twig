@@ -1,0 +1,308 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+    <style>
+        table {
+            background: #FFFFFF;
+            border: 1px solid #CCC;
+        }
+        th {
+            background: #EEE;
+            border-bottom: 2px solid #CCC !important;
+            padding: 0 !important;
+        }
+        th > * {
+            color: #222222;
+            display: block;
+            padding: 10px 6px;
+            white-space: nowrap;
+        }
+        td {
+            vertical-align: middle !important;
+            border-top: 1px solid #DDD;
+        }
+        tr:hover td {
+            background: #F5F5F5;
+        }
+    </style>
+{% endblock %}
+
+{% block bottom_post_javascript %}
+    <script>
+        var isMultiCheck = false;
+        $('.toggleMultiCheck').click(function(e) {
+            e.preventDefault();
+
+            var form = $(this).closest('form');
+            var checkboxes = form.find('input[type="checkbox"]');
+
+            if (checkboxes.length) {
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (!isMultiCheck) {
+                        checkboxes.eq(i).prop('checked', true);
+                    } else {
+                        checkboxes.eq(i).prop('checked', false);
+                    }
+                }
+                isMultiCheck = isMultiCheck ? false : true;
+                initToggleActivateMultiActionButtons();
+            }
+        });
+
+        $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]').change(function() {
+            initToggleActivateMultiActionButtons();
+        });
+        initToggleActivateMultiActionButtons();
+
+        function initToggleActivateMultiActionButtons()
+        {
+            var tableCheckboxes = $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]');
+
+            var shouldEnableMultiActionButtons = false;
+            for (var i = 0; i < tableCheckboxes.length; i++) {
+                if (tableCheckboxes.eq(i).prop('checked')) {
+                    shouldEnableMultiActionButtons = true;
+                }
+            }
+
+            shouldEnableMultiActionButtons ? enableMultiActionButtons() : disableMultiActionButtons();
+        }
+
+        function disableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', true);
+            }
+        }
+
+        function enableMultiActionButtons() {
+            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+            if (multiActionButtons.length) {
+                multiActionButtons.prop('disabled', false);
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+    <div class="content" id="main">
+
+        <section class="content-header" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1 class="title">Do not obciążeniowych</h1>
+                </div>
+            </div>
+        </section>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-body" style="padding: 15px;">
+                    Czynniki, które powodują, że klienci wyświetlają się na liście:<br>
+                    - aktualny status umowy musi posiadać odpowiednią akcję specjalną: "{{ constant('GCRM\\CRMBundle\\Service\\StatusContractModel::SPECIAL_ACTION_CHOOSE_TO_DEBIT_NOTE_RESIGNATION_BEFORE_PROCESS')|getOptionByValue('GCRM\\CRMBundle\\Service\\StatusContractModel', 'getSpecialActionOptionByValue') }}" lub "{{ constant('GCRM\\CRMBundle\\Service\\StatusContractModel::SPECIAL_ACTION_CHOOSE_TO_DEBIT_NOTE_RESIGNATION_AFTER_PROCESS')|getOptionByValue('GCRM\\CRMBundle\\Service\\StatusContractModel', 'getSpecialActionOptionByValue') }}"<br>
+                    - umowa musi mieć zaznaczone pole "Do not obciążeniowych"<br>
+                    - klient nie ma wystawionej noty obciążeniowej<br>
+                </div>
+            </div>
+        </div>
+
+        {#<div class="field-group">#}
+            {#<div class="box box-default">#}
+                {#<div class="box-header with-border">#}
+                    {#<h3 class="box-title">Wgraj klientów do not obciążeniowych</h3>#}
+                {#</div>#}
+                {#<div class="box-body">#}
+                    {#<div class="row">#}
+                        {#<div class="col-xs-12">#}
+                            {#{{ form_start(formInputFile) }}#}
+                            {#{{ form_end(formInputFile) }}#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Klienci</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {# required records #}
+                            {# required entityClass #}
+                            {# required contractType #}
+                            <form action="" method="post" novalidate>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th style="text-align: center; width: 65px !important;">
+                                                <a href="#" class="toggleMultiCheck">Zaznacz</a>
+                                            </th>
+                                            <th><span>Akcje</span></th>
+                                            <th><span>Lp.</span></th>
+                                            <th><span>ID rach.</span></th>
+                                            <th><span>Imię</span></th>
+                                            <th><span>Nazwisko</span></th>
+                                            <th><span>Pesel</span></th>
+                                            <th><span>Numer telefonu</span></th>
+                                            <th><span></span></th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        {% for record in data %}
+                                            <tr data-id="{{ record.client.id }}">
+                                                <td style="text-align: center; background-color: #f5f5f5;" class="multi-checkbox-action-column">
+                                                    <input type="checkbox" name="selectedRows[]" value="{{ record.client.id }}">
+                                                </td>
+                                                <td width="10" class="actions">
+                                                    <a class="action-displayInvoice btn btn-default" href="{{ url('clientPage', { id: record.client.id }) }}" target="_self">Karta klienta</a>
+                                                </td>
+                                                <td>{{ loop.index }}</td>
+                                                <td>
+                                                    {% if record.client.accountNumberIdentifier %}{{ record.client.accountNumberIdentifier }}{% else %}brak{% endif %}
+                                                </td>
+                                                <td>
+                                                    {{ record.client.name }}
+                                                </td>
+                                                <td>
+                                                    {{ record.client.surname }}
+                                                </td>
+                                                <td>
+                                                    {{ record.client.pesel }}
+                                                </td>
+                                                <td>
+                                                    {{ record.client.telephoneNr }}
+                                                </td>
+                                                <td>
+
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                    <div id="multi-action-buttons" style="margin-bottom: 15px;">
+                                        <div style="margin-bottom: 5px;">
+                                            <label for="multiPackageRequestMakePackageChooseDate">Data wystawienia</label>
+                                            <input type="date" id="multiPackageRequestMakePackageChooseDate" name="multiPackageRequestMakePackageChooseDate" class="datepicker">
+                                        </div>
+                                        <button type="submit" name="multiPackageRequestMakePackage" value="1" class="btn btn-success">Utwórz paczkę</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Paczki</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {# required packages #}
+                            <form action="{{ url('packagesDebitNoteToGenerateListPostAction') }}" method="post" novalidate>
+
+                                <div class="table-responsive">
+
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th style="text-align: center; width: 65px !important;">
+                                                <a href="#" class="toggleMultiCheck">Zaznacz</a>
+                                            </th>
+                                            <th><span>Akcje</span></th>
+                                            <th><span>Lp.</span></th>
+                                            <th><span>Dodane przez</span></th>
+                                            <th><span>Data wystawienia</span></th>
+                                            <th><span>Ilość</span></th>
+                                            <th><span>I: oczekiwanie na procesowanie</span></th>
+                                            <th><span>I: procesowanych</span></th>
+                                            <th><span>I: oczekiwanie na generowanie</span></th>
+                                            <th><span>I: generowanych</span></th>
+                                            <th><span>I: zakończonych</span></th>
+                                            <th><span>I: błędnych</span></th>
+                                            <th><span>Data utworzenia</span></th>
+                                            <th><span>Komunikat błędu</span></th>
+                                            <th><span>Status</span></th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        {% for record in packages %}
+                                            <tr data-id="{{ record.id }}">
+                                                <td style="text-align: center; background-color: #f5f5f5;" class="multi-checkbox-action-column">
+                                                    <input type="checkbox" name="selectedRows[]" value="{{ record.id }}">
+                                                </td>
+                                                <td width="10" class="actions" style="white-space: nowrap;">
+                                                    <a href="{{ url('actualToDebitNotePackage', { id: record.id }) }}">Pokaż zawartość</a>&nbsp;&nbsp;
+                                                    {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\DebitNotePackageModel::STATUS_WAITING_TO_PROCESS') %}
+                                                        <button type="submit" name="changeStatusToProcessAction" value="{{ record.id }}" class="btn btn-sm">Procesuj</button>
+                                                    {% endif %}
+                                                    <button type="submit" name="generateEnveloAction" value="{{ record.id }}" class="btn btn-sm">Pobierz envelo</button>
+                                                    <button type="submit" name="downloadXlsx" value="{{ record.id }}" class="btn btn-sm">Pobierz do xlsx</button>
+                                                </td>
+                                                <td>{{ loop.index }}</td>
+                                                <td>{{ record.addedBy }}</td>
+                                                <td>{{ record.createdDate|date('Y-m-d') }}</td>
+
+                                                <td>{{ record.packageRecords|length }}</td>
+                                                <td>{{ record.countWaitingToProcess }}</td>
+                                                <td>{{ record.countToProcess }}</td>
+                                                <td>{{ record.countWaitingToGenerate }}</td>
+                                                <td>{{ record.countToGenerate }}</td>
+                                                <td>{{ record.countCompleted }}</td>
+                                                <td>{{ record.countError }}</td>
+                                                <td>{{ record.createdAt|date('Y-m-d') }}</td>
+
+                                                <td>{{ record.errorMessage }}</td>
+                                                <td>{{ record.status }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                    <div id="multi-action-buttons" style="margin-bottom: 15px;">
+                                        {# after click, modal is enabled - when click 'yes' on modal hidden input multideleteaction is filled and form is processed #}
+                                        <button type="submit" name="multiRollBack" value="1" class="btn btn-danger">Usuń cofając zmiany</button>
+                                    </div>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

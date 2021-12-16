@@ -1,0 +1,94 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block main %}
+    <div id="sms-bundle">
+        <div class="row">
+            <div class="field-group col-xs-6">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Informacje</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-xs-6" style="margin-bottom: 15px;"><b>Nazwa</b></div>
+                            <div class="col-xs-6">{{ group.title }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6" style="margin-bottom: 15px;"><b>Identyfikator</b></div>
+                            <div class="col-xs-6">{% include "admin/smsGroupCode.html.twig" with { value: group.code } %}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6" style="margin-bottom: 15px;"><b>Data utworzenia</b></div>
+                            <div class="col-xs-6">{{ group.createdAt|date('d-m-Y, H:i') }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6" style="margin-bottom: 15px;"><b>Data ukończenia</b></div>
+                            <div class="col-xs-6">{{ group.completedAt is null ? '-' : group.completedAt|date('d-m-Y, H:i') }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="field-group col-xs-6">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Statusy</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-xs-6" style="margin-bottom: 15px;">Status</div>
+                            <div class="col-xs-6">{% include "admin/smsGroupStatus.html.twig" with { value: group.statusCode } %}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6" style="margin-bottom: 15px;">Łączna liczba wiadomości</div>
+                            <div class="col-xs-6">{% include "admin/label.html.twig" with { value: group.totalToSendCount } %}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6" style="margin-bottom: 15px;">Wysłano</div>
+                            <div class="col-xs-6">{% include "admin/successLabel.html.twig" with { value: group.sentCount } %}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6" style="margin-bottom: 15px;">Nie wysłano</div>
+                            <div class="col-xs-6">{% include "admin/errorLabel.html.twig" with { value: group.errorCount } %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field-group col-xs-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Wiadomości SMS</h3>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Imię i nazwisko</th>
+                                    <th>Numer rachunku</th>
+                                    <th>Numer telefonu</th>
+                                    <th>Dokumenty</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for sms in group.smsMessages %}
+                                    {% set client = sms.client %}
+                                    <tr>
+                                        <td>{{ client.fullName }}</td>
+                                        <td>{{ client.accountNumberIdentifier.number }}</td>
+                                        <td>{{ client.telephoneNr }}</td>
+                                        <td>{{ sms.documentNumbers|replace({',': '<br>'})|raw }}</td>
+                                        <td>{% include('admin/smsMessageStatus.html.twig') with {'value': sms.statusCode} %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

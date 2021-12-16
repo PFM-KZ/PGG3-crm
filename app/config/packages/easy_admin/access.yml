@@ -1,0 +1,15 @@
+easy_admin:
+    entities:
+        Access:
+            class: GCRM\CRMBundle\Entity\Access
+            permissions: ['ROLE_SUPERADMIN']
+            disabled_actions: ['delete']
+            list:
+                actions: ['show']
+                fields:
+                    - { property: 'user', label: 'Użytkownik' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+            form:
+                fields:
+                    - { property: 'user', label: 'Użytkownik' }
+                    - { property: 'createdAt', label: 'Utworzone' }

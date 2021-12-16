@@ -1,0 +1,50 @@
+Client: Klient
+ContractGas: Umowa gaz
+ContractEnergy: Umowa prąd
+Invoices: Faktury
+Rabate: Rabat
+Warehouse: Magazyn
+Company: Firma
+Brand: Marka
+Branch: Oddział
+Tariff: Cennik
+Service: Usługa
+Package: Pakiet
+Access: Dostęp
+Settings: Ustawienia
+User: Użytkownik
+ContractType: Typ umowy
+CustomerAllowedDevice: Użądzenie
+InvoiceType: Rodzaj faktury
+ContractSignPersonType: Typ osob podpisujących
+ContractTerminationTypeFormerServiceProvider: Rodzaj rozwiązania umowy z poprzednim operatorem
+ContractShownDocumentTypeBeforeSign: Rodzaj dokumentu pokazanego przed podpisaniem umowy
+StatusDepartment: Status departamentu
+StatusClient: Status klienta
+StatusClientVerification: Status klienta weryfikacja
+StatusContract: Status umowy
+StatusContractAuthorization: Status umowy autoryzacja
+StatusContractVerification: Status umowy weryfikacja
+StatusContractAdministration: Status umowy administracja
+StatusContractControl: Status umowy kontrola
+ServiceProvider: Operator
+ContractAndService: Umowa - usługi
+ContractAndCustomerAllowedDevice: Umowa - urządzenia
+ContractAndContractShownDocumentTypeBeforeSign: Umowa - okazane dokumenty
+ContractAttachment: Umowa - załączone dokumenty
+RecordingAttachment: Umowa - załączone nagrania
+ClientAndUser: Klient - użytkownik wprowadzający
+TariffAndService: Cennik - usługi
+UserAndCompanyWithBranch: Użytkownik - firma i marka
+PackageAndCDRType: Pakiet - typ CDR
+ContractAndTelephone: Umowa - telefon
+ContractEnergyVerificationDepartment: Umowa prądowa - D. WERYFIKACJI
+ContractEnergyAdministrationDepartment: Umowa prądowa - D. ADMINISTRACJI
+ContractEnergyControlDepartment: Umowa prądowa - D. KONTROLI
+ContractEnergyProcessDepartment: Umowa prądowa - D. PROCESOWY
+ContractGasVerificationDepartment: Umowa gazowa - D. WERYFIKACJI
+ContractGasAdministrationDepartment: Umowa gazowa - D. ADMINISTRACJI
+ContractGasControlDepartment: Umowa gazowa - D. KONTROLI
+ContractGasProcessDepartment: Umowa gazowa - D. PROCESOWY
+PackageToProcess: Paczki do procesu
+PackageToSend: Paczki do wysyłki

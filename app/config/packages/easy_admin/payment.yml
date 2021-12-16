@@ -1,0 +1,42 @@
+easy_admin:
+    entities:
+        Payment:
+            class: GCRM\CRMBundle\Entity\Payment
+            permissions: ['ROLE_INVOICES']
+            list:
+                actions:
+#                    - { name: '-delete' }
+                    - { name: 'clientPage', type: 'route', label: 'Karta klienta', params: { fetchClientFromEntity: 'Payment', byBadgeId: true }, css_class: 'btn' }
+                permissions: ['ROLE_INVOICES_LIST']
+                fields:
+                    - id
+                    - { property: 'badgeId', label: 'ID rachunku' }
+                    - { property: 'value', label: 'Kwota' }
+                    - { property: 'senderBranchNumber', label: 'Numer oddziału nadawcy' }
+                    - { property: 'receiverBranchNumber', label: 'Numer oddziału odbiorcy' }
+                    - { property: 'senderAccountNumber', label: 'Numer rachunku nadawcy' }
+                    - { property: 'receiverAccountNumber', label: 'Numer rachunku odbiorcy' }
+                    - { property: 'senderName', label: 'Nazwa nadawcy' }
+                    - { property: 'receiverName', label: 'Nazwa odbiorcy' }
+                    - { property: 'date', label: 'Data płatności' }
+                    - { property: 'code', label: 'Kod banku' }
+                    - { property: 'filename', label: 'Nazwa pliku' }
+                    - { property: 'createdAt', label: 'Utworzono' }
+            form:
+                actions:
+#                    - { name: '-delete' }
+                    - { name: '-edit' }
+                    - { name: '-save' }
+                fields:
+                    - { property: 'badgeId', label: 'ID rachunku' }
+                    - { property: 'value', label: 'Kwota' }
+                    - { property: 'senderBranchNumber', label: 'Numer oddziału nadawcy' }
+                    - { property: 'receiverBranchNumber', label: 'Numer oddziału odbiorcy' }
+                    - { property: 'senderAccountNumber', label: 'Numer rachunku nadawcy' }
+                    - { property: 'receiverAccountNumber', label: 'Numer rachunku odbiorcy' }
+                    - { property: 'senderName', label: 'Nazwa nadawcy' }
+                    - { property: 'receiverName', label: 'Nazwa odbiorcy' }
+                    - { property: 'date', label: 'Data płatności' }
+                    - { property: 'data', label: 'Zrzut danych' }
+                    - { property: 'help', label: 'Dodatkowa informacja' }
+                    - { property: 'createdAt', label: 'Utworzono' }

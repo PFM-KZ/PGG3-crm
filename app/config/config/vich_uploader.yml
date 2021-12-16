@@ -1,0 +1,79 @@
+vich_uploader:
+    db_driver: orm
+    mappings:
+        contractsPrivate:
+            uri_prefix: '%vich.path.relative.contracts%'
+            upload_destination: '%vich.path.absolute.private.contracts%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+        contractsGasPrivate:
+            uri_prefix: '%vich.path.relative.contracts_gas%'
+            upload_destination: '%vich.path.absolute.private.contracts_gas%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+        contractsEnergyPrivate:
+            uri_prefix: '%vich.path.relative.contracts_energy%'
+            upload_destination: '%vich.path.absolute.private.contracts_energy%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+
+        recordingsPrivate:
+            uri_prefix: '%vich.path.relative.recordings%'
+            upload_destination: '%vich.path.absolute.private.recordings%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+        recordingsGasPrivate:
+            uri_prefix: '%vich.path.relative.recordings_gas%'
+            upload_destination: '%vich.path.absolute.private.recordings_gas%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+        recordingEnergyPrivate:
+            uri_prefix: '%vich.path.relative.recordings_energy%'
+            upload_destination: '%vich.path.absolute.private.recordings_energy%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+
+        invoiceTemplates:
+            uri_prefix: '%vich.path.relative.invoice_templates%'
+            upload_destination: '%vich.path.absolute.private.invoice_templates%'
+
+        correspondenceAttachment:
+            uri_prefix: '%vich.path.relative.correspondence_attachment%'
+            upload_destination: '%vich.path.absolute.private.correspondence_attachment%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+
+        systemSettings:
+            uri_prefix: '%vich.path.relative.system_settings%'
+            upload_destination: '%vich.path.absolute.system_settings%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+
+        province:
+            uri_prefix: '%vich.path.relative.province%'
+            upload_destination: '%vich.path.absolute.province%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+
+        customDocumentTemplateAndDocument:
+            uri_prefix: '%vich.path.relative.custom_document_template_and_document%'
+            upload_destination: '%vich.path.absolute.custom_document_template_and_document%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }
+
+        clientEnquiryFile:
+            uri_prefix: '%vich.path.relative.client_enquiry_file%'
+            upload_destination: '%vich.path.absolute.private.client_enquiry_file%'
+            namer:
+                service: 'vich_uploader.namer_origname'
+                options: { transliterate: true }

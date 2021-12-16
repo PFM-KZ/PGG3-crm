@@ -1,0 +1,320 @@
+.box-bordered {
+    margin-bottom: 30px;
+    padding: 20px 20px 10px;
+    border: 1px solid #ddd;
+}
+
+.box-bordered h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    letter-spacing: 0.5px;
+}
+
+.box-bordered p {
+    font-size: 16px;
+    letter-spacing: 0.3px;
+}
+
+.box-bordered p .number {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.date-selects {
+    min-width: 250px;
+}
+
+.date-selects > div {
+    display: flex;
+    width: 100px;
+}
+
+.inline-row {
+    padding: 20px;
+}
+
+.form-stats {
+    border-bottom: 1px solid black;
+}
+
+.form-stats .result {
+    padding: 20px;
+    clear: both;
+}
+
+.form-stats .result strong {
+    font-size: 16px;
+}
+
+.inline-row > * {
+    float: left;
+    display: flex;
+    margin-right: 20px;
+}
+.inline-row > * label {
+    padding-top: 6px;
+    margin-right: 15px;
+}
+
+.client-page-table .client-page-table tr:first-child td {
+    padding-top: 0;
+}
+
+.client-page-table {
+
+}
+
+.client-page-table tr {
+
+}
+
+.client-page-table tr td.no-padding-left {
+    padding-left: 0;
+}
+
+.client-page-table tr td {
+    padding: 5px 15px;
+}
+
+.client-page-table tr td:first-child {
+    font-weight: bold;
+    padding-left: 0;
+}
+
+.button-line {
+    padding: 10px 0;
+}
+
+.contract-section {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #DDD;
+}
+.contract-section .button-line {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.contract-section .title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 15px;
+    background: #f0f0f0;
+    cursor: pointer;
+}
+.contract-section .title .btn {
+    margin-right: 10px;
+}
+
+
+.contract-section .section-content {
+    display: none;
+}
+
+.contract-section.active > .section-content {
+    padding: 15px;
+    display: block;
+}
+
+.contract-section.active > .title i {
+    -webkit-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+
+.box-title .btn {
+    margin-right: 10px;
+}
+
+.department-section {
+    padding: 30px 0 0;
+}
+.department-section h2 {
+    font-size: 22px;
+    line-height: 30px;
+    margin-bottom: 30px;
+    margin-top: 0;
+    text-transform: uppercase;
+    color: white;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+.verification-section {
+    margin-top: -15px;
+    background-color: #16a085;
+}
+.administration-section {
+    background-color: #2980b9;
+}
+.control-section {
+    background-color: #8e44ad;
+}
+.process-section {
+    background-color: #2c3e50;
+}
+
+.administration-section .section-content {
+    display: none;
+}
+.contract-box {
+    position: relative;
+    background-color: white;
+    border-radius: 3px;
+    border: 1px solid #DDD;
+    padding: 15px;
+    padding-bottom: 45px;
+    margin-bottom: 30px;
+}
+
+.contract-box.is-returned {
+    background-color: #ffa09b;
+}
+
+.contract-box .type {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin: -15px -15px 0;
+    padding: 10px 15px 7px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #DDD;
+}
+
+.contract-box .text-col {
+    padding: 15px 0;
+    font-size: 14px;
+}
+
+.contract-box .text-col td {
+    padding: 5px 0;
+}
+.contract-box .text-col td:first-child {
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+.contract-box .button-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 15px 15px;
+}
+
+.contract-box .status {
+    position: absolute;
+    top: 16px;
+    right: 15px;
+    width: 8px;
+    height: 8px;
+    border-radius: 100px;
+}
+
+.contract-box .status.is-positive {
+    background-color: #00a300;
+}
+.contract-box .status.is-negative {
+    background-color: #c00000;
+}
+
+.flash-notice,
+.flash-success,
+.flash-error {
+    margin-bottom: 20px;
+    padding: 15px 25px;
+    font-size: 14px;
+    color: white; }
+
+.flash-success {
+    background-color: green; }
+
+.flash-notice {
+    background-color: #ff7900; }
+
+.flash-error {
+    background-color: #8c0000; }
+
+.error-message {
+    font-size: 1.2em;
+    color: red; }
+.error-message ul {
+    margin: 0;
+    padding: 0;
+    list-style: none; }
+
+
+.client-documents-menu {
+    margin: 0 -5px 30px;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.client-documents-menu li {
+    width: 25%;
+    padding: 5px;
+    margin-bottom: 0;
+}
+.client-documents-menu li a {
+    display: inline-block;
+    line-height: 30px;
+    padding: 10px;
+    background-color: #dadada;
+    font-size: 12px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    width: 100%;
+    position: relative;
+}
+
+.client-documents-menu li a .number {
+    position: absolute;
+    right: -5px;
+    top: -5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 1000px;
+    line-height: 20px;
+    font-weight: bold;
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+}
+
+.client-documents-menu li a .number.no-documents {
+    background: #c7c7c7;
+}
+
+.client-documents-menu li.active a,
+.client-documents-menu li a:hover {
+    background-color: #16a085;
+    color: white;
+}
+
+.client-documnets-target {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.client-documnets-target > li {
+    display: none;
+}
+
+.client-documnets-target > li.active {
+    display: block;
+}
+
+.show-all-documents-link-holder {
+    text-align: right;
+    margin-top: -30px;
+    margin-bottom: 30px;
+}

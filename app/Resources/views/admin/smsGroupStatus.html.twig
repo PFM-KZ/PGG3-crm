@@ -1,0 +1,9 @@
+{% if value == 0 %}
+    <div class="label" style="background-color: #9ea300 !important; display: block; padding: 8px;">OCZEKIWANIE</div>
+{% elseif value == 1 %}
+    <div class="label" style="background-color: #0082a3 !important; display: block; padding: 8px;">PROCESOWANIE</div>
+{% elseif value == 2 %}
+    <div class="label" style="background-color: #20a300 !important; display: block; padding: 8px;">UKOŃCZONO</div>
+{% elseif value == 3 %}
+    <div class="label" style="background-color: #707070 !important; display: block; padding: 8px;">WSTRZYMANE</div>
+{% endif %}

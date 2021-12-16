@@ -1,0 +1,526 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+{% endblock %}
+
+{% block bottom_post_javascript %}
+    <script src="{{ asset('bundles/gcrmcrm/js/scripts.js') }}"></script>
+    <script>
+        $(function() {
+            if ($('#person-type-wrapper input:checked').length && (!$('#energy-type-wrapper').length || $('#energy-type-wrapper input:checked').length)) {
+                hideShowPersonTypeFields();
+                if ($('.has-error').length) {
+                    $('body, html').animate({scrollTop: $('.has-error').offset().top - 100}, 500);
+                }
+            }
+
+            if ($('#energy-type-wrapper input:checked').length) {
+                hideShowPriceListAndTariffFields();
+            }
+
+            $('#energy-type-wrapper input').change(function() {
+                hideShowPriceListAndTariffFields();
+                hideShowPersonTypeFields();
+            });
+
+            if ($('#isContractMultiPerson input:checked').length) {
+                hideShowMultiPersonFields();
+            }
+
+            $('#person-type-wrapper input').change(function() {
+                hideShowPersonTypeFields();
+            });
+
+            $('#isContractMultiPerson').change(function() {
+                hideShowMultiPersonFields();
+            });
+        });
+
+        function hideShowMultiPersonFields()
+        {
+            var isChecked = $('#isContractMultiPerson input').prop('checked');
+
+            if (isChecked) {
+                $('#fields-multi-person-wrapper').addClass('active');
+                $('#fields-multi-person-wrapper input').attr('disabled', false);
+            } else {
+                $('#fields-multi-person-wrapper').removeClass('active');
+                $('#fields-multi-person-wrapper input').attr('disabled', 'disabled');
+            }
+        }
+
+        function hideShowPersonTypeFields()
+        {
+            var value = $('#person-type-wrapper input:checked').val();
+            var energyTypeWrapper = $('#energy-type-wrapper').length;
+            var valueEnergyType = $('#energy-type-wrapper input:checked').val();
+
+            if (value && (!energyTypeWrapper || valueEnergyType)) {
+                $('#fields-wrapper').addClass('active');
+
+                if (value == 1) { // person
+                    $('.for-company input').attr('disabled', 'disabled');
+                    $('.for-person input').attr('disabled', false);
+                    $('.for-company').hide();
+                    $('.for-person').show();
+
+                    hideShowMultiPersonFields();
+                } else {
+                    $('.for-person input').attr('disabled', 'disabled');
+                    $('.for-company input').attr('disabled', false);
+                    $('.for-person').hide();
+                    $('.for-company').show();
+                }
+            }
+        }
+
+        function hideShowPriceListAndTariffFields()
+        {
+            var value = $('#energy-type-wrapper input:checked').val();
+
+            if (value == 1) { // GAS
+                $('.for-energy select').attr('disabled', 'disabled');
+                $('.for-gas select').attr('disabled', false);
+                $('.for-energy').hide();
+                $('.for-gas').show();
+            } else { // ENERGY
+                $('.for-gas select').attr('disabled', 'disabled');
+                $('.for-energy select').attr('disabled', false);
+                $('.for-gas').hide();
+                $('.for-energy').show();
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {#<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">#}
+    {#<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>#}
+    {#<script src="{{ asset('bundles/gcrmcrm/js/ui.datepicker-pl.js') }}"></script>#}
+    {#<script src="{{ asset('bundles/gcrmcrm/js/jquery-ui-scripts.js') }}"></script>#}
+
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message|raw }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="content">
+        <div class="field-group">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">
+                        <b>AUTORYZACJA - tworzenie karty klienta</b>
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            {{ form_start(form) }}
+
+                                <style>
+                                    .tempstyle label {
+                                        cursor: pointer;
+                                        margin-top: 10px;
+                                        margin-right: 15px;
+                                    }
+                                    .tempstyle input {
+                                        margin-top: 10px;
+                                        margin-right: 5px;
+                                    }
+                                    #fields-wrapper {
+                                        display: none;
+                                    }
+                                    #fields-wrapper.active {
+                                        display: block;
+                                    }
+                                    #fields-multi-person-wrapper {
+                                        display: none;
+                                    }
+                                    #fields-multi-person-wrapper.active {
+                                        display: block;
+                                    }
+                                </style>
+
+
+
+                                <div id="person-type-wrapper" class="form-group {% if not form.personType.vars.valid %}has-error{% endif %} field-choice">
+                                    <label class=" control-label required">Osoba fizyczna / firma</label>
+                                    <div class="tempstyle">
+                                        {{ form_widget(form.personType) }}
+                                    </div>
+                                </div>
+
+                                {% if form.contractTypes is defined %}
+                                    <div id="energy-type-wrapper" class="form-group {% if not form.contractTypes.vars.valid %}has-error{% endif %} field-choice">
+                                        <label class=" control-label required">Wybierz umowę</label>
+                                        <div class="tempstyle">
+                                            {{ form_widget(form.contractTypes) }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+
+
+
+                                <div id="fields-wrapper">
+
+                                    {% if form.brands is defined %}
+                                        <div class="form-group {% if not form.brands.vars.valid %}has-error{% endif %}">
+                                            <label class=" control-label {% if form.brands.vars.required %}required{% endif %}" for="{{ form.brands.vars.id }}">{{ form.brands.vars.label }}</label>
+                                            {{ form_widget(form.brands, { 'attr': {'class': 'form-control'} }) }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-group">
+                                        <label class="control-label {% if form.datepicker.vars.required %}required{% endif %}" for="{{ form.datepicker.vars.id }}">{{ form.datepicker.vars.label }}</label>
+                                        {{ form_widget(form.datepicker, { 'attr': {'class': 'datepicker form-control'} }) }}
+                                    </div>
+                                    <div class="form-group {% if not form.salesRepresentative.vars.valid %}has-error{% endif %}">
+                                        <label class=" control-label {% if form.salesRepresentative.vars.required %}required{% endif %}" for="{{ form.salesRepresentative.vars.id }}">{{ form.salesRepresentative.vars.label }}</label>
+                                        {{ form_widget(form.salesRepresentative, { 'attr': {'class': 'form-control'} }) }}
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="form-group {% if not form.contractNumber.vars.valid %}has-error{% endif %} field-text">
+                                                <label class=" control-label {% if form.contractNumber.vars.required %}required{% endif %}" for="{{ form.contractNumber.vars.id }}">{{ form.contractNumber.vars.label }}</label>
+                                                {{ form_widget(form.contractNumber, { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="form-group ">
+                                                <label class=" control-label {% if form.contractPeriodInMonths.vars.required %}required{% endif %}" for="{{ form.contractPeriodInMonths.vars.id }}">{{ form.contractPeriodInMonths.vars.label }}</label>
+                                                {{ form_widget(form.contractPeriodInMonths, { 'attr': {'class': 'datepicker form-control'} }) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <hr>
+
+
+                                    <div class="row">
+                                        {% for contractType in contractTypes %}
+                                            {% if contractType.code == 'energy' %}
+                                                <div class="for-energy">
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <div class="form-group {% if not form.priceListEnergy.vars.valid %}has-error{% endif %}">
+                                                            <label class=" control-label {% if form.priceListEnergy.vars.required %}required{% endif %}" for="{{ form.priceListEnergy.vars.id }}">{{ form.priceListEnergy.vars.label }}</label>
+                                                            {{ form_widget(form.priceListEnergy, { 'attr': {'class': 'form-control'} }) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <div class="form-group ">
+                                                            <label class=" control-label {% if form.tariffEnergy.vars.required %}required{% endif %}" for="{{ form.tariffEnergy.vars.id }}">{{ form.tariffEnergy.vars.label }}</label>
+                                                            {{ form_widget(form.tariffEnergy, { 'attr': {'class': 'form-control'} }) }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% elseif contractType.code == 'gas' %}
+                                                <div class="for-gas">
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <div class="form-group {% if not form.priceListGas.vars.valid %}has-error{% endif %}">
+                                                            <label class=" control-label {% if form.priceListGas.vars.required %}required{% endif %}" for="{{ form.priceListGas.vars.id }}">{{ form.priceListGas.vars.label }}</label>
+                                                            {{ form_widget(form.priceListGas, { 'attr': {'class': 'form-control'} }) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-6">
+                                                        <div class="form-group ">
+                                                            <label class=" control-label {% if form.tariffGas.vars.required %}required{% endif %}" for="{{ form.tariffGas.vars.id }}">{{ form.tariffGas.vars.label }}</label>
+                                                            {{ form_widget(form.tariffGas, { 'attr': {'class': 'form-control'} }) }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+
+
+
+                                    <div class="form-group {% if not form.consumption.vars.valid %}has-error{% endif %} field-text">
+                                        <label class=" control-label {% if form.consumption.vars.required %}required{% endif %}" for="{{ form.consumption.vars.id }}">{{ form.consumption.vars.label }}</label>
+                                        {{ form_widget(form.consumption, { 'attr': {'class': 'form-control'} }) }}
+                                    </div>
+
+
+                                    <hr>
+
+
+                                    <div class="for-person">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6">
+                                                <div class="form-group {% if not form.name.vars.valid %}has-error{% endif %} field-text">
+                                                    <label class=" control-label {% if form.name.vars.required %}required{% endif %}" for="{{ form.name.vars.id }}">{{ form.name.vars.label }}</label>
+                                                    {{ form_widget(form.name, { 'attr': {'class': 'form-control'} }) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6">
+                                                <div class="form-group {% if not form.surname.vars.valid %}has-error{% endif %} field-text">
+                                                    <label class=" control-label {% if form.surname.vars.required %}required{% endif %}" for="{{ form.surname.vars.id }}">{{ form.surname.vars.label }}</label>
+                                                    {{ form_widget(form.surname, { 'attr': {'class': 'form-control'} }) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="form-group {% if not form.telephoneCallNumber.vars.valid %}has-error{% endif %} field-text">
+                                                <label class=" control-label {% if form.telephoneCallNumber.vars.required %}required{% endif %}" for="{{ form.telephoneCallNumber.vars.id }}">{{ form.telephoneCallNumber.vars.label }}</label>
+                                                {{ form_widget(form.telephoneCallNumber, { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-6">
+                                            <div class="form-group {% if not form.email.vars.valid %}has-error{% endif %} field-text">
+                                                <label class=" control-label {% if form.email.vars.required %}required{% endif %}" for="{{ form.email.vars.id }}">{{ form.email.vars.label }}</label>
+                                                {{ form_widget(form.email, { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+
+
+                                    <div class="for-person">
+                                        <div class="form-group {% if not form.pesel.vars.valid %}has-error{% endif %} field-text">
+                                            <label class=" control-label {% if form.pesel.vars.required %}required{% endif %}" for="{{ form.pesel.vars.id }}">{{ form.pesel.vars.label }}</label>
+                                            {{ form_widget(form.pesel, { 'attr': {'class': 'form-control'} }) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="for-company">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6">
+                                                <div class="form-group {% if not form.companyNip.vars.valid %}has-error{% endif %} field-text">
+                                                    <label class=" control-label {% if form.companyNip.vars.required %}required{% endif %}" for="{{ form.companyNip.vars.id }}">{{ form.companyNip.vars.label }}</label>
+                                                    {{ form_widget(form.companyNip, { 'attr': {'class': 'form-control'} }) }}
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6">
+                                                <div class="form-group {% if not form.companyName.vars.valid %}has-error{% endif %} field-text">
+                                                    <label class=" control-label {% if form.companyName.vars.required %}required{% endif %}" for="{{ form.companyName.vars.id }}">{{ form.companyName.vars.label }}</label>
+                                                    {{ form_widget(form.companyName, { 'attr': {'class': 'form-control'} }) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+
+
+                                    <div class="for-person">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6">
+                                                <div id="isContractMultiPerson">
+                                                    {{ form_widget(form.isContractMultiPerson) }}
+                                                    <label class=" control-label " for="{{ form.isContractMultiPerson.vars.id }}">{{ form.isContractMultiPerson.vars.label }}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="fields-multi-person-wrapper">
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <div class="form-group {% if not form.secondPersonName.vars.valid %}has-error{% endif %} field-text">
+                                                        <label class=" control-label {% if form.secondPersonName.vars.required %}required{% endif %}" for="{{ form.secondPersonName.vars.id }}">{{ form.secondPersonName.vars.label }}</label>
+                                                        {{ form_widget(form.secondPersonName, { 'attr': {'class': 'form-control'} }) }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6">
+                                                    <div class="form-group {% if not form.secondPersonSurname.vars.valid %}has-error{% endif %} field-text">
+                                                        <label class=" control-label {% if form.secondPersonSurname.vars.required %}required{% endif %}" for="{{ form.secondPersonSurname.vars.id }}">{{ form.secondPersonSurname.vars.label }}</label>
+                                                        {{ form_widget(form.secondPersonSurname, { 'attr': {'class': 'form-control'} }) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group {% if not form.secondPersonPesel.vars.valid %}has-error{% endif %} field-text">
+                                                <label class=" control-label {% if form.secondPersonPesel.vars.required %}required{% endif %}" for="{{ form.secondPersonPesel.vars.id }}">{{ form.secondPersonPesel.vars.label }}</label>
+                                                {{ form_widget(form.secondPersonPesel, { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+
+
+
+
+
+
+
+
+
+
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-4">
+                                            <div class="form-group {% if not form.ppZipCode.vars.valid %}has-error{% endif %} field-text">
+                                                <label class=" control-label {% if form.ppZipCode.vars.required %}required{% endif %}" for="{{ form.ppZipCode.vars.id }}">{{ form.ppZipCode.vars.label }}</label>
+                                                {{ form_widget(form.ppZipCode, { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-8">
+                                            <div class="form-group {% if not form.ppCity.vars.valid %}has-error{% endif %} field-text">
+                                                <label class=" control-label {% if form.ppCity.vars.required %}required{% endif %}" for="{{ form.ppCity.vars.id }}">{{ form.ppCity.vars.label }}</label>
+                                                {{ form_widget(form.ppCity, { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-8">
+                                            <div class="form-group {% if not form.ppStreet.vars.valid %}has-error{% endif %} field-text">
+                                                <label class=" control-label {% if form.ppStreet.vars.required %}required{% endif %}" for="{{ form.ppStreet.vars.id }}">{{ form.ppStreet.vars.label }}</label>
+                                                {{ form_widget(form.ppStreet, { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2">
+                                            <div class="form-group {% if not form.ppHouseNr.vars.valid %}has-error{% endif %} field-text">
+                                                <label class=" control-label {% if form.ppHouseNr.vars.required %}required{% endif %}" for="{{ form.ppHouseNr.vars.id }}">{{ form.ppHouseNr.vars.label }}</label>
+                                                {{ form_widget(form.ppHouseNr, { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2">
+                                            <div class="form-group {% if not form.ppApartmentNr.vars.valid %}has-error{% endif %} field-text">
+                                                <label class=" control-label {% if form.ppApartmentNr.vars.required %}required{% endif %}" for="{{ form.ppApartmentNr.vars.id }}">{{ form.ppApartmentNr.vars.label }}</label>
+                                                {{ form_widget(form.ppApartmentNr, { 'attr': {'class': 'form-control'} }) }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <hr>
+
+
+
+
+                                    <div class="form-group {% if not form.statusAuthorization.vars.valid %}has-error{% endif %} field-choice">
+                                        <label class=" control-label required">Wybierz status</label>
+                                        <div class="tempstyle">
+                                            {{ form_widget(form.statusAuthorization) }}
+                                        </div>
+                                    </div>
+
+
+                                    <hr>
+
+
+                                    <div class="form-group field-textarea">
+                                        <label class=" control-label {% if form.commentAuthorization.vars.required %}required{% endif %}" for="{{ form.commentAuthorization.vars.id }}">{{ form.commentAuthorization.vars.label }}</label>
+                                        {{ form_widget(form.commentAuthorization, { 'attr': {'class': 'form-control'} }) }}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class=""></div>
+                                        {{ form_widget(form.save, { 'attr': { 'class': 'btn btn-primary' } }) }}
+                                    </div>
+
+
+                                </div>
+                            {{ form_end(form) }}
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        {#<div class="field-group">#}
+            {#<div class="box box-default">#}
+                {#<div class="box-header with-border">#}
+                    {#<h3 class="box-title">#}
+                        {#<b>Historia</b>#}
+                    {#</h3>#}
+                {#</div>#}
+                {#<div class="box-body">#}
+                    {#<div class="row">#}
+                        {#<div class="col-xs-12">#}
+
+
+
+
+
+
+                            {#<div class="table-responsive">#}
+                                {#<table class="table">#}
+                                    {#<thead>#}
+                                    {#<tr>#}
+                                        {#<th>#}
+                                            {#<span>Akcje</span>#}
+                                        {#</th>#}
+
+                                        {#<th data-property-name="" class="  string ">#}
+                                            {#Numer telefonu#}
+                                        {#</th>#}
+
+                                        {#<th data-property-name="" class="  string ">#}
+                                            {#Imię#}
+                                        {#</th>#}
+
+                                        {#<th data-property-name="" class=" string ">#}
+                                            {#nazwisko#}
+                                        {#</th>#}
+
+                                        {#<th data-property-name="" class="  string ">#}
+                                            {#Pesel#}
+                                        {#</th>#}
+                                    {#</tr>#}
+                                    {#</thead>#}
+
+                                    {#<tbody>#}
+
+                                    {#{% for record in historyRecords %}#}
+                                        {#<tr data-id="{{ record.id }}">#}
+                                            {#<td data-label="Akcje" class="actions">#}
+                                                {#<a class="text-primary action-edit" title="" href="/admin/?entity=Client&action=edit&id={{ record.id }}" target="_self">Edytuj</a>#}
+                                            {#</td>#}
+
+                                            {#<td data-label="" class=" string ">#}
+                                                {#{{ record.telephoneNr }}#}
+                                            {#</td>#}
+
+                                            {#<td data-label="" class=" string ">#}
+                                                {#{{ record.name }}#}
+                                            {#</td>#}
+
+                                            {#<td data-label="" class=" string ">#}
+                                                {#{{ record.surname }}#}
+                                            {#</td>#}
+
+                                            {#<td data-label="" class=" string ">#}
+                                                {#{{ record.pesel }}#}
+                                            {#</td>#}
+                                        {#</tr>#}
+                                    {#{% endfor %}#}
+                                    {#</tbody>#}
+                                {#</table>#}
+                            {#</div>#}
+
+
+
+
+
+
+
+
+                        {#</div>#}
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,76 @@
+{# required packages #}
+<form action="{{ url('packagesToGenerateListPostAction') }}" method="post" novalidate>
+
+    <div class="table-responsive">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th style="text-align: center; width: 65px !important;">
+                    <a href="#" class="toggleMultiCheck">Zaznacz</a>
+                </th>
+                <th><span>Akcje</span></th>
+                <th><span>Lp.</span></th>
+                <th><span>Data wystawienia</span></th>
+                <th><span>Ilość umów (w paczce / przerobione)</span></th>
+                <th><span>Ilość dokumentów (wygenerowane rekordy / pliki)</span></th>
+                <th><span>Typ</span></th>
+                <th><span>Dodane przez</span></th>
+                <th><span>Data utworzenia</span></th>
+                <th><span>Komunikat błędu</span></th>
+                <th><span>Status</span></th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            {% for record in packages %}
+                <tr data-id="{{ record.id }}">
+                    <td style="text-align: center; background-color: #f5f5f5;" class="multi-checkbox-action-column">
+                        <input type="checkbox" name="selectedRows[]" value="{{ record.id }}">
+                    </td>
+                    <td width="10" class="actions" style="white-space: nowrap;">
+                        <a href="{{ url('actualToInvoice') }}?package-download-data-id={{ record.id }}">pobierz do xlsx</a>
+                        {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\PackageToGenerateModel::STATUS_WAITING_TO_PROCESS') %}
+                            <button type="submit" name="changeStatusToProcessAction" value="{{ record.id }}" class="btn btn-sm">Procesuj</button>
+                        {% endif %}
+                        {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\PackageToGenerateModel::STATUS_WAITING_TO_GENERATE') %}
+                            <button type="submit" name="changeStatusToGenerateAction" value="{{ record.id }}" class="btn btn-sm">Generuj dokumenty</button>
+                        {% endif %}
+                        {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\PackageToGenerateModel::STATUS_COMPLETE') %}
+                            <button type="submit" name="generateEnveloAction" value="{{ record.id }}" class="btn btn-sm">Pobierz envelo</button>
+                            <button type="submit" name="generateColonnadeAction" value="{{ record.id }}" class="btn btn-sm">Pobierz colonnade</button>
+                        {% endif %}
+                        {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\PackageToGenerateModel::STATUS_GENERATE_ERROR') %}
+                            <button type="submit" name="changeStatusToGenerateAction" value="{{ record.id }}" class="btn btn-sm">Spróbuj ponownie</button>
+                        {% endif %}
+                        {% if record.status == constant('Wecoders\\EnergyBundle\\Service\\PackageToGenerateModel::STATUS_PROCESS_ERROR') %}
+                            <button type="submit" name="changeStatusToProcessAction" value="{{ record.id }}" class="btn btn-sm">Spróbuj ponownie</button>
+                        {% endif %}
+                    </td>
+                    <td>{{ loop.index }}</td>
+                    <td>{% if record.createdDate %}{{ record.createdDate|date('Y-m-d') }}{% else %}-{% endif %}</td>
+                    <td>{{ record.contractsCount }} / {{ record.checkedContractsCount }}</td>
+                    <td>{{ record.documentsCount }} / {{ record.checkedDocumentsCount }}</td>
+                    <td>{{ record.contractType }}</td>
+                    <td>{{ record.addedBy }}</td>
+                    <td>{{ record.createdAt|date('Y-m-d') }}</td>
+                    <td>{{ record.errorMessage }}</td>
+                    <td>{{ record.status }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+
+
+        <div id="multi-action-buttons" style="margin-bottom: 15px;">
+            {# after click, modal is enabled - when click 'yes' on modal hidden input multideleteaction is filled and form is processed #}
+            <button type="submit" name="multiRollBack" value="1" class="btn btn-success">Usuń cofając zmiany</button>
+        </div>
+
+
+    </div>
+
+</form>

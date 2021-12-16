@@ -1,0 +1,41 @@
+$ffMain: nunito_sans, arial, sans-serif;
+$ffSecondary: $ffMain;
+$ffThird: $ffMain;
+
+$bgMain: white;
+$bgSecondary: $bgMain;
+$bgThird: $bgSecondary;
+
+$contrastBgMain: black;
+$contrastBgSecondary: $contrastBgMain;
+$contrastBgThird: $contrastBgSecondary;
+
+$colorMain: #0F0F0F;
+$colorOnDark: white;
+$colorOnWhite: $colorMain;
+$colorSecondary: #2a2931;
+$colorThird: $colorMain;
+$colorActive: #7273aa;
+$colorActiveSecond: #46bdd3;
+$colorButtons: #71b224;
+
+$contrastColorMain: white;
+
+$borderColor: #d7d7d7;
+$contrastBorderColor: #3f3f3f;
+
+$bgButtonMain: #ffd400;
+$bgButtonSecondary: $bgButtonMain;
+
+$maxWidth: 1170px;
+$horizontalPadding: 20px;
+
+$sectionPadding: 50px;
+
+$radius: 5px;
+
+$sm-max: 39.9375em;
+$md-min: 40em;
+$md-max: 63.9375em;
+$lg-min: 64em;
+$lg-max: 74.9375em;

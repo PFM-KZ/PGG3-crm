@@ -1,0 +1,110 @@
+exporter_bundle:
+    tables:
+        Thread:
+            class: 'TZiebura\CorrespondenceBundle\Entity\Thread'
+            filter: Wecoders\EnergyBundle\Service\Exporter\CorrespondenceDataFilter
+            alias: t
+            group_by: t.id
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'DISTINCT t.id', label: 'ID' }
+                - { property: 't.type', label: 'Rodzaj poczty', type: 'choice', choices: { incoming: 'PRZYCHODZĄCA', outgoing: 'WYCHODZĄCA' } }
+                - { property: 'tt.name', label: 'Typ' }
+                - { property: 't.sender', label: 'Nadawca' }
+                - { property: 't.address', label: 'Adres' }
+                - { property: 't.dispatchDate', label: 'Data nadania', type: 'datetime', format: 'd-m-Y' }
+                - { property: 't.entryDate', label: 'Data wpłynięcia', type: 'datetime', format: 'd-m-Y' }
+                - { property: 't.replyDeadline', label: 'Termin odpowiedzi', type: 'datetime', format: 'd-m-Y' }
+                - { property: 't.createdAt', label: 'Data utworzenia', type: 'datetime', format: 'd-m-Y, H:i' }
+                - { property: 'u.username', label: 'Wprowadzone przez' }
+                - { property: "(SELECT GROUP_CONCAT(c.name, ' ', c.surname, '|', c.pesel, '|', ani.number) FROM GCRM\\CRMBundle\\Entity\\Client c LEFT JOIN TZiebura\\CorrespondenceBundle\\Entity\\ThreadAndClient ct WITH c.id = ct.client WHERE t.id = ct.thread)", alias: 'clients', label: 'Klienci' }
+                - { property: 't.form', label: 'Forma korespondencji', type: 'choice', choices: { email: 'EMAIL', letter: 'LIST', phone: 'ROZMOWA TELEFONICZNA', visit: 'WIZYTA KLIENTA' } }
+                - { property: '(SELECT COUNT(ta.id) FROM TZiebura\CorrespondenceBundle\Entity\ThreadAttachment ta WHERE ta.thread = t.id)', alias: 'attachments', label: 'Posiada załączniki', type: 'yesno' }
+                - { property: "CASE WHEN t.replyDeadline IS NULL THEN 'NIE DOTYCZY' WHEN (t.omitDeadline = 0 AND t.replyDeadline >= tc.dispatchDate) THEN 'TAK' ELSE 'NIE' ", alias: 'replyInTime', label: 'Odpowiedź w terminie' }
+                - { property: '(SELECT COUNT(c1.id) FROM GCRM\CRMBundle\Entity\Client c1 LEFT JOIN TZiebura\CorrespondenceBundle\Entity\ThreadAndClient ct1 WITH c1.id = ct1.client WHERE t.id = ct1.thread)', alias: 'clients_count', label: 'Więcej niż jeden klient', type: 'yesnoifmorethanone' }
+                - { property: 'tc.id', alias: 'child_id', label: 'ID odpowiedzi' }
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\User', alias: 'u', condition: 't.createdBy = u.id' }
+                - { class: 'TZiebura\CorrespondenceBundle\Entity\ThreadType', alias: 'tt', condition: 't.threadType = tt.id' }
+                - { class: 'TZiebura\CorrespondenceBundle\Entity\Thread', alias: 'tc', condition: 't.child = tc.id' }
+                - { class: 'TZiebura\CorrespondenceBundle\Entity\ThreadAndClient', alias: 'threadClient', condition: 'threadClient.thread = t.id' }
+                - { class: 'GCRM\CRMBundle\Entity\Client', alias: 'client', condition: 'client.id = threadClient.client' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractGas', alias: 'lcgas', condition: 'client.id = lcgas.client'}
+                - { class: 'GCRM\CRMBundle\Entity\ContractGas', alias: 'cgas', condition: 'lcgas.contract = cgas.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractEnergy', alias: 'lcenergy', condition: 'client.id = lcenergy.client' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergy', alias: 'cenergy', condition: 'lcenergy.contract = cenergy.id' }
+                - { class: 'GCRM\CRMBundle\Entity\AccountNumberIdentifier', alias: 'ani', condition: 'client.accountNumberIdentifier = ani.id' }
+        
+        DeadlineThread:
+            class: 'TZiebura\CorrespondenceBundle\Entity\Thread'
+            filter: Wecoders\EnergyBundle\Service\Exporter\CorrespondenceDataFilter
+            alias: t
+            group_by: t.id
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'DISTINCT t.id', label: 'ID' }
+                - { property: 't.type', label: 'Rodzaj poczty', type: 'choice', choices: { incoming: 'PRZYCHODZĄCA', outgoing: 'WYCHODZĄCA' } }
+                - { property: 'tt.name', label: 'Typ' }
+                - { property: 't.sender', label: 'Nadawca' }
+                - { property: 't.address', label: 'Adres' }
+                - { property: 't.dispatchDate', label: 'Data nadania', type: 'datetime', format: 'd-m-Y' }
+                - { property: 't.entryDate', label: 'Data wpłynięcia', type: 'datetime', format: 'd-m-Y' }
+                - { property: 't.replyDeadline', label: 'Termin odpowiedzi', type: 'datetime', format: 'd-m-Y' }
+                - { property: 't.createdAt', label: 'Data utworzenia', type: 'datetime', format: 'd-m-Y, H:i' }
+                - { property: 'u.username', label: 'Wprowadzone przez' }
+                - { property: "(SELECT GROUP_CONCAT(c.name, ' ', c.surname, '|', c.pesel, '|', ani.number) FROM GCRM\\CRMBundle\\Entity\\Client c LEFT JOIN TZiebura\\CorrespondenceBundle\\Entity\\ThreadAndClient ct WITH c.id = ct.client WHERE t.id = ct.thread)", alias: 'clients', label: 'Klienci' }
+                - { property: 't.form', label: 'Forma korespondencji', type: 'choice', choices: { email: 'EMAIL', letter: 'LIST', phone: 'ROZMOWA TELEFONICZNA', visit: 'WIZYTA KLIENTA' } }
+                - { property: '(SELECT COUNT(ta.id) FROM TZiebura\CorrespondenceBundle\Entity\ThreadAttachment ta WHERE ta.thread = t.id)', alias: 'attachments', label: 'Posiada załączniki', type: 'yesno' }
+                - { property: "CASE WHEN t.replyDeadline IS NULL THEN 'NIE DOTYCZY' WHEN (t.omitDeadline = 0 AND t.replyDeadline >= tc.dispatchDate) THEN 'TAK' ELSE 'NIE' ", alias: 'replyInTime', label: 'Odpowiedź w terminie' }
+                - { property: '(SELECT COUNT(c1.id) FROM GCRM\CRMBundle\Entity\Client c1 LEFT JOIN TZiebura\CorrespondenceBundle\Entity\ThreadAndClient ct1 WITH c1.id = ct1.client WHERE t.id = ct1.thread)', alias: 'clients_count', label: 'Więcej niż jeden klient', type: 'yesnoifmorethanone' }
+                - { property: 'tc.id', alias: 'child_id', label: 'ID odpowiedzi' }
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\User', alias: 'u', condition: 't.createdBy = u.id' }
+                - { class: 'TZiebura\CorrespondenceBundle\Entity\ThreadType', alias: 'tt', condition: 't.threadType = tt.id' }
+                - { class: 'TZiebura\CorrespondenceBundle\Entity\Thread', alias: 'tc', condition: 't.child = tc.id' }
+                - { class: 'TZiebura\CorrespondenceBundle\Entity\ThreadAndClient', alias: 'threadClient', condition: 'threadClient.thread = t.id' }
+                - { class: 'GCRM\CRMBundle\Entity\Client', alias: 'client', condition: 'client.id = threadClient.client' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractGas', alias: 'lcgas', condition: 'client.id = lcgas.client'}
+                - { class: 'GCRM\CRMBundle\Entity\ContractGas', alias: 'cgas', condition: 'lcgas.contract = cgas.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractEnergy', alias: 'lcenergy', condition: 'client.id = lcenergy.client' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergy', alias: 'cenergy', condition: 'lcenergy.contract = cenergy.id' }
+                - { class: 'GCRM\CRMBundle\Entity\AccountNumberIdentifier', alias: 'ani', condition: 'client.accountNumberIdentifier = ani.id' }
+
+        ThreadAdmin:
+            class: 'TZiebura\CorrespondenceBundle\Entity\Thread'
+            filter: Wecoders\EnergyBundle\Service\Exporter\CorrespondenceDataFilter
+            alias: t
+            group_by: t.id
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'DISTINCT t.id', label: 'ID' }
+                - { property: 't.type', label: 'Rodzaj poczty', type: 'choice', choices: { incoming: 'PRZYCHODZĄCA', outgoing: 'WYCHODZĄCA' } }
+                - { property: 'tt.name', label: 'Typ' }
+                - { property: 't.sender', label: 'Nadawca' }
+                - { property: 't.address', label: 'Adres' }
+                - { property: 't.dispatchDate', label: 'Data nadania', type: 'datetime', format: 'd-m-Y' }
+                - { property: 't.entryDate', label: 'Data wpłynięcia', type: 'datetime', format: 'd-m-Y' }
+                - { property: 't.replyDeadline', label: 'Termin odpowiedzi', type: 'datetime', format: 'd-m-Y' }
+                - { property: 't.createdAt', label: 'Data utworzenia', type: 'datetime', format: 'd-m-Y, H:i' }
+                - { property: 'u.username', label: 'Wprowadzone przez' }
+                - { property: "(SELECT GROUP_CONCAT(c.name, ' ', c.surname, '|', c.pesel, '|', ani.number) FROM GCRM\\CRMBundle\\Entity\\Client c LEFT JOIN TZiebura\\CorrespondenceBundle\\Entity\\ThreadAndClient ct WITH c.id = ct.client WHERE t.id = ct.thread)", alias: 'clients', label: 'Klienci' }
+                - { property: 't.form', label: 'Forma korespondencji', type: 'choice', choices: { email: 'EMAIL', letter: 'LIST', phone: 'ROZMOWA TELEFONICZNA', visit: 'WIZYTA KLIENTA' } }
+                - { property: '(SELECT COUNT(ta.id) FROM TZiebura\CorrespondenceBundle\Entity\ThreadAttachment ta WHERE ta.thread = t.id)', alias: 'attachments', label: 'Posiada załączniki', type: 'yesno' }
+                - { property: "CASE WHEN t.replyDeadline IS NULL THEN 'NIE DOTYCZY' WHEN (t.omitDeadline = 0 AND t.replyDeadline >= tc.dispatchDate) THEN 'TAK' ELSE 'NIE' ", alias: 'replyInTime', label: 'Odpowiedź w terminie' }
+                - { property: '(SELECT COUNT(c1.id) FROM GCRM\CRMBundle\Entity\Client c1 LEFT JOIN TZiebura\CorrespondenceBundle\Entity\ThreadAndClient ct1 WITH c1.id = ct1.client WHERE t.id = ct1.thread)', alias: 'clients_count', label: 'Więcej niż jeden klient', type: 'yesnoifmorethanone' }
+                - { property: 'tc.id', alias: 'child_id', label: 'ID odpowiedzi' }
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\User', alias: 'u', condition: 't.createdBy = u.id' }
+                - { class: 'TZiebura\CorrespondenceBundle\Entity\ThreadType', alias: 'tt', condition: 't.threadType = tt.id' }
+                - { class: 'TZiebura\CorrespondenceBundle\Entity\Thread', alias: 'tc', condition: 't.child = tc.id' }
+                - { class: 'TZiebura\CorrespondenceBundle\Entity\ThreadAndClient', alias: 'threadClient', condition: 'threadClient.thread = t.id' }
+                - { class: 'GCRM\CRMBundle\Entity\Client', alias: 'client', condition: 'client.id = threadClient.client' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractGas', alias: 'lcgas', condition: 'client.id = lcgas.client'}
+                - { class: 'GCRM\CRMBundle\Entity\ContractGas', alias: 'cgas', condition: 'lcgas.contract = cgas.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractEnergy', alias: 'lcenergy', condition: 'client.id = lcenergy.client' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergy', alias: 'cenergy', condition: 'lcenergy.contract = cenergy.id' }
+                - { class: 'GCRM\CRMBundle\Entity\AccountNumberIdentifier', alias: 'ani', condition: 'client.accountNumberIdentifier = ani.id' }
+                

@@ -1,0 +1,33 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block main %}
+    <div id="sms-bundle">
+        <div class="row">
+            <div class="field-group col-xs-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Testuj wysyłkę SMS</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                {{ form_start(form) }}
+
+                                    <div class="form-group">
+                                        {{ form_label(form.telephone) }}
+                                        {{ form_widget(form.telephone) }}
+                                    </div>
+                                    <div style="margin-bottom: 10px;">
+                                        {{ form_widget(form.send, { attr: { 'class': 'btn btn-success' } }) }}
+                                    </div>
+
+                                {{ form_end(form) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+easy_admin:
+    entities:
+        PackageToSend:
+            class: GCRM\CRMBundle\Entity\PackageToSend
+            permissions: ['ROLE_ADMINISTRATION_DEPARTMENT']
+            disabled_actions: [new, delete, edit]
+            list:
+                actions:
+                    - { name: 'showPackageToSend', type: 'route', label: 'Zobacz' }
+                    - { name: 'downloadPackageToSend', type: 'route', label: 'Pobierz etykietę', css_class: 'btn btn-default' }
+                fields:
+                    - { property: 'number', label: 'Numer' }
+                    - { property: 'contractType', label: 'Typ umów' }
+                    - { property: 'addedBy', label: 'Dodane przez' }
+                    - { property: 'originBranch', label: 'Oddział początkowy' }
+                    - { property: 'fromBranch', label: 'Z oddziału' }
+                    - { property: 'toBranch', label: 'Do oddziału' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                fields:
+                    - { property: 'number', label: 'Numer', type_options: { disabled: true } }
+                    - { property: 'contractIds', label: 'ID umów w paczce', type_options: { disabled: true } }
+                    - { property: 'contractType', label: 'Typ umów', type_options: { disabled: true } }
+        PackageAdmin:
+            class: GCRM\CRMBundle\Entity\PackageToSend
+            permissions: ['ROLE_SUPERADMIN']
+            disabled_actions: [new]
+            list:
+                actions:
+                    - { name: 'showPackageToSend', type: 'route', label: 'Zobacz' }
+                    - { name: 'downloadPackageToSend', type: 'route', label: 'Pobierz etykietę', css_class: 'btn btn-default' }
+                fields:
+                    - { property: 'number', label: 'Numer' }
+                    - { property: 'contractType', label: 'Typ umów' }
+                    - { property: 'addedBy', label: 'Dodane przez' }
+                    - { property: 'originBranch', label: 'Oddział początkowy' }
+                    - { property: 'fromBranch', label: 'Z oddziału' }
+                    - { property: 'toBranch', label: 'Do oddziału' }
+                    - { property: 'isProcessed', label: 'Jest odebrana?', type: boolean }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                fields:
+                    - { property: 'number', label: 'Numer' }
+                    - { property: 'contractIds', label: 'ID umów w paczce' }
+                    - { property: 'contractType', label: 'Typ umów', type: 'choice', type_options: { expanded: true, choices: { 'Gaz': 'gas', 'Energia': 'energy' }}}
+                    - { property: 'originBranch', label: 'Oddział początkowy' }
+                    - { property: 'fromBranch', label: 'Z oddziału' }
+                    - { property: 'toBranch', label: 'Do oddziału' }
+                    - { property: 'isProcessed', label: 'Jest odebrana?' }
+                    - { property: 'isReturned', label: 'Jest zwrócona?' }
+                    - { property: 'returnedComment', label: 'Komentarz do zwrotu' }

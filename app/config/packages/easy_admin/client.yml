@@ -1,0 +1,98 @@
+easy_admin:
+    entities:
+        Client:
+            class: GCRM\CRMBundle\Entity\Client
+            permissions: ['ROLE_CLIENTS']
+            show:
+                permissions: ['ROLE_CLIENTS_SHOW']
+            edit:
+                permissions: ['ROLE_CLIENTS_EDIT']
+            new:
+                permissions: ['ROLE_CLIENTS_NEW']
+            delete:
+                permissions: ['ROLE_CLIENTS_DELETE']
+            search:
+                permissions: ['ROLE_CLIENTS_SEARCH']
+            list:
+                permissions: ['ROLE_CLIENTS_LIST']
+                max_results: 15
+                actions:
+                    - { name: 'clientPage', type: 'route', label: 'Karta klienta', css_class: 'btn' }
+                    - { name: 'show' }
+                    - { name: '-edit' }
+                    - { name: '-show' }
+                    - { name: '-search' }
+                    - { name: '-delete' }
+                fields:
+                    - { property: 'lp', label: 'Lp.' }
+                    - { property: 'clientAndGasContracts', label: 'Umowy: Typ / Departament / Status / Nr' }
+                    - { property: 'companyName', label: 'Nazwa' }
+                    - { property: 'name', label: 'Imię' }
+                    - { property: 'surname', label: 'Nazwisko' }
+                    - { property: 'pesel', label: 'PESEL' }
+                    - { property: 'telephoneNr', label: 'Numer telefonu' }
+                    - { property: 'user', label: 'Wprowadził' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+            form:
+                fields:
+                    - { type: 'group', css_class: 'col-sm-12 col-md-6', label: 'Klient' }
+                    - { property: 'isCompany', label: 'Czy firma?' }
+                    - { property: 'name', label: 'Imię' }
+                    - { property: 'surname', label: 'Nazwisko' }
+                    - { property: 'telephoneNr', label: 'Numer telefonu' }
+                    - { property: 'pesel', label: 'PESEL' }
+                    - { property: 'email', label: 'E-mail', type_options: { required: false } }
+                    - { property: 'idNr', label: 'Numer dowodu' }
+                    - { property: 'badgeId', label: 'Unikalny numer klienta', type_options: { disabled: true } }
+                    - { property: 'accountNumberIdentifier', label: 'Unikalny numer klienta (nowy)', type_options: { disabled: true } }
+                    - { property: 'bankAccountNumber', label: 'Numer rachunku klienta', type_options: { disabled: true } }
+                    - { property: 'previousBankAccountNumber', label: 'Poprzedni numer rachunku klienta', type_options: { disabled: true } }
+                    - { property: 'initialBalance', label: 'Saldo początkowe klienta', help: '+ oznacza, że klient ma nadpłatę / - oznacza do zapłaty' }
+
+                    - { type: 'group', css_class: 'col-sm-12 col-md-6', label: 'Adres kontaktowy / korespondencyjny' }
+                    - { property: 'contactTelephoneNr', label: 'Numer telefonu' }
+                    - { property: 'correspondenceCity', label: 'Miasto' }
+                    - { property: 'correspondenceZipCode', label: 'Kod pocztowy' }
+                    - { property: 'correspondenceStreet', label: 'Ulica' }
+                    - { property: 'correspondenceHouseNr', label: 'Numer domu' }
+                    - { property: 'correspondenceApartmentNr', label: 'Numer mieszkania' }
+                    - { property: 'correspondencePostOffice', label: 'Poczta' }
+                    - { property: 'correspondenceCounty', label: 'Powiat' }
+
+                    - { type: 'group', css_class: 'col-sm-12 col-md-12', label: 'Nabywca / adres zameldowania / zamieszkania' }
+                    - { property: 'companyName', label: 'Firma' }
+                    - { property: 'nip', label: 'NIP', type_options: { required: false } }
+                    - { property: 'city', label: 'Miasto' }
+                    - { property: 'zipCode', label: 'Kod pocztowy' }
+                    - { property: 'street', label: 'Ulica' }
+                    - { property: 'houseNr', label: 'Numer domu' }
+                    - { property: 'apartmentNr', label: 'Numer mieszkania', type_options: { required: false } }
+                    - { property: 'postOffice', label: 'Poczta' }
+                    - { property: 'county', label: 'Powiat' }
+
+                    - { type: 'group', css_class: 'col-sm-12 col-md-12', label: 'Odbiorca' }
+                    - { property: 'recipientCompanyName', label: 'Firma' }
+                    - { property: 'recipientNip', label: 'NIP', type_options: { required: false } }
+                    - { property: 'recipientCity', label: 'Miasto' }
+                    - { property: 'recipientZipCode', label: 'Kod pocztowy' }
+                    - { property: 'recipientStreet', label: 'Ulica' }
+                    - { property: 'recipientHouseNr', label: 'Numer domu' }
+                    - { property: 'recipientApartmentNr', label: 'Numer mieszkania', type_options: { required: false } }
+                    - { property: 'isRecipientSameAsBuyer', label: 'Taki sam jak nabywca' }
+
+                    - { type: 'group', css_class: 'col-sm-12 col-md-12', label: 'Płatnik' }
+                    - { property: 'payerCompanyName', label: 'Firma' }
+                    - { property: 'payerNip', label: 'NIP', type_options: { required: false } }
+                    - { property: 'payerCity', label: 'Miasto' }
+                    - { property: 'payerZipCode', label: 'Kod pocztowy' }
+                    - { property: 'payerStreet', label: 'Ulica' }
+                    - { property: 'payerHouseNr', label: 'Numer domu' }
+                    - { property: 'payerApartmentNr', label: 'Numer mieszkania', type_options: { required: false } }
+                    - { property: 'isPayerSameAsBuyer', label: 'Taki sam jak nabywca' }
+                    - { property: 'isPayerSameAsRecipient', label: 'Taki sam jak odbiorca' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Meta dane' }
+                    - { property: 'comments', label: 'Uwagi' }
+                    - { property: 'clientAndGasContracts', label: 'Klient i umowy gaz', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ClientAndContractGasType', by_reference: false } }
+                    - { property: 'clientAndEnergyContracts', label: 'Klient i umowy prąd', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ClientAndContractEnergyType', by_reference: false } }
+                    - { property: 'user', label: 'Wprowadził' }

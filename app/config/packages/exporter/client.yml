@@ -1,0 +1,248 @@
+exporter_bundle:
+    tables:
+        Client:
+            class: GCRM\CRMBundle\Entity\Client
+            alias: c
+            tweaker: Wecoders\EnergyBundle\Service\Exporter\ClientTweaker
+            filter: Wecoders\EnergyBundle\Service\Exporter\ClientDataFilter
+            groupBy: c.id
+            options:
+                inc_row_number: true
+            fields:
+                - { property: 'c.id', alias: 'client_id', label: 'ID Klienta'}
+                - { property: 'c.name', label: 'Imię'}
+                - { property: 'c.surname', label: 'Nazwisko'}
+                - { property: 'c.telephoneNr', label: 'Numer telefonu'}
+                - { property: 'c.pesel', label: 'PESEL'}
+                - { property: 'c.nip', label: 'NIP'}
+                - { property: 'c.regon', label: 'REGON'}
+                - { property: 'c.email', label: 'E-mail'}
+                - { property: 'c.city', label: 'Miasto'}
+                - { property: 'c.zipCode', label: 'Kod pocztowy'}
+                - { property: 'c.street', label: 'Ulica'}
+                - { property: 'c.houseNr', label: 'Numer domu'}
+                - { property: 'c.apartmentNr', label: 'Numer mieszkania'}
+                - { property: 'c.postOffice', label: 'Poczta'}
+                - { property: 'c.county', label: 'Powiat'}
+                - { property: 'c.contactTelephoneNr', label: 'Kontakt - numer telefonu'}
+                - { property: 'c.correspondenceCity', label: 'Korespondencja - Miasto'}
+                - { property: 'c.correspondenceZipCode', label: 'Korespondencja - Kod pocztowy'}
+                - { property: 'c.correspondenceStreet', label: 'Korespondencja - Ulica'}
+                - { property: 'c.correspondenceHouseNr', label: 'Korespondencja - Numer domu'}
+                - { property: 'c.correspondenceApartmentNr', label: 'Korespondencja - Numer mieszkania'}
+                - { property: 'c.correspondencePostOffice', label: 'Korespondencja - Poczta'}
+                - { property: 'c.correspondenceCounty', label: 'Korespondencja - Powiat'}
+                - { property: 'c.initialBalance', label: 'Saldo początkowe (na dzień 8 marca)'}
+                - { property: 'ani.number', alias: 'ani_number', label: 'Unikalny numer rachunku klienta'}
+                - { property: 'c.recipientCompanyName', label: 'Nazwa firmy(Odbiorca)' }
+                - { property: 'c.recipientNip', label: 'NIP(Odbiorca' }
+                - { property: 'c.payerCompanyName', label: 'Nazwa firmy(Płatnik)' }
+                - { property: 'c.payerNip', label: 'NIP(Płatnik)' }
+                - { property: 'c.bankAccountNumber', label: 'Numer rachunku klienta'}
+
+                # CONTRACT GAS ENTITY
+                - { property: 'cg.type', alias: 'contract_gas_type', label: 'Typ umowy'}
+                - { property: 'cg.id', alias: 'contract_gas_id', label: 'ID umowy'}
+                - { property: 'cg.contractNumber', alias: 'contract_gas_contractNumber', label: 'Numer umowy'}
+                - { property: 'cg.signDate', alias: 'contract_gas_signDate', label: 'Data podpisania'}
+                - { property: 'cg.secondPersonName', alias: 'contract_gas_secondPersonName', label: 'Imię drugiej osoby podpisującej'}
+                - { property: 'cg.secondPersonSurname', alias: 'contract_gas_secondPersonSurname', label: 'Nazwisko drugiej osoby podpisującej'}
+                - { property: 'cg.secondPersonPesel', alias: 'contract_gas_secondPersonPesel', label: 'PESEL drugiej osoby podpisującej'}
+                - { property: 'cg.isResignation', alias: 'contract_gas_isResignation', label: 'Rezygnacja', , type: 'yesno' }
+                - { property: 'cg.isBrokenContract', alias: 'contract_gas_isBrokenContract', label: 'Zerwanie umowy', type: 'yesno' }
+                - { property: 'cg.isOnPackageList', alias: 'contract_gas_isOnPackageList', label: 'Na liście paczek', , type: 'yesno' }
+                - { property: 'cg.distributor', alias: 'contract_gas_distributor', label: 'Dystrybutor'}
+                - { property: 'cg.distributorBranch', alias: 'contract_gas_distributorBranch', label: 'Dystrybutor oddział'}
+
+                - { property: 'cgdistributor.title', alias: 'contract_gas_distributor_object', label: 'Dystrybutor (aktualne)'}
+                - { property: 'cgdistributorbranch.title', alias: 'contract_gas_distributorBranch_object', label: 'Dystrybutor oddział (aktualne)'}
+
+                - { property: 'cg.periodOfNotice', alias: 'contract_gas_periodOfNotice', label: 'Okres wypowiedzenia umowy'}
+                - { property: 'cg.isReturned', alias: 'contract_gas_isReturned', label: 'Umowa kiedykolwiek zwrócona?'}
+                - { property: 'cg.isCallCenter', alias: 'contract_gas_isCallCenter', label: 'Call Center'}
+                - { property: 'cgsd.title', alias: 'contract_gas_status_department', label: 'Departament'}
+                - { property: 'cgsa.title', alias: 'contract_gas_status_authorization', label: 'Status autoryzacji'}
+                - { property: 'cgsca.title', alias: 'contract_gas_status_contract_authorization', label: 'Status autoryzacji (b)'}
+                - { property: 'cg.commentAuthorization', alias: 'contract_gas_comment_authorization', label: 'Komentarz autoryzacji'}
+                - { property: 'cgsv.title', alias: 'contract_gas_status_verification', label: 'Status weryfikacji'}
+                - { property: 'cgscv.title', alias: 'contract_gas_status_contract_verification', label: 'Status weryfikacji (b)'}
+                - { property: 'cg.commentVerification', alias: 'contract_gas_comment_verification', label: 'Komentarz weryfikacji'}
+                - { property: 'cgsad.title', alias: 'contract_gas_status_administration', label: 'Status administracji'}
+                - { property: 'cgscad.title', alias: 'contract_gas_status_contract_administration', label: 'Status administracji (b)'}
+                - { property: 'cg.commentAdministration', alias: 'contract_gas_comment_administration', label: 'Komentarz administracji'}
+                - { property: 'cgsc.title', alias: 'contract_gas_status_control', label: 'Status kontroli'}
+                - { property: 'cgscc.title', alias: 'contract_gas_status_contract_control', label: 'Status kontroli (b)'}
+                - { property: 'cg.commentControl', alias: 'contract_gas_comment_control', label: 'Komentarz kontroli'}
+                - { property: 'cgsp.title', alias: 'contract_gas_status_process', label: 'Status procesu'}
+                - { property: 'cgscp.title', alias: 'contract_gas_status_contract_process', label: 'Status procesu (b)'}
+                - { property: 'cg.commentProcess', alias: 'contract_gas_comment_process', label: 'Komentarz procesu'}
+                - { property: 'cgsf.title', alias: 'contract_gas_status_finances', label: 'Status finanse'}
+                - { property: 'cgscf.title', alias: 'contract_gas_status_contract_finances', label: 'Status finanse (b)'}
+                - { property: 'cg.commentFinances', alias: 'contract_gas_comment_finances', label: 'Komentarz finanse'}
+                - { property: 'cgsd.code', alias: 'contract_gas_actual_status', label: 'Aktualny status' }
+                - { property: 'cg.isTerminationSent', alias: 'contract_gas_is_termination_sent', label: 'Wysłano wypowiedzenie', type: 'yesno'}
+                - { property: 'cg.terminationCreatedDate', alias: 'contract_gas_termination_created_date', label: 'Data wysłania wypowiedzenia', type: 'datetime', format: 'Y-m-d'}
+                - { property: 'cg.isProposalOsdSent', alias: 'contract_gas_is_proposal_osd_sent', label: 'Wysłano wniosek na OSD', type: 'yesno'}
+                - { property: 'cg.plannedActivationDate', alias: 'contract_gas_planned_activation_date', label: 'Planowana data uruchomienia', type: 'datetime', format: 'Y-m-d'}
+                - { property: 'cg.proposalStatus', alias: 'contract_gas_proposal_staut', label: 'Status wniosku', type: 'yesno'}
+                - { property: 'u.username', alias: 'contract_gas_user', label: 'Wprowadzone przez'}
+                - { property: 'cgb.title', alias: 'contract_gas_brand', label: 'Marka'}
+                - { property: 'sr.username', alias: 'contract_gas_sales_representative', label: 'Pełnomocnik'}
+                - { property: 'FIRST(SELECT srb1.title FROM GCRM\CRMBundle\Entity\Branch srb1 LEFT JOIN GCRM\CRMBundle\Entity\UserAndBranch srab1 WITH srab1.branch = srb1.id WHERE srab1.user = sr.id)', alias: 'contract_gas_sales_representative_branch', label: 'Pełnomocnik Odział' }
+                - { property: 'cg.consumption', alias: 'contract_gas_consumption', label: 'Zużycie (kWh)'}
+                - { property: 'cg.periodInMonths', alias: 'contract_gas_period_in_months', label: 'Umowa na okres (mc)'}
+                - { property: 'cgseller.title', alias: 'contract_gas_current_seller', label: 'Obecny sprzedawca'}
+                - { property: 'cg.changeOfSeller', alias: 'contract_gas_change_of_seller', label: 'Zmiana sprzedawcy', type: 'choice', choices: { 1: 'Pierwsza', 2: 'Kolejna' } }
+                - { property: 'cg.ppZipCode', alias: 'contract_gas_pp_zip_code', label: 'PP kod pocztowy'}
+                - { property: 'cg.ppPostOffice', alias: 'contract_gas_pp_post_offce', label: 'PP poczta'}
+                - { property: 'cg.ppCity', alias: 'contract_gas_pp_city', label: 'PP miasto'}
+                - { property: 'cg.ppStreet', alias: 'contract_gas_pp_street', label: 'PP ulica'}
+                - { property: 'cg.ppHouseNr', alias: 'contract_gas_pp_house_nr', label: 'PP dom'}
+                - { property: 'cg.ppApartmentNr', alias: 'contract_gas_apartment_nr', label: 'PP lokal'}
+                - { property: 'cg.createdAt', alias: 'contract_gas_created_at', label: 'Data utworzenia', type: 'datetime', format: 'Y-m-d H:i:s'}
+                - { property: 'cg.updatedAt', alias: 'contract_gas_updated_at', label: 'Data aktualizacji', type: 'datetime', format: 'Y-m-d H:i:s'}
+                - { property: 'cg.isCanceled', alias: 'contract_gas_is_canceled', label: 'Jest anulowana', type: 'yesno'}
+                - { property: 'cg.isPostponed', alias: 'contract_gas_is_postponed', label: 'Zmiana terminu', type: 'yesno'}
+                - { property: 'cg.contractFromDate', alias: 'contract_gas_contract_from_date', label: 'Umowa od', type: 'datetime', format: 'Y-m-d H:i:s'}
+                - { property: 'cg.contractToDate', alias: 'contract_gas_contract_to_date', label: 'Umowa do', type: 'datetime', format: 'Y-m-d H:i:s'}
+                - { property: 'COUNT(cgra.id', alias: 'contract_gas_recording_attachments_count', label: 'Dodane nagrania', type: 'yesno'}
+                - { property: 'GROUP_CONCAT(DISTINCT cgra.urlFileTemp)', alias: 'contract_gas_recording_attachments_files', label: 'Nagrania pliki'}
+                - { property: 'COUNT(cga.id)', alias: 'contract_gas_contract_attachments_count', label: 'Dodane dokumenty (>1)', type: 'yesnoifmorethanone'}
+                - { property: 'GROUP_CONCAT(DISTINCT cga.urlFileTemp)', alias: 'contract_gas_contract_attachments', label: 'Dokumenty pliki'}
+                - { property: 'cg.postponedDeadlines', alias: 'contract_gas_postponed_deadlines', label: 'Wysłano wypowiedznie(Zmiana terminu)'}
+                - { property: 'cgo.option', alias: 'contract_gas_osd', label: 'OSD'}
+                - { property: 'cg.isRebateMarketingAgreement', alias: 'contract_gas_is_rebate_marketing_agreement', label: 'Rabat - zgoda marketingowa', type: 'yesno'}
+                - { property: 'cg.isRebateTimelyPayments', alias: 'contract_gas_is_rebate_timely_payments', label: 'Rabat - terminowe wpłaty', type: 'yesno'}
+                - { property: 'cg.isRebateElectronicInvoice', alias: 'contract_gas_is_rebate_electronic_invoice', label: 'Rabat - faktura elektroniczna', type: 'yesno'}
+                - { property: 'cg.registerNumber', alias: 'contract_gas_register_number', label: 'Archiwum - nr ewidencyjny'}
+                - { property: 'cg.box', alias: 'contract_gas_box', label: 'Archiwum - nr kartonu'}
+
+                # CONTRACT ENERGY ENTITY
+                - { property: 'ce.type', alias: 'contract_energy_type', label: 'Typ umowy'}
+                - { property: 'ce.id', alias: 'contract_energy_id', label: 'ID umowy'}
+                - { property: 'ce.contractNumber', alias: 'contract_energy_contractNumber', label: 'Numer umowy'}
+                - { property: 'ce.signDate', alias: 'contract_energy_signDate', label: 'Data podpisania'}
+                - { property: 'ce.secondPersonName', alias: 'contract_energy_secondPersonName', label: 'Imię drugiej osoby podpisującej'}
+                - { property: 'ce.secondPersonSurname', alias: 'contract_energy_secondPersonSurname', label: 'Nazwisko drugiej osoby podpisującej'}
+                - { property: 'ce.secondPersonPesel', alias: 'contract_energy_secondPersonPesel', label: 'PESEL drugiej osoby podpisującej'}
+                - { property: 'ce.isResignation', alias: 'contract_energy_isResignation', label: 'Rezygnacja', , type: 'yesno' }
+                - { property: 'ce.isBrokenContract', alias: 'contract_energy_isBrokenContract', label: 'Zerwanie umowy', type: 'yesno' }
+                - { property: 'ce.isOnPackageList', alias: 'contract_energy_isOnPackageList', label: 'Na liście paczek', type: 'yesno' }
+                - { property: 'ce.distributor', alias: 'contract_energy_distributor', label: 'Dystrybutor'}
+                - { property: 'ce.distributorBranch', alias: 'contract_energy_distributorBranch', label: 'Dystrybutor oddział'}
+
+                - { property: 'cedistributor.title', alias: 'contract_energy_distributor_object', label: 'Dystrybutor (aktualne)'}
+                - { property: 'cedistributorbranch.title', alias: 'contract_energy_distributorBranch_object', label: 'Dystrybutor oddział (aktualne)'}
+
+                - { property: 'ce.periodOfNotice', alias: 'contract_energy_periodOfNotice', label: 'Okres wypowiedzenia umowy'}
+                - { property: 'ce.isReturned', alias: 'contract_energy_isReturned', label: 'Umowa kiedykolwiek zwrócona?'}
+                - { property: 'ce.isCallCenter', alias: 'contract_energy_isCallCenter', label: 'Call Center'}
+                - { property: 'cesd.title', alias: 'contract_energy_status_department', label: 'Departament'}
+                - { property: 'cesa.title', alias: 'contract_energy_status_authorization', label: 'Status autoryzacji'}
+                - { property: 'cesca.title', alias: 'contract_energy_status_contract_authorization', label: 'Status autoryzacji (b)'}
+                - { property: 'ce.commentAuthorization', alias: 'contract_energy_comment_authorization', label: 'Komentarz autoryzacji'}
+                - { property: 'cesv.title', alias: 'contract_energy_status_verification', label: 'Status weryfikacji'}
+                - { property: 'cescv.title', alias: 'contract_energy_status_contract_verification', label: 'Status weryfikacji (b)'}
+                - { property: 'ce.commentVerification', alias: 'contract_energy_comment_verification', label: 'Komentarz weryfikacji'}
+                - { property: 'cesad.title', alias: 'contract_energy_status_administration', label: 'Status administracji'}
+                - { property: 'cescad.title', alias: 'contract_energy_status_contract_administration', label: 'Status administracji (b)'}
+                - { property: 'ce.commentAdministration', alias: 'contract_energy_comment_administration', label: 'Komentarz administracji'}
+                - { property: 'cesc.title', alias: 'contract_energy_status_control', label: 'Status kontroli'}
+                - { property: 'cescc.title', alias: 'contract_energy_status_contract_control', label: 'Status kontroli (b)'}
+                - { property: 'ce.commentControl', alias: 'contract_energy_comment_control', label: 'Komentarz kontroli'}
+                - { property: 'cesp.title', alias: 'contract_energy_status_process', label: 'Status procesu'}
+                - { property: 'cescp.title', alias: 'contract_energy_status_contract_process', label: 'Status procesu (b)'}
+                - { property: 'ce.commentProcess', alias: 'contract_energy_comment_process', label: 'Komentarz procesu'}
+                - { property: 'cesf.title', alias: 'contract_energy_status_finances', label: 'Status finanse'}
+                - { property: 'cescf.title', alias: 'contract_energy_status_contract_finances', label: 'Status finanse (b)'}
+                - { property: 'ce.commentFinances', alias: 'contract_energy_comment_finances', label: 'Komentarz finanse'}
+                - { property: 'cesd.code', alias: 'contract_energy_actual_status', label: 'Aktualny status' }
+                - { property: 'ce.isTerminationSent', alias: 'contract_energy_is_termination_sent', label: 'Wysłano wypowiedzenie', type: 'yesno'}
+                - { property: 'ce.terminationCreatedDate', alias: 'contract_energy_termination_created_date', label: 'Data wysłania wypowiedzenia', type: 'datetime', format: 'Y-m-d'}
+                - { property: 'ce.isProposalOsdSent', alias: 'contract_energy_is_proposal_osd_sent', label: 'Wysłano wniosek na OSD', type: 'yesno'}
+                - { property: 'ce.plannedActivationDate', alias: 'contract_energy_planned_activation_date', label: 'Planowana data uruchomienia', type: 'datetime', format: 'Y-m-d'}
+                - { property: 'ce.proposalStatus', alias: 'contract_energy_proposal_staut', label: 'Status wniosku', type: 'yesno'}
+                - { property: 'u.username', alias: 'contract_energy_user', label: 'Wprowadzone przez'}
+                - { property: 'ceb.title', alias: 'contract_energy_brand', label: 'Marka'}
+                - { property: 'sr.username', alias: 'contract_energy_sales_representative', label: 'Pełnomocnik'}
+                - { property: 'FIRST(SELECT srb2.title FROM GCRM\CRMBundle\Entity\Branch srb2 LEFT JOIN GCRM\CRMBundle\Entity\UserAndBranch srab2 WITH srab2.branch = srb2.id WHERE srab2.user = sr.id)', alias: 'contract_energy_sales_representative_branch', label: 'Pełnomocnik Odział' }
+                - { property: 'ce.consumption', alias: 'contract_energy_consumption', label: 'Zużycie (kWh)'}
+                - { property: 'ce.periodInMonths', alias: 'contract_energy_period_in_months', label: 'Umowa na okres (mc)'}
+                - { property: 'ceseller.title', alias: 'contract_energy_current_seller', label: 'Obecny sprzedawca'}
+                - { property: 'ce.changeOfSeller', alias: 'contract_energy_change_of_seller', label: 'Zmiana sprzedawcy', type: 'choice', choices: { 1: 'Pierwsza', 2: 'Kolejna' } }
+                - { property: 'ce.ppZipCode', alias: 'contract_energy_pp_zip_code', label: 'PP kod pocztowy'}
+                - { property: 'ce.ppPostOffice', alias: 'contract_energy_pp_post_offce', label: 'PP poczta'}
+                - { property: 'ce.ppCity', alias: 'contract_energy_pp_city', label: 'PP miasto'}
+                - { property: 'ce.ppStreet', alias: 'contract_energy_pp_street', label: 'PP ulica'}
+                - { property: 'ce.ppHouseNr', alias: 'contract_energy_pp_house_nr', label: 'PP dom'}
+                - { property: 'ce.ppApartmentNr', alias: 'contract_energy_apartment_nr', label: 'PP lokal'}
+                - { property: 'ce.createdAt', alias: 'contract_energy_created_at', label: 'Data utworzenia', type: 'datetime', format: 'Y-m-d H:i:s'}
+                - { property: 'ce.updatedAt', alias: 'contract_energy_updated_at', label: 'Data aktualizacji', type: 'datetime', format: 'Y-m-d H:i:s'}
+                - { property: 'ce.isCanceled', alias: 'contract_energy_is_canceled', label: 'Jest anulowana', type: 'yesno'}
+                - { property: 'ce.isPostponed', alias: 'contract_energy_is_postponed', label: 'Zmiana terminu', type: 'yesno'}
+                - { property: 'ce.contractFromDate', alias: 'contract_energy_contract_from_date', label: 'Umowa od', type: 'datetime', format: 'Y-m-d H:i:s'}
+                - { property: 'ce.contractToDate', alias: 'contract_energy_contract_to_date', label: 'Umowa do', type: 'datetime', format: 'Y-m-d H:i:s'}
+                - { property: 'COUNT(cera.id', alias: 'contract_energy_recording_attachments_count', label: 'Dodane nagrania', type: 'yesno'}
+                - { property: 'GROUP_CONCAT(DISTINCT cera.urlFileTemp)', alias: 'contract_energy_recording_attachments_files', label: 'Nagrania pliki'}
+                - { property: 'COUNT(cea.id)', alias: 'contract_energy_contract_attachments_count', label: 'Dodane dokumenty (>1)', type: 'yesnoifmorethanone'}
+                - { property: 'GROUP_CONCAT(DISTINCT cea.urlFileTemp)', alias: 'contract_energy_contract_attachments_files', label: 'Dokumenty pliki'}
+                - { property: 'ce.postponedDeadlines', alias: 'contract_energy_postponed_deadlines', label: 'Wysłano wypowiedznie(Zmiana terminu)'}
+                - { property: "''", alias: 'contract_energy_osd', label: 'OSD' }
+                - { property: 'ce.isRebateMarketingAgreement', alias: 'contract_energy_is_rebate_marketing_agreement', label: 'Rabat - zgoda marketingowa', type: 'yesno'}
+                - { property: 'ce.isRebateTimelyPayments', alias: 'contract_energy_is_rebate_timely_payments', label: 'Rabat - terminowe wpłaty', type: 'yesno'}
+                - { property: 'ce.isRebateElectronicInvoice', alias: 'contract_energy_is_rebate_electronic_invoice', label: 'Rabat - faktura elektroniczna', type: 'yesno'}
+                - { property: 'ce.registerNumber', alias: 'contract_energy_register_number', label: 'Archiwum - nr ewidencyjny'}
+                - { property: 'ce.box', alias: 'contract_energy_box', label: 'Archiwum - nr kartonu'}
+
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\AccountNumberIdentifier', alias: 'ani', condition: 'c.accountNumberIdentifier = ani.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractGas', alias: 'ccg', condition: 'ccg.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractGas', alias: 'cg', condition: 'ccg.contract = cg.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractEnergy', alias: 'cce', condition: 'cce.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergy', alias: 'ce', condition: 'cce.contract = ce.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusDepartment', alias: 'cesd', condition: 'ce.statusDepartment = cesd.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusDepartment', alias: 'cgsd', condition: 'cg.statusDepartment = cgsd.id' }
+
+                - { class: 'GCRM\CRMBundle\Entity\Distributor', alias: 'cedistributor', condition: 'ce.distributorObject = cedistributor.id' }
+                - { class: 'GCRM\CRMBundle\Entity\Distributor', alias: 'cgdistributor', condition: 'cg.distributorObject = cgdistributor.id' }
+
+                - { class: 'GCRM\CRMBundle\Entity\Seller', alias: 'ceseller', condition: 'ce.currentSellerObject = ceseller.id' }
+                - { class: 'GCRM\CRMBundle\Entity\Seller', alias: 'cgseller', condition: 'cg.currentSellerObject = cgseller.id' }
+
+                - { class: 'GCRM\CRMBundle\Entity\DistributorBranch', alias: 'cedistributorbranch', condition: 'ce.distributorBranchObject = cedistributorbranch.id' }
+                - { class: 'GCRM\CRMBundle\Entity\DistributorBranch', alias: 'cgdistributorbranch', condition: 'cg.distributorBranchObject = cgdistributorbranch.id' }
+
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractAuthorization', alias: 'cesa', condition: 'ce.statusAuthorization = cesa.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractAuthorization', alias: 'cgsa', condition: 'cg.statusAuthorization = cgsa.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cesca', condition: 'ce.statusContractAuthorization = cesca.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgsca', condition: 'cg.statusContractAuthorization = cgsca.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractVerification', alias: 'cesv', condition: 'ce.statusVerification = cesv.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractVerification', alias: 'cgsv', condition: 'cg.statusVerification = cgsv.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescv', condition: 'ce.statusContractVerification = cescv.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscv', condition: 'cg.statusContractVerification = cgscv.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractAdministration', alias: 'cesad', condition: 'ce.statusAdministration = cesad.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractAdministration', alias: 'cgsad', condition: 'cg.statusAdministration = cgsad.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescad', condition: 'ce.statusContractAdministration = cescad.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscad', condition: 'cg.statusContractAdministration = cgscad.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractControl', alias: 'cesc', condition: 'ce.statusControl = cesc.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractControl', alias: 'cgsc', condition: 'cg.statusControl = cgsc.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescc', condition: 'ce.statusContractControl = cescc.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscc', condition: 'cg.statusContractControl = cgscc.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractProcess', alias: 'cesp', condition: 'ce.statusProcess = cesp.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractProcess', alias: 'cgsp', condition: 'cg.statusProcess = cgsp.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescp', condition: 'ce.statusContractProcess = cescp.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscp', condition: 'cg.statusContractProcess = cgscp.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractFinances', alias: 'cesf', condition: 'ce.statusFinances = cesf.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractFinances', alias: 'cgsf', condition: 'cg.statusFinances = cgsf.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescf', condition: 'ce.statusContractFinances = cescf.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscf', condition: 'cg.statusContractFinances = cgscf.id' }
+                - { class: 'GCRM\CRMBundle\Entity\User', alias: 'u', condition: '(ce.user = u.id OR cg.user = u.id)' }
+                - { class: 'Wecoders\EnergyBundle\Entity\Brand', alias: 'ceb', condition: 'ce.brand = ceb.id' }
+                - { class: 'Wecoders\EnergyBundle\Entity\Brand', alias: 'cgb', condition: 'cg.brand = cgb.id' }
+                - { class: 'GCRM\CRMBundle\Entity\User', alias: 'sr', condition: '(ce.salesRepresentative = sr.id OR cg.salesRepresentative = sr.id)' }
+                - { class: 'Wecoders\EnergyBundle\Entity\Osd', alias: 'cgo', condition: 'cg.osd = cgo.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractGasAttachment', alias: 'cga', condition: 'cga.contract = cg.id', }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergyAttachment', alias: 'cea', condition: 'cea.contract = ce.id', }
+                - { class: 'GCRM\CRMBundle\Entity\RecordingGasAttachment', alias: 'cgra', condition: 'cgra.contract = cg.id', }
+                - { class: 'GCRM\CRMBundle\Entity\RecordingEnergyAttachment', alias: 'cera', condition: 'cera.contract = ce.id', }
+                - { class: 'GCRM\CRMBundle\Entity\UserAndBranch', alias: 'uab', condition: 'uab.user = sr.id'}

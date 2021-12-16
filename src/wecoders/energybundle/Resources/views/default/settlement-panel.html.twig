@@ -1,0 +1,589 @@
+<link rel="stylesheet" href="/bundles/gcrmcrm/css/admin/import.css?v2">
+<link rel="stylesheet" href="/bundles/gcrmcrm/css/admin/modify.css?v2">
+<link rel="stylesheet" href="/bundles/gcrmcrm/css/admin/font-awesome-all.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/bundles/gcrmcrm/css/admin/hide-native-datepicker.css">
+
+<script src="/bundles/easyadmin/javascript/easyadmin-all.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="/bundles/gcrmcrm/js/ui.datepicker-pl.js"></script>
+<script src="/bundles/gcrmcrm/js/jquery-ui-scripts.js"></script>
+
+<style>
+    form div {
+        margin-bottom: 5px;
+    }
+    .info {
+        opacity: 0.5;
+    }
+    .calculated {
+        border: 2px solid #ffd339;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+    th, td {
+        border: 1px solid gray;
+        padding: 5px;
+    }
+    li {
+        padding: 10px 0;
+    }
+    .error {
+        background: #f46255;
+    }
+    .chosen {
+        background: rgb(203,203,203);
+    }
+    p {
+        margin: 5px 0;
+    }
+    ul {
+        margin: 20px 0;
+        padding: 0 0 0 20px;
+    }
+
+    /*ul ul ul ul {*/
+        /*background: #a5a5a5;*/
+
+    /*}*/
+    /*ul ul ul {*/
+        /*background: #d4d4d4;*/
+
+    /*}*/
+    /*ul ul {*/
+        /*background: #efefef;*/
+
+    /*}*/
+    .summary {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .errors-block {
+        padding: 20px;
+        background-color: #c30000;
+        color: white;
+    }
+</style>
+
+
+{% for type, messages in app.session.flashbag.all() %}
+    {% for message in messages %}
+        <div class="flash-{{ type }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+
+{{ form_start(form, { attr: { 'action': url('energySettlementPanel') } }) }}
+
+<div>
+{{ form_widget(form.pp) }}
+{{ form_label(form.pp) }}
+</div>
+
+<div>
+{{ form_widget(form.dateFrom) }}
+{{ form_label(form.dateFrom) }}
+</div>
+
+<div>
+{{ form_widget(form.dateTo) }}
+{{ form_label(form.dateTo) }}
+</div>
+
+<div>
+    {{ form_widget(form.omitCalculateDateFrom) }}
+    {{ form_label(form.omitCalculateDateFrom) }}
+</div>
+
+<div>
+    {{ form_widget(form.invoiceType) }}
+    {{ form_label(form.invoiceType) }}
+</div>
+
+<div>
+    {{ form_widget(form.check) }}
+    {{ form_label(form.check) }}
+</div>
+
+<div style="{% if data.errors is defined and data.errors|length %}display: none;{% endif %}">
+    {{ form_widget(form.generate) }}
+    {{ form_label(form.generate) }}
+</div>
+
+{{ form_end(form) }}
+<p class="info">Gdy data "od" nie zostanie wybrana, system sam ją wybierze na podstawie ostatniego dokumentu rozliczeniowego (okres rozliczeniowy data "do")</p>
+
+
+<p></p>
+<p class="info">
+    Opłaty stałe - sposób liczenia miesięcy<br>
+    Pierwszy miesiąc: <br>
+    W przypadku gdy pierwszego rozliczenia klienta pierwszy miesiąc jest zawsze liczony<br>
+    przy kolejnych rozliczeniach jeśli data od > 10 nie licz, jeśli data od 10 <= licz<br>
+    Ostatni miesiąc:<br>
+    Data do < 10 nie licz, jeśli data do >= 10 licz<br>
+    W przypadku ostatniego rozliczenia zawsze licz ostatni miesiąc<br>
+</p>
+
+<br>
+
+{% if data.errors is defined and data.errors|length %}
+    <div class="errors-block">
+        <strong>Błędy:</strong>
+        <ul>
+            {% for error in data.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+{% if recordsAll|length %}
+    <h4>Informacje:</h4>
+    <p>Imię i nazwisko: {{ client.fullName }}</p>
+    <p>Pesel: {{ client.pesel }}</p>
+    -
+    <p>Numer umowy: {{ contract.contractNumber }}</p>
+    <p>Taryfa: {{ contract.tariff }}</p>
+    -
+    <p>Pierwsze rozlicznie: {% if data.additionalData.isFirstSettlement %}TAK{% else %}NIE{% endif %}</p>
+    <p>Ostatnie rozlicznie: {% if data.additionalData.isLastSettlement %}TAK{% else %}NIE{% endif %}</p>
+    <p>Kwota brutto rozliczenia: {{ data.additionalData.summaryGrossValue }}</p>
+    -
+    <p>Wpłaty (rozliczenia): {{ data.additionalData.settlementPaymentValue }}</p>
+    <p>Dokumenty na podstawie których zostało wyliczone pole wpłaty:</p>
+    {% if data.additionalData.settlementPaymentValueIncludedDocuments %}
+        <ul>
+            {% for document in data.additionalData.settlementPaymentValueIncludedDocuments %}
+                <li>
+                    Numer: {{ document.number }}<br>
+                    Wpłacono: {{ document.paidValue }}<br>
+                    Od - do: {{ document.billingPeriodFrom|date('d-m-Y') }} - {{ document.billingPeriodTo|date('d-m-Y') }}<br>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        brak dokumentów<br>
+    {% endif %}
+    -
+
+    {#<p>Cennik: {{ contract.priceList }}</p>#}
+    {#<p>Grupa cennikowa: {{ contract.priceList.priceListGroup }}</p>#}
+    <p>Pobierz rekordy od: {{ dateFrom|date('d-m-Y') }} <span class="info">(na podstawie ostatniego dokumentu rozliczeniowego - okres "do". Jeśli nie istnieje wybierze rok 2000, aby pobrać wszystkie rekordy)</span></p>
+    <br>
+
+    <h4>Status przetwarzania:</h4>
+    <p>Do przetworzenia {{ records|length }}</p>
+    <p style="color: #b41714;">Błędy: {{ data.errors|length }}</p>
+    <p style="color: #00bf12;">Prawidłowe: {{ records|length - data.errors|length }}</p>
+    {% if data.errors|length %}
+        <p style="margin: 5px 0;">Komunikaty błędów:</p>
+        {% for error in data.errors %}
+            {{ error }}<br>
+        {% endfor %}
+    {% endif %}
+    <br>
+
+    <h4>Rekordy wybrane:</h4>
+    {% if records|length %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>PP</th>
+            <th>Kod licznika</th>
+            <th>Taryfa</th>
+            <th>Strefa</th>
+            <th>Data odczytu poprzedniego</th>
+            <th>Odczyt poprzedni [m3]</th>
+            <th class="calculated">-</th>
+            <th>Data odczytu bieżącego</th>
+            <th>Odczyt bieżący [m3]</th>
+            <th>Zużycie [m3]</th>
+            <th class="calculated">-</th>
+            <th>Współczynnik konwersji</th>
+            <th>Zużycie [kWh]</th>
+            <th>Straty [kWh]</th>
+            <th class="calculated">-</th>
+            <th>Status odczytu</th>
+            <th>Status rozliczenia</th>
+            <th>Typ odczytu</th>
+            <th>Z</th>
+            <th>Plik</th>
+        </tr>
+    {% for record in records %}
+        <tr class="{% if record.error %}error{% endif %}">
+            <td>{{ record.id }}</td>
+            <td>{{ record.ppCode }}</td>
+            <td>{{ record.deviceId }}</td>
+            <td>{{ record.tariff }}</td>
+            <td>{{ record.area }}</td>
+            <td>{{ record.billingPeriodFrom ? record.billingPeriodFrom|date('Y-m-d') : null }}</td>
+            <td>{{ record.stateStart }}</td>
+            <td class="calculated">{{ record.calculatedStateStart }}</td>
+            <td>{{ record.billingPeriodTo ? record.billingPeriodTo|date('Y-m-d') : null }}</td>
+            <td>{{ record.stateEnd }}</td>
+            <td>{{ record.consumptionM }}</td>
+            <td class="calculated">{{ record.calculatedConsumptionM }}</td>
+            <td>{{ record.ratio }}</td>
+            <td>{{ record.consumptionKwh }}</td>
+            <td>{{ record.consumptionLossKwh }}</td>
+            <td class="calculated">{{ record.calculatedConsumptionKwh }}</td>
+            <td>{{ record.readingStatus }}</td>
+            <td>{{ record.billingStatus }}</td>
+            <td>{{ record.readingType }} - {{ record.readingTypeOriginal }}</td>
+            <td>{{ record.code }}</td>
+            <td>{{ record.filename }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    <p><span class="calculated" style="display: inline-block; width: 10px; height: 10px;"></span> Wyliczone wartości</p>
+    {% else %}
+        <p>Brak</p>
+    {% endif %}
+
+    <br>
+
+    <h4>Wszystkie rekordy z naniesionymi wybranymi rekordami:</h4>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>PP</th>
+            <th>Kod licznika</th>
+            <th>Taryfa</th>
+            <th>Strefa</th>
+            <th>Data odczytu poprzedniego</th>
+            <th>Odczyt poprzedni [m3]</th>
+            <th class="calculated">-</th>
+            <th>Data odczytu bieżącego</th>
+            <th>Odczyt bieżący [m3]</th>
+            <th>Zużycie [m3]</th>
+            <th class="calculated">-</th>
+            <th>Współczynnik konwersji</th>
+            <th>Zużycie [kWh]</th>
+            <th>Straty [kWh]</th>
+            <th class="calculated">-</th>
+            <th>Status odczytu</th>
+            <th>Status rozliczenia</th>
+            <th>Typ odczytu</th>
+            <th>Z</th>
+            <th>Plik</th>
+        </tr>
+        {% for record in recordsAll %}
+            <tr class="{% if record.chosen %}chosen{% endif %}">
+                <td>{{ record.id }}</td>
+                <td>{{ record.ppCode }}</td>
+                <td>{{ record.deviceId }}</td>
+                <td>{{ record.tariff }}</td>
+                <td>{{ record.area }}</td>
+                <td>{{ record.billingPeriodFrom ? record.billingPeriodFrom|date('Y-m-d') : null }}</td>
+                <td>{{ record.stateStart }}</td>
+                <td class="calculated">{{ record.calculatedStateStart }}</td>
+                <td>{{ record.billingPeriodTo ? record.billingPeriodTo|date('Y-m-d') : null }}</td>
+                <td>{{ record.stateEnd }}</td>
+                <td>{{ record.consumptionM }}</td>
+                <td class="calculated">{{ record.calculatedConsumptionM }}</td>
+                <td>{{ record.ratio }}</td>
+                <td>{{ record.consumptionKwh }}</td>
+                <td>{{ record.consumptionLossKwh }}</td>
+                <td class="calculated">{{ record.calculatedConsumptionKwh }}</td>
+                <td>{{ record.readingStatus }}</td>
+                <td>{{ record.billingStatus }}</td>
+                <td>{{ record.readingType }} - {{ record.readingTypeOriginal }}</td>
+                <td>{{ record.code }}</td>
+                <td>{{ record.filename }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><span class="calculated" style="display: inline-block; width: 10px; height: 10px;"></span> Wyliczone wartości</p>
+    <p><span class="chosen" style="display: inline-block; width: 10px; height: 10px; border: 1px solid black; "></span> Wybrane rekordy</p>
+    <p><span style="display: inline-block; width: 10px; height: 10px; border: 1px solid black; "></span> Pozostałe rekordy, których rozliczenie nie uwzględnia</p>
+    <p>x - y (Rekord zmieniony systemowo - rekord oryginalny)</p>
+
+    <br>
+
+    {#{{ dump(data) }}#}
+    {#<h4>Rozliczenie (podział na liczniki):</h4>#}
+    {#<ul>#}
+        {#{% for counterId, counterData in data.data.data %}#}
+            {#<li>#}
+                {#<div>Licznik: {{ counterId }}</div>#}
+                {#<br>#}
+                {#<table>#}
+                    {#<tr>#}
+                        {#<th>Taryfa</th>#}
+                        {#<th>Strefa</th>#}
+                        {#<th>Rekord</th>#}
+                        {#<th>Zużycie rekordu (kWh)</th>#}
+                        {#<th>Zużycie rozdzielone <br>pomiędzy składowe cennika (kWh)</th>#}
+                        {#<th>Dni</th>#}
+                        {#<th>Rok</th>#}
+                        {#<th>Cena netto (kWh)</th>#}
+                        {#<th>Cena brutto (kWh)</th>#}
+                        {#<th>Kwota</th>#}
+                    {#</tr>#}
+                    {#{% for tariff, tariffData in counterData.data %}#}
+                    {#{% for area, areaData in tariffData.data %}#}
+                    {#{% for pricingData in areaData.data %}#}
+                    {#{% for pricingDataRecord in pricingData.pricingData %}#}
+                        {#<tr>#}
+                            {#<td>{{ tariff }}</td>#}
+                            {#<td>{{ area }}</td>#}
+                            {#<td>{{ pricingData.record.id }}</td>#}
+                            {#<td>{{ pricingData.record.consumptionKwh }}</td>#}
+                            {#<td>{{ pricingDataRecord.consumption }}</td>#}
+                            {#<td>{{ pricingDataRecord.days }}</td>#}
+                            {#<td>{{ pricingDataRecord.pricing.year }}</td>#}
+                            {#<td>{{ pricingDataRecord.pricing.netValue }}</td>#}
+                            {#<td>{{ pricingDataRecord.pricing.grossValue }}</td>#}
+                            {#<td>{{ pricingDataRecord.calculation.netValue }}</td>#}
+                        {#</tr>#}
+                    {#{% endfor %}#}
+                    {#{% endfor %}#}
+                    {#{% endfor %}#}
+                    {#{% endfor %}#}
+                {#</table>#}
+                {#<br>#}
+                {#<div class="summary" style="text-align: right;">Suma licznika (netto): {{ counterData.calculation.netValue }}</div>#}
+            {#</li>#}
+        {#{% endfor %}#}
+        {#<div class="summary" style="text-align: right;">Suma (netto): {{ data.data.calculation.netValue }}</div>#}
+    {#</ul>#}
+
+    {#<br>#}
+    {#<br>#}
+    {#<br>#}
+
+    <h4>Logi szczegółowe (obliczone na każdy dzień)</h4>
+    <table>
+        <tr>
+            <th>Data</th>
+            <th>Index dnia (rekordu)</th>
+            <th>Rekord (EnergyData)</th>
+            <th>Cennik</th>
+            <th>Opcja cennika</th>
+            <th>Licznik</th>
+            <th>Strefa</th>
+            <th>Taryfa</th>
+            <th>Dystr.</th>
+            <th>Dystr. grupa opcji</th>
+            <th>Dystr. opcja</th>
+            <th>Opłata abon. opcja</th>
+            <th>Zużycie</th>
+        </tr>
+        {% for tableRow in data.rawData %}
+            <tr>
+                <td>{{ tableRow.date|date('Y-m-d') }}</td>
+                <td>{{ tableRow.dayIndex }} / {{ tableRow.daysToSplit }}</td>
+                <td>(#{{ tableRow.record }})</td>
+                <td>(#{{ tableRow.priceList }}) {{ tableRow.priceList.title }}</td>
+                <td>(#{{ tableRow.pricingData.id }})</td>
+                <td>{{ tableRow.deviceId }}</td>
+                <td>{{ tableRow.area }}</td>
+                <td>{{ tableRow.tariff }}</td>
+                {% if tableRow.osd %}
+                    <td>(#{{ tableRow.osd.id }})</td>
+                    <td>(#{{ tableRow.osdData.id }})</td>
+                    <td>(#{{ tableRow.osdPricingData.id }})</td>
+                    <td>(#{{ tableRow.subscription.id }})</td>
+                {% else %}
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                {% endif %}
+                <td>{{ tableRow.consumptionDay }} / {{ tableRow.consumptionTotal }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+    <br>
+    <h4>Logi podzielone ((zgrupowane po strefie) licznik -> tarifa -> strefa -> opcja cennika) [przypisane rekordy na dany dzień]</h4>
+    {% for counterDataGrouped in data.data %}
+        <ul>
+            {% for counterId, counterData in counterDataGrouped %}
+            <li>
+                Licznik: {{ counterId }}
+                <ul>
+                    {% for tariff, tariffData in counterData.tree %}
+                        <li>
+                            Taryfa: {{ tariff }}
+                            <ul>
+                                {% for area, areaData in tariffData.tree %}
+                                    <li>
+                                        Strefa: {{ area }}
+                                        <ul>
+                                            {% for pricingId, pricingData in areaData.tree %}
+                                                <li>
+                                                    Grupa cennikowa : (#{{ pricingData.pricingData.priceListData.priceList.priceListGroup.id }}) {{ pricingData.pricingData.priceListData.priceList.priceListGroup.title }}<br>
+                                                    Cennik: (#{{ pricingData.pricingData.priceListData.priceList.id }}) {{ pricingData.pricingData.priceListData.priceList.title }}<br>
+                                                    Wybrana opcja cennika ID: {{ pricingId }}<br>
+                                                    Licz od (rok): {{ pricingData.pricingData.year }}<br>
+                                                    Cena netto: {{ pricingData.pricingData.netValue }}<br>
+                                                    -<br>
+                                                    Dane dodatkowe (cennik):<br>
+                                                    OH netto: {{ pricingData.pricingData.priceListData.priceList.feeOhNetValue }}<br>
+                                                    OZE netto: {{ pricingData.pricingData.priceListData.priceList.feeOzeNetValue }}<br>
+                                                    UD netto: {{ pricingData.pricingData.priceListData.priceList.feeUdNetValue }}<br>
+                                                    GSC netto: {{ pricingData.pricingData.priceListData.priceList.feeGscNetValue }}<br>
+                                                    -<br>
+                                                    Zużycia zaliczane do tych stawek (rozbite na dni):<br><br>
+                                                    <table>
+                                                        <tr>
+                                                            <th>Data</th>
+                                                            <th>Index dnia (rekordu)</th>
+                                                            <th>Rekord (EnergyData)</th>
+                                                            <th>Dystr.</th>
+                                                            <th>Dystr. grupa opcji</th>
+                                                            <th>Dystr. opcja</th>
+                                                            <th>Opłata abon. opcja</th>
+                                                            <th>Zużycie</th>
+                                                        </tr>
+                                                        {% for tableRow in areaData.data %}
+                                                            <tr>
+                                                                <td>{{ tableRow.date|date('Y-m-d') }}</td>
+                                                                <td>{{ tableRow.dayIndex }} / {{ tableRow.daysToSplit }}</td>
+                                                                <td>(#{{ tableRow.record }})</td>
+                                                                {% if tableRow.osd %}
+                                                                    <td>(#{{ tableRow.osd.id }})</td>
+                                                                    <td>(#{{ tableRow.osdData.id }})</td>
+                                                                    <td>(#{{ tableRow.osdPricingData.id }})</td>
+                                                                    <td>(#{{ tableRow.subscription.id }})</td>
+                                                                {% else %}
+                                                                    <td>-</td>
+                                                                    <td>-</td>
+                                                                    <td>-</td>
+                                                                    <td>-</td>
+                                                                {% endif %}
+                                                                <td>{{ tableRow.consumptionDay }} / {{ tableRow.consumptionTotal }}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+
+    {% endfor %}
+
+    {#<h4>Rozliczenie:</h4>#}
+    {#{% if records|length and data.data|length %}#}
+    {#<ul>#}
+        {#{% for counterId, counterData in data.data.data %}#}
+            {#<li>#}
+                {#<div>Licznik: {{ counterId }}</div>#}
+                {#<div>Taryfa:</div>#}
+                {#<ul class="tariff">#}
+                    {#{% for tariff, tariffData in counterData.data %}#}
+                        {#<li>#}
+                            {#<div>{{ tariff }}</div>#}
+                            {#<div>Strefa:</div>#}
+                            {#<ul>#}
+                                {#{% for area, areaData in tariffData.data %}#}
+                                    {#<div>{% if area %}{{ area }}{% else %}-{% endif %}</div>#}
+                                    {#<div>Odczyty z podziałem zużycia na ceny wynikające z cennika na podstawie daty (rozdzielenie zużycia pomiędzy daty):</div>#}
+                                    {#<br>#}
+                                    {#<ul>#}
+                                        {#{% for pricingData in areaData.data %}#}
+                                            {#<li>#}
+                                                {#<div>Rekord: {{ pricingData.record.id }}</div>#}
+                                                {#<div>Zużycie (kWh): {{ pricingData.record.consumptionKwh }}</div>#}
+                                                {#<div>Rozdzielenie zużycia:</div>#}
+                                                {#<ul>#}
+                                                    {#{% for pricingDataRecord in pricingData.pricingData %}#}
+                                                        {#<li>#}
+                                                            {#<div>Zużycie: {{ pricingDataRecord.consumption }}</div>#}
+                                                            {#<div>Dni: {{ pricingDataRecord.days }}</div>#}
+                                                            {#<div>Rok: {{ pricingDataRecord.pricing.year }}</div>#}
+                                                            {#<div>Netto: {{ pricingDataRecord.pricing.netValue }}</div>#}
+                                                            {#<div>Brutto: {{ pricingDataRecord.pricing.grossValue }}</div>#}
+                                                            {#<div>Obliczona należność (netto): {{ pricingDataRecord.calculation.netValue }}</div>#}
+                                                            {#<div>Przeładowanie: {% if pricingDataRecord.overload %}TAK{% else %}NIE{% endif %}</div>#}
+                                                        {#</li>#}
+                                                    {#{% endfor %}#}
+                                                {#</ul>#}
+                                                {#<div class="summary">Suma rekordu (netto): {{ pricingData.calculation.netValue }}</div>#}
+                                            {#</li>#}
+                                        {#{% endfor %}#}
+                                    {#</ul>#}
+                                    {#<div class="summary">Suma strefy (netto): {{ areaData.calculation.netValue }}</div>#}
+                                {#{% endfor %}#}
+                            {#</ul>#}
+                            {#<div class="summary">Suma taryfy (netto): {{ tariffData.calculation.netValue }}</div>#}
+                        {#</li>#}
+                    {#{% endfor %}#}
+                {#</ul>#}
+                {#<div class="summary">Suma licznika (netto): {{ counterData.calculation.netValue }}</div>#}
+            {#</li>#}
+        {#{% endfor %}#}
+    {#</ul>#}
+    {#<div class="summary">Suma (netto): {{ data.data.calculation.netValue }}</div>#}
+    {#{% else %}#}
+        {#<p>Brak wybranych rekordów</p>#}
+    {#{% endif %}#}
+
+    <br>
+    <br>
+
+    <h4>Dane do faktury:</h4>
+    {% if records|length %}
+        <ol>
+            {% for summary in data.summaryData %}
+                <li>
+                    <ul>
+                        <li>{{ summary.title }}</li>
+                        <li>Taryfa: {{ summary.tariff }}</li>
+                        <li>Strefa: {{ summary.area }}</li>
+                        <li>J.m: {{ summary.unit }}</li>
+                        <li>Ilość: {{ summary.consumption }}</li>
+                        <li>Cena netto: {{ summary.priceValue }}</li>
+                        <li>Wartość netto: {{ summary.netValue }}</li>
+                        <li>VAT (%): {{ summary.vatPercentage }}</li>
+                        <li>Wartość VAT: {{ summary.grossValue - summary.netValue }}</li>
+                        <li>Wartość brutto: {{ summary.grossValue }}</li>
+                        <li>-</li>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>Brak wybranych rekordów</p>
+    {% endif %}
+    <br><br>
+
+    <h4>Liczniki i zużycia</h4>
+    {% if records|length %}
+        <ol>
+            {% for summary in data.consumptionByDevices %}
+                <li>
+                    <ul>
+                        <li>Licznik: {{ summary.deviceId }}</li>
+                        <li>Taryfa: {{ summary.tariff }}</li>
+                        <li>Strefa: {{ summary.area }}</li>
+                        <li>Data od: {{ summary.dateFrom|date('Y-m-d') }}</li>
+                        <li>Data do: {{ summary.dateTo|date('Y-m-d') }}</li>
+                        <li>Zużycie: {{ summary.consumption }}</li>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+
+{% else %}
+    <p>Brak rekordów</p>
+{% endif %}

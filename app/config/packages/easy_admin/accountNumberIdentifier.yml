@@ -1,0 +1,12 @@
+easy_admin:
+    entities:
+        AccountNumberIdentifier:
+            class: GCRM\CRMBundle\Entity\AccountNumberIdentifier
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - id
+                    - { property: 'number', label: 'Numer' }
+            form:
+                fields:
+                    - { property: 'number', label: 'Numer' }

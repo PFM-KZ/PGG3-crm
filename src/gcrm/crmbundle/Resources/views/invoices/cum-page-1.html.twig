@@ -1,0 +1,215 @@
+{% spaceless %}
+<style>
+* {
+letter-spacing: 0.1px;
+line-height: 16px;
+}
+th {
+font-weight: bold;
+}
+table.bordered td {
+border-top: 1px solid black;
+}
+</style>
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 90%">&nbsp;</td>
+<td style="width: 10%">Strona 1 z 2</td>
+</tr>
+</table>
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 50%;"><img src="{{ data.logo }}" height="55"></td>
+<td style="width: 50%;">
+
+<br><br>
+
+<table style="width: 100%; line-height: 3; font-size: 12px;" cellpadding="0">
+<tr>
+<td style="width: 38%; line-height: 1.3"><b>Faktura VAT nr</b></td>
+<td style="width: 62%; line-height: 1.3">{{ data.nr }}</td>
+</tr>
+<tr>
+<td style="width: 38%;"><b>Data wystawienia</b></td>
+<td style="width: 62%;">{{ data.date|date('Y-m-d') }}</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<br>
+<div style="border-bottom: 1px solid #1d70b7;">&nbsp;</div>
+<br><br>
+
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 60%">
+<div>
+<span style="font-weight: bold; font-size: 12px;">Sprzedawca</span><br>
+{{ data.seller.title }}<br>
+{{ data.seller.address }}<br>
+{{ data.seller.zipcode }} {{ data.seller.city }}, NIP: {{ data.seller.nip }}<br>
+</div>
+</td>
+<td style="width: 40%;">
+
+<table style="width: 100%; line-height: 3; font-size: 13px;" cellpadding="5">
+<tr>
+<td style="color: #656565;">PLAN TARYFOWY:</td>
+<td bgcolor="#2ebbc8" style="text-align: center; color: white;"><b>{% if data.client.nip and data.client.nip > 0 %}FIRMA{% else %}DOM{% endif %}</b></td>
+</tr>
+</table>
+
+</td>
+</tr>
+<tr>
+<td style="width: 60%;">
+<div>
+<span style="font-weight: bold; font-size: 12px;">Nabywca</span><br>
+{{ data.client.title }}<br>
+ul. {{ data.client.address }}, <br>{{ data.client.zipcode }} {{ data.client.city }}<br>
+{% if data.client.nip and data.client.nip > 0 %}NIP: {{ data.client.nip }}{% endif %}<br>
+</div>
+</td>
+<td style="width: 40%"></td>
+</tr>
+</table>
+
+<br><br>
+
+
+
+
+
+<table style="width: 100%;" cellpadding="0" cellspacing="0" style="color: #656565; font-size: 12px; line-height: 2.8;">
+<tr>
+<td style="width: 5%;" bgcolor="#efefef"></td>
+<td style="width: 60%;" bgcolor="#efefef">Opłata za bieżący okres:</td>
+<td style="width: 30%; text-align: right;" bgcolor="#efefef">{{ data.customData.paymentValueForCurrentTimePeriod|number_format(2, ',', '.') }} PLN</td>
+<td style="width: 5%;" bgcolor="#efefef"></td>
+</tr>
+<tr>
+<td style="width: 5%;"></td>
+<td style="width: 60%;">Rozliczenie poprzedniego okresu ({{ data.customData.balanceBeforeInvoiceTitle }}):</td>
+<td style="width: 30%; text-align: right;">{{ data.customData.balanceBeforeInvoice|number_format(2, ',', '.') }} PLN</td>
+<td style="width: 5%;"></td>
+</tr>
+</table>
+
+
+
+<table style="width: 100%;" cellpadding="0" cellspacing="0" bgcolor="#1d70b7">
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td style="width: 5%;"></td>
+<td style="width: 45%; font-size: 26px; line-height: 90px; color: white;">Razem do zapłaty: </td>
+<td style="width: 45%; font-size: 30px; line-height: 90px; color: white; text-align: right;">{{ data.totalSummary|number_format(2, ',', '.') }} PLN</td>
+<td style="width: 5%;"></td>
+</tr>
+<tr>
+<td><br></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td style="width: 5%;"></td>
+<td style="width: 45%; font-size: 18px; line-height: 2; color: white;">Termin płatności: </td>
+<td style="width: 45%; font-size: 18px; line-height: 2; color: white; text-align: right;">{{ data.dateOfPayment|date('Y-m-d') }}</td>
+<td style="width: 5%;"></td>
+</tr>
+<tr>
+<td><br></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</table>
+
+<br>
+<br>
+
+<table cellpadding="0" cellspacing="0" style="width: 100%; color: #656565; font-size: 10px; line-height: 2.3;">
+<tr>
+<td style="width: 5%;"></td>
+<td style="width: 90%;"><span style="font-style: italic; text-align: left; font-size: 11px; line-heihgt: 1.8;">Słownie: {{ data.getPriceInWords(data.totalSummary) }}</span></td>
+<td style="width: 5%;"></td>
+</tr>
+</table>
+
+<br><br><br>
+
+
+<table style="width: 100%; font-size: 12px; line-height: 1; color: #656565;" cellpadding="0" cellspacing="0">
+<tr>
+<td style="width: 2%"></td>
+<td style="width: 73%;">
+<table style="width: 100%; border: 1px solid #4a4a4a;" cellpadding="2" cellspacing="0">
+<tr>
+<td style="width: 3%"></td>
+<td style="width: 72%;">
+<br><br><b>Dane do przelewu:</b>
+</td>
+<td style="width: 25%"></td>
+</tr>
+<tr>
+<td style="width: 3%"></td>
+<td style="width: 72%;">
+<span>{{ data.seller.title }}</span>
+</td>
+<td style="width: 25%"></td>
+</tr>
+<tr>
+<td style="width: 3%"></td>
+<td style="width: 72%;">
+<span>{{ data.seller.address }}</span>
+</td>
+<td style="width: 25%"></td>
+</tr>
+<tr>
+<td style="width: 3%"></td>
+<td style="width: 72%;">
+<span>{{ data.seller.zipcode }} {{ data.seller.city }}</span>
+</td>
+<td style="width: 25%"></td>
+</tr>
+<tr>
+<td style="width: 3%"></td>
+<td style="width: 72%;">
+<b>Numer rachunku:</b>
+</td>
+<td style="width: 25%"></td>
+</tr>
+<tr>
+<td style="width: 3%"></td>
+<td style="width: 72%;">
+<span>{{ data.seller.bankAccount }}</span>
+</td>
+<td style="width: 25%"></td>
+</tr>
+<tr>
+<td style="width: 3%"></td>
+<td style="width: 72%;">
+<b>Kwota:</b> {{ data.totalSummary|number_format(2, ',', '.') }} PLN
+</td>
+<td style="width: 25%"></td>
+</tr>
+<tr>
+<td style="width: 3%"></td>
+<td style="width: 72%;">
+<b>Tytułem:</b> {{ data.nr }}<br>
+</td>
+<td style="width: 25%"></td>
+</tr>
+</table>
+</td>
+<td style="width: 25%"></td>
+</tr>
+</table>
+{% endspaceless %}

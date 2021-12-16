@@ -1,0 +1,32 @@
+{# required var payments #}
+{# required var initialBalance #}
+
+<div class="table-responsive payments-table-wrapper">
+    <table class="table">
+        <tr>
+            <th><span>Lp.</span></th>
+            <th><span>Kwota</span></th>
+            <th><span>Data wpłaty</span></th>
+            <th><span>Informacja</span></th>
+        </tr>
+
+        {% for payment in payments %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ payment.value|number_format(2, ',', '.') }}</td>
+                <td>{{ payment.date|date('d-m-Y') }}</td>
+                <td>{{ payment.help }}</td>
+            </tr>
+        {% endfor %}
+
+        {# Adds initial balance if exists #}
+        {% if initialBalance is defined %}
+            <tr>
+                <td>-</td>
+                <td>{{ initialBalance|number_format(2, ',', '.') }}</td>
+                <td>-</td>
+                <td>saldo początkowe</td>
+            </tr>
+        {% endif %}
+    </table>
+</div>

@@ -1,0 +1,69 @@
+{#<div class="multi-export-panel">#}
+    {#{{ form_start(multiExportForm) }}#}
+    {#<div class="multi-export-buttons">#}
+        {#{{ form_label(multiExportForm.contractType) }}#}
+        {#{{ form_widget(multiExportForm.contractType) }}#}
+
+        {#{{ form_label(multiExportForm.statuses) }}#}
+        {#{{ form_widget(multiExportForm.statuses) }}#}
+
+        {#{% if app.request.query.get('statusDepartment') == 'process' %}#}
+            {#<label for="multiExportAddToPackage">Utwórz paczkę umów do procesu</label>#}
+            {#<input type="checkbox" name="multiExportAddToPackage" id="multiExportAddToPackage">#}
+        {#{% endif %}#}
+
+        {#{{ form_widget(multiExportForm.export, { attr: { 'class': 'btn btn-action' } }) }}#}
+    {#</div>#}
+    {#<div class="under-multi-export-buttons">#}
+        {#<p><strong>* Pozytywne</strong> - umowy, które otrzymały status pozytywny w danym departamencie (znajdują się w którymś z kolejnych departamentów).</p>#}
+        {#<p><strong>* Negatywne</strong> - umowy, które otrzymały status inny niż pozytywny w danym departamencie (znajdują się na aktualnej liście rekordów).</p>#}
+        {#<p><strong>* Na liście</strong> - umowy, które otrzymały status pozytywny w poprzednim departamencie (znajdują się na aktualnej liście rekordów. Mogą to być zarówno umowy bez statusu z aktualnego departamentu jak i umowy negatywne).</p>#}
+        {#<p><strong>* Bez statusu</strong> - umowy, które otrzymały status pozytywny w poprzednim departamencie, ale nie otrzymały statusu w obecnym departamencie (znajdują się na aktualnej liście rekordów).</p>#}
+        {#<p><strong>* Zaznaczone</strong> - umowy zaznaczone na liście z wybranym typem.</p>#}
+    {#</div>#}
+    {#{{ form_end(multiExportForm) }}#}
+{#</div>#}
+
+<div class="multi-export-panel">
+    <div class="multi-export-buttons">
+        <label for="multiExportContractType">Typ: </label>
+        <select name="multiExportContractType" id="multiExportContractType">
+            {% for contractType in contractTypes %}
+                <option value="{{ contractType.code }}">{{ contractType.title }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="multiExportContractStatus">Status</label>
+        {% if app.request.query.get('statusDepartment') == 'process' %}
+            <select name="multiExportContractStatus" id="multiExportContractStatus">
+                <option value="onlist">Na liście</option>
+                <option value="selected">Zaznaczone</option>
+            </select>
+        {% else %}
+            <select name="multiExportContractStatus" id="multiExportContractStatus">
+                {% if app.request.query.has('statusDepartment') %}
+                    <option value="positive">Pozytywne</option>
+                    <option value="negative">Negatywne</option>
+                    <option value="onlist">Na liście</option>
+                    <option value="withoutstatus">Bez statusu</option>
+                    <option value="selected">Zaznaczone</option>
+                {% endif %}
+                <option value="all">Wszystkie</option>
+            </select>
+        {% endif %}
+
+        {% if app.request.query.get('statusDepartment') == 'process' %}
+            <label for="multiExportAddToPackage">Utwórz paczkę umów do procesu</label>
+            <input type="checkbox" name="multiExportAddToPackage" id="multiExportAddToPackage">
+        {% endif %}
+
+        <button type="submit" class="btn btn-action" name="multiExportAction" value="1">Eksportuj do pliku</button>
+    </div>
+    <div class="under-multi-export-buttons">
+        <p><strong>* Pozytywne</strong> - umowy, które otrzymały status pozytywny w danym departamencie (znajdują się w którymś z kolejnych departamentów).</p>
+        <p><strong>* Negatywne</strong> - umowy, które otrzymały status inny niż pozytywny w danym departamencie (znajdują się na aktualnej liście rekordów).</p>
+        <p><strong>* Na liście</strong> - umowy, które otrzymały status pozytywny w poprzednim departamencie (znajdują się na aktualnej liście rekordów. Mogą to być zarówno umowy bez statusu z aktualnego departamentu jak i umowy negatywne).</p>
+        <p><strong>* Bez statusu</strong> - umowy, które otrzymały status pozytywny w poprzednim departamencie, ale nie otrzymały statusu w obecnym departamencie (znajdują się na aktualnej liście rekordów).</p>
+        <p><strong>* Zaznaczone</strong> - umowy zaznaczone na liście z wybranym typem.</p>
+    </div>
+</div>

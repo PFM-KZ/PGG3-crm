@@ -1,0 +1,13 @@
+{% if contractsByType is defined %}
+<div class="list-info-panel">
+    <span class="summary">Umowy: <strong>{{ contractsByType.contractsDataCountSummary }}</strong></span> &nbsp;&nbsp;
+    {% if contractsByType.contractsDataCount.gas is defined %}Gaz: {{ contractsByType.contractsDataCount.gas }} &nbsp;{% endif %}
+    {% if contractsByType.contractsDataCount.energy is defined %}Prąd: {{ contractsByType.contractsDataCount.energy }} &nbsp;{% endif %}
+    {% if contractsByType.contractsDataCount.polmed is defined %}Polmed: {{ contractsByType.contractsDataCount.polmed }} &nbsp;{% endif %}
+    {% if contractsByType.contractsDataCount.television is defined %}Telewizja: {{ contractsByType.contractsDataCount.television }} &nbsp;{% endif %}
+    {% if contractsByType.contractsDataCount.internet is defined %}Internet: {{ contractsByType.contractsDataCount.internet }} &nbsp;{% endif %}
+    {% if contractsByType.contractsDataCount.wlr is defined %}Wlr: {{ contractsByType.contractsDataCount.wlr }} &nbsp;{% endif %}
+    {% if contractsByType.contractsDataCount.mvno is defined %}Mvno: {{ contractsByType.contractsDataCount.mvno }} &nbsp;{% endif %}
+    {% if contractsByType.contractsDataCount.fvno is defined %}Fvno: {{ contractsByType.contractsDataCount.fvno }}{% endif %}
+</div>
+{% endif %}

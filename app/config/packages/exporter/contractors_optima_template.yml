@@ -1,0 +1,107 @@
+exporter_bundle:
+    tables:
+        ContractorsOptimaTemplate:
+            class: GCRM\CRMBundle\Entity\Client
+            alias: c
+            tweaker: Wecoders\EnergyBundle\Service\Exporter\ContractorsOptimaTweaker
+            filter: Wecoders\EnergyBundle\Service\Exporter\ClientDataFilter
+            groupBy: c.id
+            options:
+                inc_row_number: false
+            fields:
+                - { property: 'c.id', alias: 'client_id', label: 'Kod' }
+                - { property: 'c.name', alias: 'client_client_name', label: 'Nazwa' } # managed field by tweaker
+                - { property: 'c.surname', alias: 'client_client_surname', label: 'Nazwa2' } # managed field by tweaker
+                - { property: 'c.companyName', alias: 'client_client_company_name', label: 'Nazwa3' } # managed field by tweaker
+                - { property: 'c.telephoneNr', label: 'Telefon' }
+                - { property: "''", label: 'Telefon2' }
+                - { property: "''", label: 'TelefonSms' }
+                - { property: "''", label: 'Fax' }
+                - { property: 'c.street', alias: 'client_street', label: 'Ulica' }
+                - { property: 'c.houseNr', alias: 'client_house_nr', label: 'NrDomu' }
+                - { property: 'c.apartmentNr', alias: 'client_apartment_nr', label: 'NrLokalu' }
+                - { property: 'c.zipCode', alias: 'client_zip_code', label: 'KodPocztowy' }
+                - { property: 'c.postOffice', alias: 'client_post_office', label: 'Poczta' }
+                - { property: 'c.city', alias: 'client_city', label: 'Miasto' }
+                - { property: "''", label: 'Kraj' }
+                - { property: "''", label: 'Województwo' }
+                - { property: "''", label: 'Powiat' }
+                - { property: "''", label: 'Gmina' }
+                - { property: "''", label: 'Url' }
+                - { property: "''", label: 'Grupa' }
+                - { property: 'c.isCompany', alias: 'client_is_company', label: 'Osoba fizyczna' }
+                - { property: 'c.nip', alias: 'client_nip', label: 'NIP' }
+                - { property: "''", label: 'NipKraj' }
+                - { property: "''", label: 'Zezwolenie' }
+                - { property: 'c.regon', alias: 'client_regon', label: 'Regon' }
+                - { property: 'c.pesel', alias: 'client_pesel', label: 'Pesel' }
+                - { property: 'c.email', alias: 'client_email', label: 'Email' }
+                - { property: "''", label: 'BankRachunekNr' }
+                - { property: "''", label: 'BankNazwa' }
+                - { property: "''", label: 'Osoba' }
+                - { property: "''", alias: 'energy_type', label: 'Opis' } # managed field by tweaker
+                - { property: "'O'", label: 'Rodzaj' }
+                - { property: "''", label: 'PłatnikVAT' }
+                - { property: "''", label: 'PodatnikVatCzynny' }
+                - { property: "''", label: 'Eksport' }
+                - { property: "''", label: 'LimitKredytu' }
+                - { property: "''", label: 'Termin' }
+                - { property: "''", label: 'FormaPlatnosci' }
+                - { property: "''", label: 'Ceny' }
+                - { property: "''", label: 'CenyNazwa' }
+                - { property: "''", label: 'Upust' }
+                - { property: "''", label: 'NieNaliczajOdsetek' }
+                - { property: "''", label: 'MetodaKasowa' }
+                - { property: "''", label: 'WindykacjaEMail' }
+                - { property: "''", label: 'WindykacjaTelefonSms' }
+                - { property: "''", label: 'AlgorytmNettoBrutto' }
+                - { property: "''", label: 'Waluta' }
+#                additional fields to delete in tweaker after fetch data
+                - { property: 'cg.id', alias: 'cg_id', label: 'ID UMOWY GAZ' }
+                - { property: 'ce.id', alias: 'ce_id', label: 'ID UMOWY PRAD' }
+
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractGas', alias: 'ccg', condition: 'ccg.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractGas', alias: 'cg', condition: 'ccg.contract = cg.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractEnergy', alias: 'cce', condition: 'cce.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergy', alias: 'ce', condition: 'cce.contract = ce.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusDepartment', alias: 'cesd', condition: 'ce.statusDepartment = cesd.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusDepartment', alias: 'cgsd', condition: 'cg.statusDepartment = cgsd.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractAuthorization', alias: 'cesa', condition: 'ce.statusAuthorization = cesa.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractAuthorization', alias: 'cgsa', condition: 'cg.statusAuthorization = cgsa.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cesca', condition: 'ce.statusContractAuthorization = cesca.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgsca', condition: 'cg.statusContractAuthorization = cgsca.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractVerification', alias: 'cesv', condition: 'ce.statusVerification = cesv.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractVerification', alias: 'cgsv', condition: 'cg.statusVerification = cgsv.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescv', condition: 'ce.statusContractVerification = cescv.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscv', condition: 'cg.statusContractVerification = cgscv.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractAdministration', alias: 'cesad', condition: 'ce.statusAdministration = cesad.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractAdministration', alias: 'cgsad', condition: 'cg.statusAdministration = cgsad.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescad', condition: 'ce.statusContractAdministration = cescad.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscad', condition: 'cg.statusContractAdministration = cgscad.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractControl', alias: 'cesc', condition: 'ce.statusControl = cesc.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractControl', alias: 'cgsc', condition: 'cg.statusControl = cgsc.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescc', condition: 'ce.statusContractControl = cescc.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscc', condition: 'cg.statusContractControl = cgscc.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractProcess', alias: 'cesp', condition: 'ce.statusProcess = cesp.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractProcess', alias: 'cgsp', condition: 'cg.statusProcess = cgsp.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescp', condition: 'ce.statusContractProcess = cescp.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscp', condition: 'cg.statusContractProcess = cgscp.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractFinances', alias: 'cesf', condition: 'ce.statusFinances = cesf.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContractFinances', alias: 'cgsf', condition: 'cg.statusFinances = cgsf.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cescf', condition: 'ce.statusContractFinances = cescf.id' }
+                - { class: 'GCRM\CRMBundle\Entity\StatusContract', alias: 'cgscf', condition: 'cg.statusContractFinances = cgscf.id' }
+                - { class: 'GCRM\CRMBundle\Entity\User', alias: 'u', condition: '(ce.user = u.id OR cg.user = u.id)' }
+                - { class: 'Wecoders\EnergyBundle\Entity\Brand', alias: 'ceb', condition: 'ce.brand = ceb.id' }
+                - { class: 'Wecoders\EnergyBundle\Entity\Brand', alias: 'cgb', condition: 'cg.brand = cgb.id' }
+                - { class: 'GCRM\CRMBundle\Entity\User', alias: 'sr', condition: '(ce.salesRepresentative = sr.id OR cg.salesRepresentative = sr.id)' }
+                - { class: 'Wecoders\EnergyBundle\Entity\Tariff', alias: 'cet', condition: 'ce.tariff = cet.id' }
+                - { class: 'Wecoders\EnergyBundle\Entity\Tariff', alias: 'cgt', condition: 'cg.tariff = cgt.id' }
+                - { class: 'Wecoders\EnergyBundle\Entity\Osd', alias: 'cgo', condition: 'cg.osd = cgo.id' }
+                - { class: 'Wecoders\EnergyBundle\Entity\PriceList', alias: 'cepl', condition: 'ce.priceList = cepl.id', }
+                - { class: 'Wecoders\EnergyBundle\Entity\PriceList', alias: 'cgpl', condition: 'cg.priceList = cgpl.id', }
+                - { class: 'GCRM\CRMBundle\Entity\ContractGasAttachment', alias: 'cga', condition: 'cga.contract = cg.id', }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergyAttachment', alias: 'cea', condition: 'cea.contract = ce.id', }
+                - { class: 'GCRM\CRMBundle\Entity\RecordingGasAttachment', alias: 'cgra', condition: 'cgra.contract = cg.id', }
+                - { class: 'GCRM\CRMBundle\Entity\RecordingEnergyAttachment', alias: 'cera', condition: 'cera.contract = ce.id', }
+                - { class: 'GCRM\CRMBundle\Entity\UserAndBranch', alias: 'uab', condition: 'uab.user = sr.id'}

@@ -1,0 +1,22 @@
+services:
+    wecoders.invoicebundle.service.invoice_data:
+        class: Wecoders\InvoiceBundle\Service\InvoiceData
+        autowire: true
+
+    wecoders.invoicebundle.service.number_model:
+        class: Wecoders\InvoiceBundle\Service\NumberModel
+        autowire: true
+
+    wecoders.invoicebundle.service.invoice_model:
+        class: Wecoders\InvoiceBundle\Service\InvoiceModel
+        autowire: true
+
+    wecoders.invoicebundle.service.invoice_template_model:
+        class: Wecoders\InvoiceBundle\Service\InvoiceTemplateModel
+        autowire: true
+
+    wecoders.invoicebundle.command.insert_predefined_data:
+        class: Wecoders\InvoiceBundle\Command\InsertPredefinedDataCommand
+        autowire: true
+        tags:
+            - { name: console.command }

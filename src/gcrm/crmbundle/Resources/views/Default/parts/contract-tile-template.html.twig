@@ -1,0 +1,36 @@
+<div class="col-xs-12 col-md-3">
+    <div class="contract-box {% if contract.isReturned %} is-returned {% endif %}">
+        <div class="type">{{ key }}</div>
+        <div class="text-col">
+            <table>
+                <tr>
+                    <td>Status:</td>
+                    <td>
+                        {% if contractStatus.title is defined and contractStatus.title %}{{ contractStatus.title }}{% else %}brak{% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Nr:</td>
+                    <td>{% if contract.contractNumber %}{{ contract.contractNumber }}{% else %}brak{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>Nr ewidencyjny:</td>
+                    <td>{% if contract.registerNumber is defined and contract.registerNumber %}{{ contract.registerNumber }}{% else %}brak{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>Nr kartonu:</td>
+                    <td>{% if contract.box is defined and contract.box %}{{ contract.box }}{% else %}brak{% endif %}</td>
+                </tr>
+            </table>
+            <div>
+                {% if contract.packageToSend %}UMOWA W PACZCE{% elseif contract.isOnPackageList %}UMOWA NA LIŚCIE DO PACZEK{% endif %}
+                {% if contract.isBrokenContract or contract.isResignation %}WYCOFANE Z OBIEGU{% endif %}
+            </div>
+        </div>
+
+        <div class="button-line">
+            <a href="{{ contract.editLinkByStatusDepartment }}&referer=/admin/client-page/{{ client.id }}" class="btn btn-success">Edytuj</a>
+        </div>
+        <span class="status {% if contractStatus.statusContractAction.code is defined and contractStatus.statusContractAction.code == 'GO' %}is-positive{% else %}is-negative{% endif %}"></span>
+    </div>
+</div>

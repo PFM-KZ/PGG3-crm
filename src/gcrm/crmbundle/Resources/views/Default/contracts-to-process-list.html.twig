@@ -1,0 +1,281 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+
+{% block head_stylesheets %}
+    <link rel="stylesheet" href="{{ asset('bundles/easyadmin/stylesheet/easyadmin-all.min.css') }}">
+    <style>
+        {{ easyadmin_config('_internal.custom_css')|raw }}
+    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/gcrmcrm/css/admin/import.css') }}">
+{% endblock %}
+
+{% block content %}
+    {% set referer = app.request.query.get('referer') ?: app.request.pathInfo  %}
+
+    <script src="{{ asset('bundles/gcrmcrm/js/scripts.js') }}"></script>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+
+
+
+
+    <div class="content" id="main">
+
+
+        <section class="content-header" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-sm-5">
+                    <h1 class="title">Lista umów do paczek</h1>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="field-group">
+            <div class="box box-default">
+                {#<div class="box-header with-border">#}
+                    {#<h3 class="box-title">#}
+                        {#<b>Umowy w paczce</b>#}
+                    {#</h3>#}
+                {#</div>#}
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+
+
+
+
+                            <form action="{{ url('packagesListPostAction') }}?contractType={{ contractTypeCode }}&entityClass={{ entityClass }}" method="post" novalidate>
+
+                                <div class="table-responsive">
+                                    <style>
+                                        table {
+                                            background: #FFFFFF;
+                                            border: 1px solid #CCC;
+                                        }
+                                        th {
+                                            background: #EEE;
+                                            border-bottom: 2px solid #CCC !important;
+                                            padding: 0 !important;
+                                        }
+                                        th > * {
+                                            color: #222222;
+                                            display: block;
+                                            padding: 10px 6px;
+                                            white-space: nowrap;
+                                        }
+                                        td {
+                                            vertical-align: middle !important;
+                                            border-top: 1px solid #DDD;
+                                        }
+                                        tr:hover td {
+                                            background: #F5F5F5;
+                                        }
+                                    </style>
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th style="text-align: center; width: 65px !important;">
+                                                <a href="#" id="toggleMultiCheck">Zaznacz</a>
+                                            </th>
+
+                                            <th><span>Akcje</span></th>
+                                            <th>
+                                                <span>Lp.</span>
+                                            </th>
+
+                                            <th data-property-name="crmNr" class="  string ">
+                                                <span>Numer umowy</span>
+                                            </th>
+
+                                            <th data-property-name="correctionNr" class="  string ">
+                                                    <span>Imię</span>
+                                            </th>
+
+                                            <th data-property-name="crmInvoiceCreatedDate" class="  datetime ">
+                                                    <span>Nazwisko</span>
+                                            </th>
+
+                                            <th data-property-name="clientFullName" class="  string ">
+                                                    <span>Pesel</span>
+                                            </th>
+
+
+
+                                            <th data-property-name="calculatedSummaryGrossValue" class=" virtual text ">
+                                                <span>Numer telefonu</span>
+                                            </th>
+
+                                            <th data-property-name="overdueDateOfPayment" class=" virtual text ">
+                                                <span>Wprowadził</span>
+                                            </th>
+
+                                            <th><span>Marka</span></th>
+                                            <th><span>Oddział</span></th>
+                                            <th><span>Spad (odstąpienie / zerwanie)</span></th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        {% for clientAndContracts in clientsAndContracts %}
+                                            <tr data-id="112">
+                                                <td style="text-align: center; background-color: #f5f5f5;" class="multi-checkbox-action-column">
+                                                    <input type="checkbox" name="selectedRows[]" value="{{ clientAndContracts.contract.id }}">
+                                                </td>
+
+                                                <td width="10" data-label="Akcje" class="actions">
+                                                    <a class="action-displayInvoice btn btn-default" href="{{ url('clientPage', { id:clientAndContracts.client.id }) }}" target="_self">Karta klienta</a>
+                                                </td>
+
+                                                <td>{{ loop.index }}</td>
+
+                                                <td data-label="" class=" text ">
+                                                    {% if clientAndContracts.contract.contractNumber %}{{ clientAndContracts.contract.contractNumber }}{% else %}brak{% endif %}
+                                                </td>
+
+                                                <td data-label="" class=" text ">
+                                                    {{ clientAndContracts.client.name }}
+                                                </td>
+
+                                                <td data-label="" class=" text ">
+                                                    {{ clientAndContracts.client.surname }}
+                                                </td>
+
+                                                <td data-label="" class=" text ">
+                                                    {{ clientAndContracts.client.pesel }}
+                                                </td>
+
+                                                <td data-label="" class=" text ">
+                                                    {{ clientAndContracts.client.telephoneNr }}
+                                                </td>
+
+                                                <td data-label="" class=" text ">
+                                                    {{ clientAndContracts.contract.user }}
+                                                </td>
+
+                                                <td>
+                                                    {{ clientAndContracts.contract.brand }}
+                                                </td>
+                                                <td>
+                                                    {% if clientAndContracts.contract.salesRepresentative %}
+                                                        {% if clientAndContracts.contract.salesRepresentative.branch is defined and clientAndContracts.contract.salesRepresentative.branch %}
+                                                            {{ clientAndContracts.contract.salesRepresentative.branch }}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if clientAndContracts.contract.isResignation or clientAndContracts.contract.isBrokenContract %}
+                                                        <span style="color: #ff1a15;">TAK</span>
+                                                    {% else %}
+                                                        <span style="color: #00bf12">NIE</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+
+
+
+
+                                    <div id="multi-action-buttons" style="margin-bottom: 15px;">
+                                        {# after click, modal is enabled - when click 'yes' on modal hidden input multideleteaction is filled and form is processed #}
+                                        <button type="submit" name="multiUnlinkAction" value="1" class="btn btn-danger">Usuń z listy</button>
+
+                                        {#<br><br>#}
+                                        {#<div class="select">#}
+                                            {#<label for="multiSendTo">Wyślij do oddziału</label>#}
+                                            {#<select name="multiSendTo" id="multiSendTo">#}
+                                                {#{% for branch in branches %}#}
+                                                    {#<option value="{{ branch.id }}">{{ branch.title }}</option>#}
+                                                {#{% endfor %}#}
+                                            {#</select>#}
+                                        {#</div>#}
+<br>
+<br>
+                                        <button type="submit" name="multiMakePackage" value="1" class="btn btn-success">Utwórz paczkę</button>
+                                        {#<button type="submit" class="btn btn-action" name="multiCloneAction" value="1">Klonuj zaznaczone</button>#}
+                                    </div>
+
+                                    <script>
+                                        var isMultiCheck = false;
+                                        $('#toggleMultiCheck').click(function(e) {
+                                            e.preventDefault();
+
+                                            var form = $(this).closest('form');
+                                            var checkboxes = form.find('input[type="checkbox"]');
+
+                                            if (checkboxes.length) {
+                                                for (var i = 0; i < checkboxes.length; i++) {
+                                                    if (!isMultiCheck) {
+                                                        checkboxes.eq(i).prop('checked', true);
+                                                    } else {
+                                                        checkboxes.eq(i).prop('checked', false);
+                                                    }
+                                                }
+                                                isMultiCheck = isMultiCheck ? false : true;
+                                                initToggleActivateMultiActionButtons();
+                                            }
+                                        });
+
+                                        $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]').change(function() {
+                                            initToggleActivateMultiActionButtons();
+                                        });
+                                        initToggleActivateMultiActionButtons();
+
+                                        function initToggleActivateMultiActionButtons()
+                                        {
+                                            var tableCheckboxes = $('#main form .table-responsive .table td.multi-checkbox-action-column input[type="checkbox"]');
+
+                                            var shouldEnableMultiActionButtons = false;
+                                            for (var i = 0; i < tableCheckboxes.length; i++) {
+                                                if (tableCheckboxes.eq(i).prop('checked')) {
+                                                    shouldEnableMultiActionButtons = true;
+                                                }
+                                            }
+
+                                            shouldEnableMultiActionButtons ? enableMultiActionButtons() : disableMultiActionButtons();
+                                        }
+
+                                        function disableMultiActionButtons() {
+                                            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+                                            if (multiActionButtons.length) {
+                                                multiActionButtons.prop('disabled', true);
+                                            }
+                                        }
+
+                                        function enableMultiActionButtons() {
+                                            var multiActionButtons = $('#multi-action-buttons').find('button');
+
+                                            if (multiActionButtons.length) {
+                                                multiActionButtons.prop('disabled', false);
+                                            }
+                                        }
+                                    </script>
+
+
+                                </div>
+
+                            </form>
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+easy_admin:
+    entities:
+        TariffEnergy:
+            class: Wecoders\EnergyBundle\Entity\Tariff
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - { property: 'title', label: 'Nazwa taryfy' }
+                    - { property: 'code', label: 'Kod taryfy' }
+                    - { property: 'invoicingPeriodInMonths', label: 'Okres fakturowania (mc)' }
+                    - { property: 'energyType', label: 'Typ', type: 'string' }
+            form:
+                fields:
+                    - { property: 'title', label: 'Nazwa taryfy' }
+                    - { property: 'code', label: 'Kod taryfy' }
+                    - { property: 'invoicingPeriodInMonths', label: 'Okres fakturowania (mc)' }
+                    - { property: 'energyType', label: 'Typ', type: 'choice', type_options: { required: true, multiple: false, expanded: false, choices: { PRĄD: 1, GAZ: 2 } } }

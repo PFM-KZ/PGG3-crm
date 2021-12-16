@@ -1,0 +1,35 @@
+exporter_bundle:
+    tables:
+        ClientProcessTerminatedTemplate:
+            class: GCRM\CRMBundle\Entity\Client
+            tweaker: 'Wecoders\EnergyBundle\Service\Exporter\ClientProcessTerminatedTemplateTweaker'
+            filter: Wecoders\EnergyBundle\Service\Exporter\ClientDataFilter
+            alias: c
+            groupBy: c.id
+            options:
+                inc_row_number: true
+            fields:
+                - { property: "CONCAT(c.name, ' ', c.surname)", alias: 'client_full_name', label: 'Nazwa odbiorcy'}
+                # CONCTRACT GAS
+                - { property: "CONCAT(cg.ppStreet, '|', cg.ppHouseNr, '|', cg.ppApartmentNr, '|', cg.ppZipCode, '|', cg.ppCity) ", alias: 'contract_gas_pp_full_address', label: 'Adres PP' }
+                - { property: 'cg.ppCode', alias: 'contract_gas_pp_code', label: 'Numer PPE / numer licznika' }
+                - { property: 'cg.currentSeller', alias: 'contract_gas_current_seller', label: 'Obecny sprzedawca' }
+                - { property: 'cg.contractNumber', alias: 'contract_gas_contract_number', label: 'Numer umowy' }
+                - { property: 'cg.periodOfNotice', alias: 'contract_gas_period_of_notice', label: 'Okres wypowiedzenia' }
+                - { property: 'contract_gas_type', value: 'GAZ', label: 'Typ umowy' }
+                # CONTRACT ENERGY
+                - { property: "CONCAT(ce.ppStreet, '|', ce.ppHouseNr, '|', ce.ppApartmentNr, '|', ce.ppZipCode, '|', ce.ppCity)", alias: 'contract_energy_pp_full_address', label: 'Adres PP' }
+                - { property: 'ce.ppCode', alias: 'contract_energy_pp_code', label: 'Numer PPE / numer licznika' }
+                - { property: 'ce.ppCounterNr', alias: 'contract_energy_pp_counter_nr' }
+                - { property: 'ce.currentSeller', alias: 'contract_energy_current_seller', label: 'Obecny sprzedawca' }
+                - { property: 'ce.contractNumber', alias: 'contract_energy_contract_number', label: 'Numer umowy' }
+                - { property: 'ce.periodOfNotice', alias: 'contract_energy_period_of_notice', label: 'Okres wypowiedzenia' }
+                - { property: 'contract_energy_type', value: 'PRĄD', label: 'Typ umowy' }
+            joinTables:
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractGas', alias: 'ccg', condition: 'ccg.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractGas', alias: 'cg', condition: 'ccg.contract = cg.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ClientAndContractEnergy', alias: 'cce', condition: 'cce.client = c.id' }
+                - { class: 'GCRM\CRMBundle\Entity\ContractEnergy', alias: 'ce', condition: 'cce.contract = ce.id' }
+                - { class: 'GCRM\CRMBundle\Entity\User', alias: 'sr', condition: '(ce.salesRepresentative = sr.id OR cg.salesRepresentative = sr.id)' }
+                - { class: 'GCRM\CRMBundle\Entity\UserAndBranch', alias: 'uab', condition: 'uab.user = sr.id'}
+                

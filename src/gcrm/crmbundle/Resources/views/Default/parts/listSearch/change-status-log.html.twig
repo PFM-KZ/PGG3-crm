@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-4 selects-date-col">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsContractNumber) }}
+                    {{ form_widget(listSearchForm.lsContractNumber) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text apply-select">
+                    {{ form_label(listSearchForm.lsStatusDepartment) }}
+                    {{ form_widget(listSearchForm.lsStatusDepartment) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-4 selects-date-col">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text apply-select">
+                    {{ form_label(listSearchForm.lsStatusContractFrom) }}
+                    {{ form_widget(listSearchForm.lsStatusContractFrom) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text apply-select">
+                    {{ form_label(listSearchForm.lsStatusContractTo) }}
+                    {{ form_widget(listSearchForm.lsStatusContractTo) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-4 selects-date-col">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsCreatedDateFrom) }}
+                    {{ form_widget(listSearchForm.lsCreatedDateFrom) }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="input-text">
+                    {{ form_label(listSearchForm.lsCreatedDateTo) }}
+                    {{ form_widget(listSearchForm.lsCreatedDateTo) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

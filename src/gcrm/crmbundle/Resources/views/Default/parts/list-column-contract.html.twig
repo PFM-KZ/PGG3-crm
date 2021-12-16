@@ -1,0 +1,10 @@
+<div style="display: table-row; {% if contract.isReturned %} background: #FFACA9; {% endif %}">{% if contract.isResignation or contract.isBrokenContract %}<span style="font-size: 11px; font-weight: bold; background-color: #8c0000; color: white; padding: 5px; border-radius: 5px;">WYCOFANE Z OBIEGU</span> {% endif %}{% if contract.packageToSend %}<span style="font-size: 11px; font-weight: bold; background-color: #3a50bd; color: white; padding: 5px; border-radius: 5px;">W PACZCE</span> {% elseif contract.isOnPackageList %}<span style="font-size: 11px; font-weight: bold; background-color: #3a50bd; color: white; padding: 5px; border-radius: 5px;">NA LIŚCIE DO PACZEK</span> {% endif %}
+    {#<a href="{{ contract|contractEditLinkByStatusDepartmentAndType(contractTypeCode) }}&referer={{ referer }}">#}
+    <a href="{{ contract|contractEditLinkByStatusDepartmentAndType(contractTypeCode) }}&referer=/admin/client-page/{{ item.id }}">
+        <span style="display: table-cell; padding: 1px 0 0 1px; font-size: 12px;"><b>{{ contractTypeTitle }}</b>&nbsp;/&nbsp;{% if contract.statusDepartment.title is defined %}{{ contract.statusDepartment.title }}{% else %}brak{% endif %}</span>
+        {#<span style="display: table-cell; padding: 1px 0 0 1px; font-size: 12px;"><b>PRĄD</b></span>#}
+        {% set contractStatus = contract|contractStatus() %}
+        <span style="display: table-cell; padding: 1px; white-space: nowrap; font-size: 12px;" class="{% if contractStatus.statusContractAction.code is defined and contractStatus.statusContractAction.code == 'GO' %}status-positive{% else %}status-negative{% endif %}">&nbsp;/&nbsp;{% if contractStatus.title is defined %}{{ contractStatus.title }}{% endif %}</span>
+        <span style="display: table-cell; padding: 1px; white-space: nowrap; font-size: 12px;" class="">{% if contract.contractNumber is defined and contract.contractNumber %}&nbsp;/&nbsp;{{ contract.contractNumber }}{% else %}&nbsp;/&nbsp;brak{% endif %}</span>
+    </a>
+</div>

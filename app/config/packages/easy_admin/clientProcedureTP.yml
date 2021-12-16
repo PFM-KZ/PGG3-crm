@@ -1,0 +1,12 @@
+easy_admin:
+    entities:
+        ClientProcedureTP:
+            class: GCRM\CRMBundle\Entity\ClientProcedureTP
+            permissions: ['ROLE_CLIENTS']
+            list:
+                permissions: ['ROLE_CLIENTS_LIST']
+                fields:
+                    - { property: 'client', label: 'Klient' }
+            form:
+                fields:
+                    - { property: 'client', label: 'Klient', type: 'GCRM\CRMBundle\Form\Type\LazyChoiceType', type_options: { required: false, data_class: 'GCRM\CRMBundle\Entity\Client', attr: { data-ajax-lazyload: 'true', 'data-ajax-route': 'fetchClientData' } } }

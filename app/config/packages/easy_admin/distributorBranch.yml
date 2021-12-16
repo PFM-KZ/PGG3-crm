@@ -1,0 +1,13 @@
+easy_admin:
+    entities:
+        DistributorBranch:
+            class: GCRM\CRMBundle\Entity\DistributorBranch
+            permissions: ['ROLE_CONFIG']
+            list:
+                fields:
+                    - { property: 'distributor', label: 'Dystrybucja' }
+                    - { property: 'title', label: 'Nazwa' }
+            form:
+                fields:
+                    - { property: 'distributor', label: 'Dystrybucja' }
+                    - { property: 'title', label: 'Nazwa' }

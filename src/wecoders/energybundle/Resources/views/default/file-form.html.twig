@@ -1,0 +1,46 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+{% trans_default_domain 'WeCodersEnergyBundle' %}
+
+{% block content %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <section id="main" class="content">
+        {{ form_start(form, { attr: { 'class': 'form-horizontal edit-form'}, 'translation_domain': 'WeCodersEnergyBundle' }) }}
+        <div class="row">
+            <div class="field-group col-xs-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{ title }}</h3>
+                        {% if description is defined %}
+                            <p>{{ description|raw }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group field-file">
+                                    <label for="{{ form.file.vars.id }}" class="col-sm-2 control-label">
+                                        {{ form.file.vars.label|trans }}
+                                    </label>
+                                    <div class="col-sm-10">
+                                        {{ form_widget(form.file, { attr: { 'class': 'form-control'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12" style="text-align: right">
+                                {{ form_widget(form.submit, { attr: { 'class': 'btn btn-primary' }, 'translation_domain': 'WeCodersEnergyBundle'}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </section>
+{% endblock %}

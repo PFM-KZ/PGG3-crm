@@ -1,0 +1,189 @@
+easy_admin:
+    entities:
+        ThreadType:
+            class: TZiebura\CorrespondenceBundle\Entity\ThreadType
+            controller: TZiebura\CorrespondenceBundle\Controller\AdminThreadController
+            permissions: ['ROLE_SUPERADMIN']
+            new:
+                title: 'Nowy typ wątku'
+            edit:
+                title: 'Edytujesz typ wątku #%%entity_id%%'
+            list:
+                title: 'Typy wątków'
+                actions:
+                    - { name: 'new', label: 'Dodaj nowy typ wątku' }
+                fields:
+                    - id
+                    - { property: 'name', label: 'Nazwa' }
+            form:
+                fields:
+                    - { property: 'name', label: 'Nazwa' }
+        Thread:
+            class: TZiebura\CorrespondenceBundle\Entity\Thread
+            controller: TZiebura\CorrespondenceBundle\Controller\AdminThreadController
+            permissions: ['ROLE_CORRESPONDENCE']
+            show:
+                permissions: ['ROLE_CORRESPONDENCE_SHOW']
+            edit:
+                title: 'Edycja wątku #%%entity_id%%'
+                permissions: ['ROLE_CORRESPONDENCE_EDIT']
+            new:
+                title: 'Nowy wątek'
+                permissions: ['ROLE_CORRESPONDENCE_NEW']
+            delete:
+                permissions: ['ROLE_CORRESPONDENCE_DELETE']
+            search:
+                permissions: ['ROLE_CORRESPONDENCE_SEARCH']
+            list:
+                title: 'Wątki'
+                permissions: ['ROLE_CORRESPONDENCE_LIST']
+                actions:
+                - { name: 'addReply', label: 'Dodaj odpowiedź' }
+                - { name: 'show', label: 'Wyświetl cały wątek' }
+                - { name: 'close', label: 'Zamknij wątek' }
+                - { name: 'new', label: 'Dodaj nowy wątek' }
+                dql_filter: 'entity.parent IS NULL AND entity.isActive = 1'
+                fields:
+                    - id
+                    - { property: 'threadType', label: 'Typ' }
+                    - { property: 'type', label: 'Rodzaj poczty', template: 'CorrespondenceBundle:admin:humanizedType.html.twig' }
+                    - { property: 'dispatchDate', label: 'Data nadania', type: date }
+                    - { property: 'mainReplyDeadline', label: 'Termin odpowiedzi', type: date }
+                    - { property: 'sender', label: 'Nadawca' }
+                    - { property: 'address', label: 'Adres' }
+                    - { property: 'form', label: 'Forma korespondencji', template: 'CorrespondenceBundle:admin:humanizedForm.html.twig' }
+                    - { property: 'createdBy', label: 'Utworzone przez' }
+                    - { property: 'createdAt', label: 'Data utworzenia' }
+                    - { property: 'updatedAt', label: 'Data modyfikacji' }
+                    - { property: 'isActive', label: 'Jest otwarty', type: boolean }
+            form:
+                title: 'Dodaj nowy wątek'
+                form_options: { validation_groups: ['main_thread_validation'] }
+                fields:
+                    - { type: 'group', css_class: 'col-sm-12 new_thread_step1', label: 'Informacje' }
+                    - { property: 'threadType', label: 'Typ', type_options: { required: false, placeholder: 'Wybierz...' } }
+                    - { property: 'type', label: 'Rodzaj poczty', type: choice, type_options: { required: false, choices: { 'Przychodząca': 'incoming', 'Wychodząca': 'outgoing' }, placeholder: 'Wybierz...', attr: { data-widget: 'select2' } } }
+                    - { property: 'threadAndClients', label: 'Klienci', type: collection, type_options: { entry_type: 'GCRM\CRMBundle\Form\ThreadClientType', by_reference: false, allow_add: true, allow_delete: true } }
+                    - { property: 'sender', label: 'Nadawca', type_options: { required: false } }
+                    - { property: 'address', label: 'Adres', type_options: { required: false } }
+
+                    - { type: 'group', css_class: 'col-sm-12 new_thread_step2', label: 'Terminy' }
+                    - { property: 'dispatchDate', label: 'Data nadania', nullable: false, type: date, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'entryDate', label: 'Data wpłynięcia', nullable: false, type: date, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'replyDeadline', label: 'Termin odpowiedzi', nullable: false, type: date, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'omitDeadline', label: 'Nie ma terminu odpowiedzi' }
+                    - { type: 'group', css_class: 'col-sm-12 new_thread_step3', label: 'Korespondencja' }
+                    - { property: 'form', label: 'Forma korespondencji', type: choice, type_options: { required: false, choices: { 'Rozmowa telefoniczna': 'phone', 'Email': 'email', 'List': 'letter', 'Wizyta w biurze obsługi klienta': 'visit' }, placeholder: 'Wybierz...', attr: { data-widget: 'select2' } } }
+                    - { property: 'attachments', label: 'Załączniki', type: collection, type_options: { entry_type: 'TZiebura\CorrespondenceBundle\Form\ThreadAttachmentType', by_reference: false, allow_add: true, allow_delete: true } }
+        DeadlineThread:
+            class: 'TZiebura\CorrespondenceBundle\Entity\Thread'
+            disabled_actions: ['new', 'edit', 'delete']
+            permissions: ['ROLE_CORRESPONDENCE']
+            list:
+                permissions: ['ROLE_CORRESPONDENCE_LIST']
+                title: 'Wątki z najbliższym terminem odpowiedzi'
+                dql_filter: 'entity.parent IS NULL AND entity.isActive = 1 AND entity.mainReplyDeadline IS NOT NULL'
+                sort: ['mainReplyDeadline', 'ASC']
+                actions:
+                    - { name: 'addReply', label: 'Dodaj odpowiedź' }
+                    - { name: 'show', label: 'Wyświetl cały wątek' }
+                fields:
+                    - id
+                    - { property: 'threadType', label: 'Typ' }
+                    - { property: 'type', label: 'Rodzaj poczty', template: 'CorrespondenceBundle:admin:humanizedType.html.twig' }
+                    - { property: 'mainReplyDeadline', label: 'Termin odpowiedzi', type: date }
+                    - { property: 'sender', label: 'Nadawca' }
+                    - { property: 'address', label: 'Adres' }
+                    - { property: 'form', label: 'Forma korespondencji', template: 'CorrespondenceBundle:admin:humanizedForm.html.twig' }
+            form:
+                title: 'Dodaj nową odpowiedź'
+                form_options: { validation_groups: ['main_thread_validation'] }
+                fields:
+                    - { type: 'group', css_class: 'col-sm-12 new_thread_step1', label: 'Informacje' }
+                    - { property: 'threadType', label: 'Typ', type_options: { required: false, placeholder: 'Wybierz...' } }
+                    - { property: 'type', label: 'Rodzaj poczty', type: choice, type_options: { required: false, choices: { 'Przychodząca': 'incoming', 'Wychodząca': 'outgoing' }, placeholder: 'Wybierz...', attr: { data-widget: 'select2' } } }
+                    - { property: 'threadAndClients', label: 'Klienci', type: collection, type_options: { entry_type: 'GCRM\CRMBundle\Form\ThreadClientType', by_reference: false, allow_add: true, allow_delete: true } }
+                    - { property: 'sender', label: 'Nadawca', type_options: { required: false } }
+                    - { property: 'address', label: 'Adres', type_options: { required: false } }
+
+                    - { type: 'group', css_class: 'col-sm-12 new_thread_step2', label: 'Terminy' }
+                    - { property: 'dispatchDate', label: 'Data nadania', nullable: false, type: date, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'entryDate', label: 'Data wpłynięcia', nullable: false, type: date, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'replyDeadline', label: 'Termin odpowiedzi', nullable: false, type: date, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'omitDeadline', label: 'Nie ma terminu odpowiedzi' }
+                    - { type: 'group', css_class: 'col-sm-12 new_thread_step3', label: 'Korespondencja' }
+                    - { property: 'form', label: 'Forma korespondencji', type: choice, type_options: { required: false, choices: { 'Rozmowa telefoniczna': 'phone', 'Email': 'email', 'List': 'letter', 'Wizyta w biurze obsługi klienta': 'visit' }, placeholder: 'Wybierz...', attr: { data-widget: 'select2' } } }
+                    - { property: 'attachments', label: 'Załączniki', type: collection, type_options: { entry_type: 'TZiebura\CorrespondenceBundle\Form\ThreadAttachmentType', by_reference: false, allow_add: true, allow_delete: true } }
+        ClosedThread:
+            class: TZiebura\CorrespondenceBundle\Entity\Thread
+            controller: TZiebura\CorrespondenceBundle\Controller\AdminThreadController
+            permissions: ['ROLE_CORRESPONDENCE']
+            disabled_actions: ['delete', 'new', 'edit']
+            list:
+                permissions: ['ROLE_CORRESPONDENCE_LIST']
+                title: 'Zamknięte wątki'
+                dql_filter: 'entity.parent IS NULL AND entity.isActive = 0'
+                actions:
+                - { name: 'show', label: 'Wyświetl cały wątek' }
+                fields:
+                    - id
+                    - { property: 'threadType', label: 'Typ' }
+                    - { property: 'type', label: 'Rodzaj poczty', template: 'CorrespondenceBundle:admin:humanizedType.html.twig' }
+                    - { property: 'dispatchDate', label: 'Data nadania', type: date }
+                    - { property: 'mainReplyDeadline', label: 'Termin odpowiedzi', type: date }
+                    - { property: 'sender', label: 'Nadawca' }
+                    - { property: 'address', label: 'Adres' }
+                    - { property: 'form', label: 'Forma korespondencji', template: 'CorrespondenceBundle:admin:humanizedForm.html.twig' }
+                    - { property: 'createdBy', label: 'Utworzone przez' }
+                    - { property: 'createdAt', label: 'Data utworzenia' }
+                    - { property: 'updatedAt', label: 'Data modyfikacji' }
+                    - { property: 'isActive', label: 'Jest otwarty', type: boolean }
+        ThreadAdmin:
+            class: TZiebura\CorrespondenceBundle\Entity\Thread
+            controller: TZiebura\CorrespondenceBundle\Controller\AdminThreadController
+            permissions: ['ROLE_SUPERADMIN']
+            edit:
+                title: 'Edycja wątku #%%entity_id%%'
+            new:
+                title: 'Nowy wątek'
+            list:
+                title: 'Wszystkie wątki i odpowiedzi'
+                actions:
+                    - { name: 'new', label: 'Dodaj nowy wątek' }
+                fields:
+                    - id
+                    - { property: 'threadType', label: 'Typ' }
+                    - { property: 'parent', label: 'Rodzic' }
+                    - { property: 'child', label: 'Dziecko' }
+                    - { property: 'type', label: 'Rodzaj poczty', template: 'CorrespondenceBundle:admin:humanizedType.html.twig' }
+                    - { property: 'sender', label: 'Nadawca' }
+                    - { property: 'address', label: 'Adres' }
+                    - { property: 'form', label: 'Forma korespondencji', template: 'CorrespondenceBundle:admin:humanizedForm.html.twig' }
+                    - { property: 'createdBy', label: 'Utworzone przez' }
+                    - { property: 'createdAt', label: 'Data utworzenia' }
+                    - { property: 'updatedAt', label: 'Data modyfikacji' }
+                    - { property: 'isActive', label: 'Jest otwarty' }
+            form:
+                form_options: { validation_groups: ['main_thread_validation'] }
+                fields:
+                    - { type: 'group', css_css: 'col-sm-12', label: 'Relacje' }
+                    - { property: 'parent', label: 'Rodzic' }
+                    - { property: 'child', label: 'Dziecko' }
+                    - { property: 'createdBy', label: 'Utworzone przez' }
+
+                    - { type: 'group', css_class: 'col-sm-12 new_thread_step1', label: 'Informacje' }
+                    - { property: 'threadType', label: 'Typ', type_options: { required: false, placeholder: 'Wybierz...' } }
+                    - { property: 'type', label: 'Rodzaj poczty', type: choice, type_options: { required: false, choices: { 'Przychodząca': 'incoming', 'Wychodząca': 'outgoing' }, placeholder: 'Wybierz...', attr: { data-widget: 'select2' } } }
+                    - { property: 'threadAndClients', label: 'Klienci', type: collection, type_options: { entry_type: 'GCRM\CRMBundle\Form\ThreadClientType', by_reference: false, allow_add: true, allow_delete: true } }
+                    - { property: 'sender', label: 'Nadawca', type_options: { required: false } }
+                    - { property: 'address', label: 'Adres', type_options: { required: false } }
+
+                    - { type: 'group', css_class: 'col-sm-12 new_thread_step2', label: 'Terminy' }
+                    - { property: 'dispatchDate', label: 'Data nadania', nullable: false, type: date, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'entryDate', label: 'Data wpłynięcia', nullable: false, type: date, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'replyDeadline', label: 'Termin odpowiedzi', nullable: false, type: date, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'omitDeadline', label: 'Nie ma terminu odpowiedzi' }
+                    - { type: 'group', css_class: 'col-sm-12 new_thread_step3', label: 'Korespondencja' }
+                    - { property: 'form', label: 'Forma korespondencji', type: choice, type_options: { required: false, choices: { 'Rozmowa telefoniczna': 'phone', 'Email': 'email', 'List': 'letter', 'Wizyta w biurze obsługi klienta': 'visit' }, placeholder: 'Wybierz...', attr: { data-widget: 'select2' } } }
+                    - { property: 'attachments', label: 'Załączniki', type: collection, type_options: { entry_type: 'TZiebura\CorrespondenceBundle\Form\ThreadAttachmentType', by_reference: false, allow_add: true, allow_delete: true } }
+            

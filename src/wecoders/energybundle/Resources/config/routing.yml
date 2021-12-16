@@ -1,0 +1,3 @@
+wecoders_energy_homepage:
+    path:     /
+    defaults: { _controller: WecodersEnergyBundle:Default:index }

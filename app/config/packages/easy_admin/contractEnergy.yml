@@ -1,0 +1,692 @@
+easy_admin:
+    entities:
+        ClientAndContractEnergy:
+            class: GCRM\CRMBundle\Entity\ClientAndContractEnergy
+            permissions: ['ROLE_CONTRACTS']
+
+        ContractEnergyVerificationDepartment:
+            class: GCRM\CRMBundle\Entity\ContractEnergy
+            permissions: ['ROLE_CONTRACTS']
+            show:
+                permissions: ['ROLE_CONTRACTS_SHOW']
+            edit:
+                permissions: ['ROLE_CONTRACTS_EDIT']
+            new:
+                permissions: ['ROLE_CONTRACTS_NEW']
+            delete:
+                permissions: ['ROLE_CONTRACTS_DELETE']
+            search:
+                permissions: ['ROLE_CONTRACTS_SEARCH']
+                fields:
+                    - telephoneNumber
+                    - contractNumber
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'client', searchField: ['name', 'surname', 'pesel'] }
+            list:
+                permissions: ['ROLE_CONTRACTS_LIST']
+                actions:
+                    - { name: 'show' }
+                fields:
+                    - id
+                    - { property: 'statusDepartment', label: 'Departament' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'user', label: 'Wprowadził' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                actions:
+                    - { name: 'resetNegativeContractState', type: 'route', label: 'Przywróć do obiegu', css_class: 'btn btn-default' }
+                fields:
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Umowa' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'signDate', label: 'Data podpisania' }
+                    - { property: 'periodInMonths', label: 'Umowa na okres (mc)', type: 'choice', type_options: { multiple: false, expanded: false, choices: { 6: 6, 12: 12, 24: 24, 36: 36, 48: 48, 60: 60, 72: 72 } } }
+                    - { property: 'penaltyAmountPerMonth', type: 'number', label: 'Kara za zerwanie umowy (1 mc)' }
+                    - { type: 'section', label: 'Dane drugiej osoby zawierającej umowę' }
+                    - { property: 'secondPersonName', label: 'Imię' }
+                    - { property: 'secondPersonSurname', label: 'Nazwisko' }
+                    - { property: 'secondPersonPesel', label: 'Pesel' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Załączniki' }
+                    - { property: 'recordingAttachments', label: 'Nagrania', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\RecordingEnergyAttachmentType', by_reference: false } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Statusy' }
+                    - { property: 'statusDepartment', label: 'Departament', type_options: { disabled: true } }
+                    - { property: 'actualStatus', label: 'Aktualny status', type_options: { disabled: true } }
+                    - { property: 'statusContractAuthorization', label: 'Status autoryzacji', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'authorizationRecords'] } }
+                    - { property: 'commentAuthorization', label: 'Komentarz autoryzacji', type_options: { disabled: true } }
+                    - { property: 'statusContractVerification', label: 'Status weryfikacji', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'verificationRecords'] } }
+                    - { property: 'commentVerification', label: 'Komentarz weryfikacji' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Zgody / rabaty' }
+                    - { property: 'isRebateMarketingAgreement', label: 'Zgoda marketingowa' }
+                    - { property: 'isRebateTimelyPayments', label: 'Terminowe wpłaty' }
+                    - { property: 'isRebateElectronicInvoice', label: 'Elektroniczna faktura' }
+                    - { property: 'isMarketingAgreementColonnade', label: 'Zgoda marketingowa Colonnade' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Meta dane' }
+                    - { property: 'user', label: 'Wprowadził', type_options: { disabled: true } }
+                    - { property: 'brand', label: 'Marka' }
+                    - { property: 'isCallCenter', label: 'Call Center' }
+
+
+        ContractEnergyAdministrationDepartment:
+            class: GCRM\CRMBundle\Entity\ContractEnergy
+            permissions: ['ROLE_CONTRACTS']
+            show:
+                permissions: ['ROLE_CONTRACTS_SHOW']
+            edit:
+                permissions: ['ROLE_CONTRACTS_EDIT']
+            new:
+                permissions: ['ROLE_CONTRACTS_NEW']
+            delete:
+                permissions: ['ROLE_CONTRACTS_DELETE']
+            search:
+                permissions: ['ROLE_CONTRACTS_SEARCH']
+                fields:
+                    - contractNumber
+                    - { property: 'createdAt', label: 'Utworzone' }
+            list:
+                permissions: ['ROLE_CONTRACTS_LIST']
+                actions:
+                    - { name: 'clientPage', type: 'route', label: 'Karta klienta', css_class: 'btn' }
+                    - { name: 'show' }
+                fields:
+                    - id
+                    - { property: 'statusDepartment', label: 'Departament' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'user', label: 'Wprowadził' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                actions:
+                    - { name: 'resetNegativeContractState', type: 'route', label: 'Przywróć do obiegu', css_class: 'btn btn-default' }
+                fields:
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Umowa' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'periodInMonths', label: 'Umowa na okres (mc)', type: 'choice', type_options: { multiple: false, expanded: false, choices: { 6: 6, 12: 12, 24: 24, 36: 36, 48: 48, 60: 60, 72: 72 } } }
+                    - { property: 'penaltyAmountPerMonth', type: 'number', label: 'Kara za zerwanie umowy (1 mc)' }
+                    - { type: 'section', label: 'Dane drugiej osoby zawierającej umowę' }
+                    - { property: 'secondPersonName', label: 'Imię' }
+                    - { property: 'secondPersonSurname', label: 'Nazwisko' }
+                    - { property: 'secondPersonPesel', label: 'Pesel' }
+
+                    - { type: 'divider' }
+                    - { property: 'signDate', label: 'Data podpisania', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane' }
+                    - { property: 'changeOfSeller', label: 'Zmiana sprzedawcy', type: 'choice', type_options: { multiple: false, expanded: false, placeholder: 'Pusta wartość', choices: { Pierwsza: 1, Kolejna: 2 } } }
+                    - { property: 'distributor', label: 'Dystrybutor', type_options: { disabled: true } }
+                    - { property: 'distributorBranch', label: 'Dystrybutor oddział', type_options: { disabled: true } }
+                    - { property: 'currentSeller', label: 'Obecny sprzedawca', type_options: { disabled: true } }
+                    - { property: 'distributorObject', label: 'Dystrybutor', type_options: { required: false, attr: { data-ajax-update-target: 'true', data-ajax-update-target-id: 'distributorBranchObject', 'data-ajax-route': 'fetchDistributorBranchData' } } }
+                    - { property: 'distributorBranchObject', label: 'Dystrybutor oddział', type_options: { attr: { data-ajax-update-targeted: 'true', data-ajax-update-targeted-id: 'distributorBranchObject' } } }
+                    - { property: 'currentSellerObject', label: 'Obecny sprzedawca', type_options: { query_builder: ['GCRM\CRMBundle\Repository\SellerRepository', 'energyRecords'] } }
+                    - { type: 'divider' }
+                    - { property: 'periodOfNotice', label: 'Okres wypowiedzenia umowy' }
+                    - { type: 'divider' }
+                    - { property: 'product', label: 'Produkt' }
+                    - { type: 'section', label: 'Adres PPE' }
+                    - { property: 'ppName', label: 'PPE Nazwa' }
+                    - { property: 'ppZipCode', label: 'Kod pocztowy' }
+                    - { property: 'ppPostOffice', label: 'Poczta' }
+                    - { property: 'ppCity', label: 'Miasto' }
+                    - { property: 'ppStreet', label: 'Ulica' }
+                    - { property: 'ppHouseNr', label: 'Dom' }
+                    - { property: 'ppApartmentNr', label: 'Lokal' }
+                    - { type: 'divider' }
+#                    - { property: 'ppCode', label: 'PPE' }
+                    - { property: 'contractAndPpCodes', label: 'Kody PP', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndPpCodeType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndPpCode' } } }
+                    - { property: 'ppCounterNr', label: 'PPE nr licznika' }
+                    - { property: 'ppRegistrationNr', label: 'PPE nr ewid' }
+                    - { type: 'divider' }
+#                    - { property: 'priceList', label: 'Cennik' }
+                    - { property: 'contractAndPriceLists', label: 'Cenniki', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAndPriceListType', by_reference: false } }
+#                    - { property: 'tariff', label: 'Grupa taryfowa' }
+                    - { property: 'contractAndDistributionTariffs', label: 'Taryfy dystrybucji', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndDistributionTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'contractAndSellerTariffs', label: 'Taryfy sprzedawcy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, , entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndSellerTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'consumption', label: 'Zużycie energii (kWh)' }
+                    - { type: 'divider' }
+                    - { property: 'salesRepresentative', label: 'Pełnomocnik' }
+
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Załączniki' }
+                    - { property: 'contractAttachments', label: 'Umowy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAttachmentType', by_reference: false } }
+                    - { type: 'divider' }
+                    - { property: 'recordingAttachments', label: 'Nagrania', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\RecordingEnergyAttachmentType', by_reference: false } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Uwagi' }
+                    - { property: 'comments', label: 'Uwagi' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Statusy' }
+                    - { property: 'statusDepartment', label: 'Departament', type_options: { disabled: true } }
+                    - { property: 'actualStatus', label: 'Aktualny status', type_options: { disabled: true } }
+                    - { property: 'statusContractAuthorization', label: 'Status autoryzacji', type_options: { disabled: true } }
+                    - { property: 'commentAuthorization', label: 'Komentarz autoryzacji', type_options: { disabled: true } }
+                    - { property: 'statusContractVerification', label: 'Status weryfikacji', type_options: { disabled: true } }
+                    - { property: 'commentVerification', label: 'Komentarz weryfikacji', type_options: { disabled: true } }
+                    - { property: 'statusContractAdministration', label: 'Status administracji', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'administrationRecords'] } }
+                    - { property: 'commentAdministration', label: 'Komentarz administracji' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Zgody / rabaty' }
+                    - { property: 'isRebateMarketingAgreement', label: 'Zgoda marketingowa' }
+                    - { property: 'isRebateTimelyPayments', label: 'Terminowe wpłaty' }
+                    - { property: 'isRebateElectronicInvoice', label: 'Elektroniczna faktura' }
+                    - { property: 'isMarketingAgreementColonnade', label: 'Zgoda marketingowa Colonnade' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Archiwum' }
+                    - { property: 'registerNumber', label: 'Numer ewidencyjny' }
+                    - { property: 'box', label: 'Numer kartonu' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Meta dane' }
+                    - { property: 'user', label: 'Wprowadził', type_options: { disabled: true } }
+                    - { property: 'brand', label: 'Marka' }
+                    - { property: 'isCallCenter', label: 'Call Center' }
+
+
+        ContractEnergyControlDepartment:
+            class: GCRM\CRMBundle\Entity\ContractEnergy
+            permissions: ['ROLE_CONTRACTS']
+            show:
+                permissions: ['ROLE_CONTRACTS_SHOW']
+            edit:
+                permissions: ['ROLE_CONTRACTS_EDIT']
+            new:
+                permissions: ['ROLE_CONTRACTS_NEW']
+            delete:
+                permissions: ['ROLE_CONTRACTS_DELETE']
+            search:
+                permissions: ['ROLE_CONTRACTS_SEARCH']
+                fields:
+                    - telephoneNumber
+                    - contractNumber
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'client', searchField: ['name', 'surname', 'pesel'] }
+                    - box
+                    - registerNumber
+            list:
+                permissions: ['ROLE_CONTRACTS_LIST']
+                actions:
+                    - { name: 'registerMeAsCheckUserContract', type: 'route', label: 'Rezerwuję', css_class: 'btn btn-success' }
+                    - { name: 'clientPage', type: 'route', label: 'Karta klienta', css_class: 'btn' }
+                    - { name: 'show' }
+                fields:
+                    - id
+                    - { property: 'statusDepartment', label: 'Departament' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'registerNumber', label: 'Numer ewidencyjny' }
+                    - { property: 'box', label: 'Numer kartonu' }
+                    - { property: 'user', label: 'Wprowadził' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                actions:
+                    - { name: 'resetNegativeContractState', type: 'route', label: 'Przywróć do obiegu', css_class: 'btn btn-default' }
+                fields:
+                    - { type: 'group', css_class: 'col-sm-6', label: 'Umowa' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'periodInMonths', label: 'Umowa na okres (mc)', type: 'choice', type_options: { multiple: false, expanded: false, choices: { 6: 6, 12: 12, 24: 24, 36: 36, 48: 48, 60: 60, 72: 72 } } }
+                    - { property: 'penaltyAmountPerMonth', type: 'number', label: 'Kara za zerwanie umowy (1 mc)' }
+                    - { type: 'section', label: 'Dane drugiej osoby zawierającej umowę' }
+                    - { property: 'secondPersonName', label: 'Imię' }
+                    - { property: 'secondPersonSurname', label: 'Nazwisko' }
+                    - { property: 'secondPersonPesel', label: 'Pesel' }
+
+                    - { type: 'divider' }
+                    - { property: 'signDate', label: 'Data podpisania', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane' }
+                    - { property: 'changeOfSeller', label: 'Zmiana sprzedawcy', type: 'choice', type_options: { multiple: false, expanded: false, placeholder: 'Pusta wartość', choices: { Pierwsza: 1, Kolejna: 2 } } }
+                    - { property: 'distributor', label: 'Dystrybutor', type_options: { disabled: true } }
+                    - { property: 'distributorBranch', label: 'Dystrybutor oddział', type_options: { disabled: true } }
+                    - { property: 'currentSeller', label: 'Obecny sprzedawca', type_options: { disabled: true } }
+                    - { property: 'distributorObject', label: 'Dystrybutor', type_options: { required: false, attr: { data-ajax-update-target: 'true', data-ajax-update-target-id: 'distributorBranchObject', 'data-ajax-route': 'fetchDistributorBranchData' } } }
+                    - { property: 'distributorBranchObject', label: 'Dystrybutor oddział', type_options: { attr: { data-ajax-update-targeted: 'true', data-ajax-update-targeted-id: 'distributorBranchObject' } } }
+                    - { property: 'currentSellerObject', label: 'Obecny sprzedawca', type_options: { query_builder: ['GCRM\CRMBundle\Repository\SellerRepository', 'energyRecords'] } }
+                    - { type: 'divider' }
+                    - { property: 'periodOfNotice', label: 'Okres wypowiedzenia umowy' }
+                    - { type: 'divider' }
+                    - { property: 'product', label: 'Produkt' }
+                    - { property: 'ppName', label: 'PPE Nazwa' }
+                    - { type: 'section', label: 'Adres PPE' }
+                    - { property: 'ppZipCode', label: 'Kod pocztowy' }
+                    - { property: 'ppPostOffice', label: 'Poczta' }
+                    - { property: 'ppCity', label: 'Miasto' }
+                    - { property: 'ppStreet', label: 'Ulica' }
+                    - { property: 'ppHouseNr', label: 'Dom' }
+                    - { property: 'ppApartmentNr', label: 'Lokal' }
+                    - { type: 'divider' }
+#                    - { property: 'ppCode', label: 'PPE' }
+                    - { property: 'contractAndPpCodes', label: 'Kody PP', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndPpCodeType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndPpCode' } } }
+                    - { property: 'ppCounterNr', label: 'PPE nr licznika' }
+                    - { property: 'ppRegistrationNr', label: 'PPE nr ewid' }
+                    - { type: 'divider' }
+#                    - { property: 'priceList', label: 'Cennik' }
+                    - { property: 'contractAndPriceLists', label: 'Cenniki', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAndPriceListType', by_reference: false } }
+#                    - { property: 'tariff', label: 'Grupa taryfowa' }
+                    - { property: 'contractAndDistributionTariffs', label: 'Taryfy dystrybucji', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndDistributionTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'contractAndSellerTariffs', label: 'Taryfy sprzedawcy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, , entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndSellerTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'consumption', label: 'Zużycie energii (kWh)' }
+                    - { type: 'divider' }
+                    - { property: 'salesRepresentative', label: 'Pełnomocnik', type_options: { disabled: true } }
+
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Załączniki' }
+                    - { property: 'contractAttachments', label: 'Umowy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAttachmentType', by_reference: false } }
+                    - { type: 'divider' }
+                    - { property: 'recordingAttachments', label: 'Nagrania', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\RecordingEnergyAttachmentType', by_reference: false } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Uwagi' }
+                    - { property: 'comments', label: 'Uwagi' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Statusy' }
+                    - { property: 'statusDepartment', label: 'Departament', type_options: { disabled: true } }
+                    - { property: 'actualStatus', label: 'Aktualny status', type_options: { disabled: true } }
+                    - { property: 'statusContractAuthorization', label: 'Status autoryzacji', type_options: { disabled: true } }
+                    - { property: 'commentAuthorization', label: 'Komentarz autoryzacji', type_options: { disabled: true } }
+                    - { property: 'statusContractVerification', label: 'Status weryfikacji', type_options: { disabled: true } }
+                    - { property: 'commentVerification', label: 'Komentarz weryfikacji', type_options: { disabled: true } }
+                    - { property: 'statusContractAdministration', label: 'Status administracji', type_options: { disabled: true } }
+                    - { property: 'commentAdministration', label: 'Komentarz administracji', type_options: { disabled: true } }
+                    - { property: 'statusContractControl', label: 'Status kontroli', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'controlRecords'] } }
+                    - { property: 'commentControl', label: 'Komentarz kontroli' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Zgody / rabaty' }
+                    - { property: 'isRebateMarketingAgreement', label: 'Zgoda marketingowa' }
+                    - { property: 'isRebateTimelyPayments', label: 'Terminowe wpłaty' }
+                    - { property: 'isRebateElectronicInvoice', label: 'Elektroniczna faktura' }
+                    - { property: 'isMarketingAgreementColonnade', label: 'Zgoda marketingowa Colonnade' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Archiwum' }
+                    - { property: 'registerNumber', label: 'Numer ewidencyjny' }
+                    - { property: 'box', label: 'Numer kartonu' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Meta dane' }
+                    - { property: 'user', label: 'Wprowadził', type_options: { disabled: true } }
+                    - { property: 'brand', label: 'Marka' }
+                    - { property: 'isCallCenter', label: 'Call Center' }
+
+
+        ContractEnergyProcessDepartment:
+            class: GCRM\CRMBundle\Entity\ContractEnergy
+            permissions: ['ROLE_CONTRACTS']
+            show:
+                permissions: ['ROLE_CONTRACTS_SHOW']
+            edit:
+                permissions: ['ROLE_CONTRACTS_EDIT']
+            new:
+                permissions: ['ROLE_CONTRACTS_NEW']
+            delete:
+                permissions: ['ROLE_CONTRACTS_DELETE']
+            search:
+                permissions: ['ROLE_CONTRACTS_SEARCH']
+                fields:
+                    - telephoneNumber
+                    - contractNumber
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'client', searchField: ['name', 'surname', 'pesel'] }
+                    - box
+                    - registerNumber
+            list:
+                permissions: ['ROLE_CONTRACTS_LIST']
+                actions:
+                    - { name: 'registerMeAsCheckUserContract', type: 'route', label: 'Rezerwuję', css_class: 'btn btn-success' }
+                    - { name: 'clientPage', type: 'route', label: 'Karta klienta', css_class: 'btn' }
+                    - { name: 'show' }
+                fields:
+                    - id
+                    - { property: 'statusDepartment', label: 'Departament' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'registerNumber', label: 'Numer ewidencyjny' }
+                    - { property: 'box', label: 'Numer kartonu' }
+                    - { property: 'user', label: 'Wprowadził' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                actions:
+                    - { name: 'resetNegativeContractState', type: 'route', label: 'Przywróć do obiegu', css_class: 'btn btn-default' }
+                fields:
+                    - { type: 'group', css_class: 'col-sm-6', label: 'Umowa' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'periodInMonths', label: 'Umowa na okres (mc)', type: 'choice', type_options: { multiple: false, expanded: false, choices: { 6: 6, 12: 12, 24: 24, 36: 36, 48: 48, 60: 60, 72: 72 } } }
+                    - { property: 'penaltyAmountPerMonth', type: 'number', label: 'Kara za zerwanie umowy (1 mc)' }
+                    - { type: 'section', label: 'Dane drugiej osoby zawierającej umowę' }
+                    - { property: 'secondPersonName', label: 'Imię' }
+                    - { property: 'secondPersonSurname', label: 'Nazwisko' }
+                    - { property: 'secondPersonPesel', label: 'Pesel' }
+
+                    - { type: 'divider' }
+                    - { property: 'signDate', label: 'Data podpisania', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane' }
+                    - { property: 'changeOfSeller', label: 'Zmiana sprzedawcy', type: 'choice', type_options: { multiple: false, expanded: false, placeholder: 'Pusta wartość', choices: { Pierwsza: 1, Kolejna: 2 } } }
+                    - { property: 'distributor', label: 'Dystrybutor', type_options: { disabled: true } }
+                    - { property: 'distributorBranch', label: 'Dystrybutor oddział', type_options: { disabled: true } }
+                    - { property: 'currentSeller', label: 'Obecny sprzedawca', type_options: { disabled: true } }
+                    - { property: 'distributorObject', label: 'Dystrybutor', type_options: { required: false, attr: { data-ajax-update-target: 'true', data-ajax-update-target-id: 'distributorBranchObject', 'data-ajax-route': 'fetchDistributorBranchData' } } }
+                    - { property: 'distributorBranchObject', label: 'Dystrybutor oddział', type_options: { attr: { data-ajax-update-targeted: 'true', data-ajax-update-targeted-id: 'distributorBranchObject' } } }
+                    - { property: 'currentSellerObject', label: 'Obecny sprzedawca', type_options: { query_builder: ['GCRM\CRMBundle\Repository\SellerRepository', 'energyRecords'] } }
+                    - { type: 'divider' }
+                    - { property: 'contractFromDate', label: 'Data obow umowy od', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'contractToDate', label: 'Data obow umowy do', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'isMarkedToDebitNote', label: 'Oznaczone do noty' }
+                    - { property: 'periodOfNotice', label: 'Okres wypowiedzenia umowy' }
+                    - { type: 'divider' }
+                    - { property: 'product', label: 'Produkt' }
+                    - { property: 'ppName', label: 'PPE Nazwa' }
+                    - { type: 'section', label: 'Adres PPE' }
+                    - { property: 'ppZipCode', label: 'Kod pocztowy' }
+                    - { property: 'ppPostOffice', label: 'Poczta' }
+                    - { property: 'ppCity', label: 'Miasto' }
+                    - { property: 'ppStreet', label: 'Ulica' }
+                    - { property: 'ppHouseNr', label: 'Dom' }
+                    - { property: 'ppApartmentNr', label: 'Lokal' }
+                    - { type: 'divider' }
+#                    - { property: 'ppCode', label: 'PPE' }
+                    - { property: 'contractAndPpCodes', label: 'Kody PP', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndPpCodeType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndPpCode' } } }
+                    - { property: 'ppCounterNr', label: 'PPE nr licznika' }
+                    - { property: 'ppRegistrationNr', label: 'PPE nr ewid' }
+                    - { type: 'divider' }
+#                    - { property: 'priceList', label: 'Cennik' }
+                    - { property: 'contractAndPriceLists', label: 'Cenniki', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAndPriceListType', by_reference: false } }
+#                    - { property: 'tariff', label: 'Grupa taryfowa' }
+                    - { property: 'contractAndDistributionTariffs', label: 'Taryfy dystrybucji', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndDistributionTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'contractAndSellerTariffs', label: 'Taryfy sprzedawcy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, , entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndSellerTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'consumption', label: 'Zużycie energii (kWh)' }
+                    - { type: 'divider' }
+                    - { property: 'salesRepresentative', label: 'Pełnomocnik', type_options: { disabled: true } }
+
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Załączniki' }
+                    - { property: 'contractAttachments', label: 'Umowy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAttachmentType', by_reference: false } }
+                    - { type: 'divider' }
+                    - { property: 'recordingAttachments', label: 'Nagrania', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\RecordingEnergyAttachmentType', by_reference: false } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Uwagi' }
+                    - { property: 'comments', label: 'Uwagi' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Statusy' }
+                    - { property: 'statusDepartment', label: 'Departament', type_options: { disabled: true } }
+                    - { property: 'actualStatus', label: 'Aktualny status', type_options: { disabled: true } }
+                    - { property: 'statusContractAuthorization', label: 'Status autoryzacji', type_options: { disabled: true } }
+                    - { property: 'commentAuthorization', label: 'Komentarz autoryzacji', type_options: { disabled: true } }
+                    - { property: 'statusContractVerification', label: 'Status weryfikacji', type_options: { disabled: true } }
+                    - { property: 'commentVerification', label: 'Komentarz weryfikacji', type_options: { disabled: true } }
+                    - { property: 'statusContractAdministration', label: 'Status administracji', type_options: { disabled: true } }
+                    - { property: 'commentAdministration', label: 'Komentarz administracji', type_options: { disabled: true } }
+                    - { property: 'statusContractControl', label: 'Status kontroli', type_options: { disabled: true } }
+                    - { property: 'commentControl', label: 'Komentarz kontroli', type_options: { disabled: true } }
+                    - { property: 'statusContractProcess', label: 'Status procesu', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'processRecords'] } }
+                    - { property: 'commentProcess', label: 'Komentarz procesu' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Zgody / rabaty' }
+                    - { property: 'isRebateMarketingAgreement', label: 'Zgoda marketingowa' }
+                    - { property: 'isRebateTimelyPayments', label: 'Terminowe wpłaty' }
+                    - { property: 'isRebateElectronicInvoice', label: 'Elektroniczna faktura' }
+                    - { property: 'isMarketingAgreementColonnade', label: 'Zgoda marketingowa Colonnade' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'OSD' }
+                    - { property: 'isTerminationSent', label: 'Wysłano wypowiedzenie', type: 'choice', type_options: { multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'terminationCreatedDate', label: 'Data wysłania wypowiedzenia', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'isProposalOsdSent', label: 'Wysłano wniosek na OSD', type: 'choice', type_options: { multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'plannedActivationDate', label: 'Planowana data uruchomienia', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'proposalStatus', label: 'Status wniosku', type: 'choice', type_options: { multiple: false, expanded: false, choices: { Pozytywny: 1, Negatywny: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'isCanceled', label: 'Czy jest anulowana', type: 'choice', type_options: { required: false, multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'isPostponed', label: 'Zmiana terminu', type: 'choice', type_options: { required: false, multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'postponedDeadlines', label: 'Dodatkowe terminy', type: collection, type_options: { entry_type: 'GCRM\CRMBundle\Form\PostponedDeadlinesType', allow_add: true, allow_delete: true } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Archiwum' }
+                    - { property: 'registerNumber', label: 'Numer ewidencyjny' }
+                    - { property: 'box', label: 'Numer kartonu' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Meta dane' }
+                    - { property: 'user', label: 'Wprowadził', type_options: { disabled: true } }
+                    - { property: 'brand', label: 'Marka' }
+                    - { property: 'isCallCenter', label: 'Call Center' }
+
+        ContractEnergyFinancesDepartment:
+            class: GCRM\CRMBundle\Entity\ContractEnergy
+            permissions: ['ROLE_CONTRACTS']
+            show:
+                permissions: ['ROLE_CONTRACTS_SHOW']
+            edit:
+                permissions: ['ROLE_CONTRACTS_EDIT']
+            new:
+                permissions: ['ROLE_CONTRACTS_NEW']
+            delete:
+                permissions: ['ROLE_CONTRACTS_DELETE']
+            search:
+                permissions: ['ROLE_CONTRACTS_SEARCH']
+                fields:
+                    - telephoneNumber
+                    - contractNumber
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'client', searchField: ['name', 'surname', 'pesel'] }
+                    - box
+                    - registerNumber
+            list:
+                permissions: ['ROLE_CONTRACTS_LIST']
+                actions:
+                    - { name: 'registerMeAsCheckUserContract', type: 'route', label: 'Rezerwuję', css_class: 'btn btn-success' }
+                    - { name: 'clientPage', type: 'route', label: 'Karta klienta', css_class: 'btn' }
+                    - { name: 'show' }
+                fields:
+                    - id
+                    - { property: 'statusDepartment', label: 'Departament' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'registerNumber', label: 'Numer ewidencyjny' }
+                    - { property: 'box', label: 'Numer kartonu' }
+                    - { property: 'user', label: 'Wprowadził' }
+                    - { property: 'createdAt', label: 'Utworzone' }
+                    - { property: 'updatedAt', label: 'Zaktualizowane' }
+            form:
+                actions:
+                    - { name: 'resetNegativeContractState', type: 'route', label: 'Przywróć do obiegu', css_class: 'btn btn-default' }
+                fields:
+                    - { type: 'group', css_class: 'col-sm-6', label: 'Umowa' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'periodInMonths', label: 'Umowa na okres (mc)', type: 'choice', type_options: { multiple: false, expanded: false, choices: { 6: 6, 12: 12, 24: 24, 36: 36, 48: 48, 60: 60, 72: 72 } } }
+                    - { property: 'penaltyAmountPerMonth', type: 'number', label: 'Kara za zerwanie umowy (1 mc)' }
+                    - { type: 'section', label: 'Dane drugiej osoby zawierającej umowę' }
+                    - { property: 'secondPersonName', label: 'Imię' }
+                    - { property: 'secondPersonSurname', label: 'Nazwisko' }
+                    - { property: 'secondPersonPesel', label: 'Pesel' }
+
+                    - { type: 'divider' }
+                    - { property: 'signDate', label: 'Data podpisania', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane' }
+                    - { property: 'changeOfSeller', label: 'Zmiana sprzedawcy', type: 'choice', type_options: { multiple: false, expanded: false, placeholder: 'Pusta wartość', choices: { Pierwsza: 1, Kolejna: 2 } } }
+                    - { property: 'distributor', label: 'Dystrybutor', type_options: { disabled: true } }
+                    - { property: 'distributorBranch', label: 'Dystrybutor oddział', type_options: { disabled: true } }
+                    - { property: 'currentSeller', label: 'Obecny sprzedawca', type_options: { disabled: true } }
+                    - { property: 'distributorObject', label: 'Dystrybutor', type_options: { required: false, attr: { data-ajax-update-target: 'true', data-ajax-update-target-id: 'distributorBranchObject', 'data-ajax-route': 'fetchDistributorBranchData' } } }
+                    - { property: 'distributorBranchObject', label: 'Dystrybutor oddział', type_options: { attr: { data-ajax-update-targeted: 'true', data-ajax-update-targeted-id: 'distributorBranchObject' } } }
+                    - { property: 'currentSellerObject', label: 'Obecny sprzedawca', type_options: { query_builder: ['GCRM\CRMBundle\Repository\SellerRepository', 'energyRecords'] } }
+                    - { type: 'divider' }
+                    - { property: 'contractFromDate', label: 'Data obow umowy od', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'contractToDate', label: 'Data obow umowy do', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'isMarkedToDebitNote', label: 'Oznaczone do noty' }
+                    - { property: 'periodOfNotice', label: 'Okres wypowiedzenia umowy' }
+                    - { type: 'divider' }
+                    - { property: 'product', label: 'Produkt' }
+                    - { property: 'ppName', label: 'PPE Nazwa' }
+                    - { type: 'section', label: 'Adres PPE' }
+                    - { property: 'ppZipCode', label: 'Kod pocztowy' }
+                    - { property: 'ppPostOffice', label: 'Poczta' }
+                    - { property: 'ppCity', label: 'Miasto' }
+                    - { property: 'ppStreet', label: 'Ulica' }
+                    - { property: 'ppHouseNr', label: 'Dom' }
+                    - { property: 'ppApartmentNr', label: 'Lokal' }
+                    - { type: 'divider' }
+#                    - { property: 'ppCode', label: 'PPE' }
+                    - { property: 'contractAndPpCodes', label: 'Kody PP', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndPpCodeType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndPpCode' } } }
+                    - { property: 'ppCounterNr', label: 'PPE nr licznika' }
+                    - { property: 'ppRegistrationNr', label: 'PPE nr ewid' }
+                    - { type: 'divider' }
+#                    - { property: 'priceList', label: 'Cennik' }
+                    - { property: 'contractAndPriceLists', label: 'Cenniki', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAndPriceListType', by_reference: false } }
+#                    - { property: 'tariff', label: 'Grupa taryfowa' }
+                    - { property: 'contractAndDistributionTariffs', label: 'Taryfy dystrybucji', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndDistributionTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'contractAndSellerTariffs', label: 'Taryfy sprzedawcy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, , entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndSellerTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'consumption', label: 'Zużycie energii (kWh)' }
+                    - { type: 'divider' }
+                    - { property: 'salesRepresentative', label: 'Pełnomocnik', type_options: { disabled: true } }
+
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Załączniki' }
+                    - { property: 'contractAttachments', label: 'Umowy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAttachmentType', by_reference: false } }
+                    - { type: 'divider' }
+                    - { property: 'recordingAttachments', label: 'Nagrania', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\RecordingEnergyAttachmentType', by_reference: false } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Uwagi' }
+                    - { property: 'comments', label: 'Uwagi' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Statusy' }
+                    - { property: 'statusDepartment', label: 'Departament', type_options: { disabled: true } }
+                    - { property: 'actualStatus', label: 'Aktualny status', type_options: { disabled: true } }
+                    - { property: 'statusContractAuthorization', label: 'Status autoryzacji', type_options: { disabled: true } }
+                    - { property: 'commentAuthorization', label: 'Komentarz autoryzacji', type_options: { disabled: true } }
+                    - { property: 'statusContractVerification', label: 'Status weryfikacji', type_options: { disabled: true } }
+                    - { property: 'commentVerification', label: 'Komentarz weryfikacji', type_options: { disabled: true } }
+                    - { property: 'statusContractAdministration', label: 'Status administracji', type_options: { disabled: true } }
+                    - { property: 'commentAdministration', label: 'Komentarz administracji', type_options: { disabled: true } }
+                    - { property: 'statusContractControl', label: 'Status kontroli', type_options: { disabled: true } }
+                    - { property: 'commentControl', label: 'Komentarz kontroli', type_options: { disabled: true } }
+                    - { property: 'statusContractProcess', label: 'Status procesu', type_options: { disabled: true } }
+                    - { property: 'commentProcess', label: 'Komentarz procesu', type_options: { disabled: true } }
+                    - { property: 'statusContractFinances', label: 'Status finansów', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'financesRecords'] } }
+                    - { property: 'commentFinances', label: 'Komentarz finansów' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Zgody / rabaty' }
+                    - { property: 'isRebateMarketingAgreement', label: 'Zgoda marketingowa' }
+                    - { property: 'isRebateTimelyPayments', label: 'Terminowe wpłaty' }
+                    - { property: 'isRebateElectronicInvoice', label: 'Elektroniczna faktura' }
+                    - { property: 'isMarketingAgreementColonnade', label: 'Zgoda marketingowa Colonnade' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'OSD' }
+                    - { property: 'isTerminationSent', label: 'Wysłano wypowiedzenie', type: 'choice', type_options: { multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'terminationCreatedDate', label: 'Data wysłania wypowiedzenia', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'isProposalOsdSent', label: 'Wysłano wniosek na OSD', type: 'choice', type_options: { multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'plannedActivationDate', label: 'Planowana data uruchomienia', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'proposalStatus', label: 'Status wniosku', type: 'choice', type_options: { multiple: false, expanded: false, choices: { Pozytywny: 1, Negatywny: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'isCanceled', label: 'Czy jest anulowana', type: 'choice', type_options: { required: false, multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'isPostponed', label: 'Zmiana terminu', type: 'choice', type_options: { required: false, multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 } }, placeholder: 'Wybierz...' }
+                    - { property: 'postponedDeadlines', label: 'Dodatkowe terminy', type: collection, type_options: { entry_type: 'GCRM\CRMBundle\Form\PostponedDeadlinesType', allow_add: true, allow_delete: true } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Archiwum' }
+                    - { property: 'registerNumber', label: 'Numer ewidencyjny' }
+                    - { property: 'box', label: 'Numer kartonu' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Meta dane' }
+                    - { property: 'user', label: 'Wprowadził', type_options: { disabled: true } }
+                    - { property: 'brand', label: 'Marka' }
+                    - { property: 'isCallCenter', label: 'Call Center' }
+
+        ContractEnergy:
+            class: GCRM\CRMBundle\Entity\ContractEnergy
+            permissions: ['ROLE_SUPERADMIN']
+            list:
+                fields:
+                    - id
+                    - contractNumber
+            form:
+                fields:
+                    - { type: 'group', css_class: 'col-sm-6', label: 'Umowa' }
+                    - { property: 'contractNumber', label: 'Numer umowy' }
+                    - { property: 'periodInMonths', label: 'Umowa na okres (mc)', type: 'choice', type_options: { multiple: false, expanded: false, choices: { 6: 6, 12: 12, 24: 24, 36: 36, 48: 48, 60: 60, 72: 72 } } }
+                    - { property: 'penaltyAmountPerMonth', type: 'number', label: 'Kara za zerwanie umowy (1 mc)' }
+                    - { type: 'section', label: 'Dane drugiej osoby zawierającej umowę' }
+                    - { property: 'secondPersonName', label: 'Imię' }
+                    - { property: 'secondPersonSurname', label: 'Nazwisko' }
+                    - { property: 'secondPersonPesel', label: 'Pesel' }
+
+                    - { type: 'divider' }
+                    - { property: 'signDate', label: 'Data podpisania', nullable: false, type_options: { required: true, widget: 'single_text', attr: { class: 'datepicker' } } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Dane' }
+                    - { property: 'changeOfSeller', label: 'Zmiana sprzedawcy', type: 'choice', type_options: { multiple: false, expanded: false, placeholder: 'Pusta wartość', choices: { Pierwsza: 1, Kolejna: 2 } } }
+                    - { property: 'distributor', label: 'Dystrybutor', type_options: { disabled: true } }
+                    - { property: 'distributorBranch', label: 'Dystrybutor oddział', type_options: { disabled: true } }
+                    - { property: 'currentSeller', label: 'Obecny sprzedawca', type_options: { disabled: true } }
+                    - { property: 'distributorObject', label: 'Dystrybutor', type_options: { required: false, attr: { data-ajax-update-target: 'true', data-ajax-update-target-id: 'distributorBranchObject', 'data-ajax-route': 'fetchDistributorBranchData' } } }
+                    - { property: 'distributorBranchObject', label: 'Dystrybutor oddział', type_options: { attr: { data-ajax-update-targeted: 'true', data-ajax-update-targeted-id: 'distributorBranchObject' } } }
+                    - { property: 'currentSellerObject', label: 'Obecny sprzedawca', type_options: { query_builder: ['GCRM\CRMBundle\Repository\SellerRepository', 'energyRecords'] } }
+                    - { type: 'divider' }
+                    - { property: 'contractFromDate', label: 'Data obow umowy od', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'contractToDate', label: 'Data obow umowy do', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'isMarkedToDebitNote', label: 'Oznaczone do noty' }
+                    - { property: 'periodOfNotice', label: 'Okres wypowiedzenia umowy' }
+                    - { type: 'divider' }
+                    - { property: 'product', label: 'Produkt' }
+                    - { property: 'ppName', label: 'PPE Nazwa' }
+                    - { type: 'section', label: 'Adres PPE' }
+                    - { property: 'ppZipCode', label: 'Kod pocztowy' }
+                    - { property: 'ppPostOffice', label: 'Poczta' }
+                    - { property: 'ppCity', label: 'Miasto' }
+                    - { property: 'ppStreet', label: 'Ulica' }
+                    - { property: 'ppHouseNr', label: 'Dom' }
+                    - { property: 'ppApartmentNr', label: 'Lokal' }
+                    - { type: 'divider' }
+#                    - { property: 'ppCode', label: 'PPE' }
+                    - { property: 'contractAndPpCodes', label: 'Kody PP', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndPpCodeType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndPpCode' } } }
+                    - { property: 'ppCounterNr', label: 'PPE nr licznika' }
+                    - { property: 'ppRegistrationNr', label: 'PPE nr ewid' }
+                    - { type: 'divider' }
+#                    - { property: 'priceList', label: 'Cennik' }
+                    - { property: 'contractAndPriceLists', label: 'Cenniki', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAndPriceListType', by_reference: false } }
+#                    - { property: 'tariff', label: 'Grupa taryfowa' }
+                    - { property: 'contractAndDistributionTariffs', label: 'Taryfy dystrybucji', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndDistributionTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'contractAndSellerTariffs', label: 'Taryfy sprzedawcy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractAndTariffGroupType', by_reference: false, , entry_options: { data_class: 'GCRM\CRMBundle\Entity\ContractEnergyAndSellerTariff', tariff_class: 'Wecoders\EnergyBundle\Entity\Tariff' } } }
+                    - { property: 'consumption', label: 'Zużycie energii (kWh)' }
+                    - { type: 'divider' }
+                    - { property: 'salesRepresentative', label: 'Pełnomocnik' }
+
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Załączniki' }
+                    - { property: 'contractAttachments', label: 'Umowy', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\ContractEnergyAttachmentType', by_reference: false } }
+                    - { type: 'divider' }
+                    - { property: 'recordingAttachments', label: 'Nagrania', type: 'collection', type_options: { entry_type: 'GCRM\CRMBundle\Form\RecordingEnergyAttachmentType', by_reference: false } }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Uwagi' }
+                    - { property: 'comments', label: 'Uwagi' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Statusy' }
+                    - { property: 'statusDepartment', label: 'Departament' }
+                    - { property: 'actualStatus', label: 'Aktualny status' }
+                    - { property: 'statusContractAuthorization', label: 'Status autoryzacji', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'authorizationRecords'] } }
+                    - { property: 'commentAuthorization', label: 'Komentarz autoryzacji' }
+                    - { property: 'statusContractVerification', label: 'Status weryfikacji', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'verificationRecords'] } }
+                    - { property: 'commentVerification', label: 'Komentarz weryfikacji' }
+                    - { property: 'statusContractAdministration', label: 'Status administracji', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'administrationRecords'] } }
+                    - { property: 'commentAdministration', label: 'Komentarz administracji' }
+                    - { property: 'statusContractControl', label: 'Status kontroli', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'controlRecords'] } }
+                    - { property: 'commentControl', label: 'Komentarz kontroli' }
+                    - { property: 'statusContractProcess', label: 'Status procesu', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'processRecords'] } }
+                    - { property: 'commentProcess', label: 'Komentarz procesu' }
+                    - { property: 'statusContractFinances', label: 'Status finansów', type_options: { query_builder: ['GCRM\CRMBundle\Repository\StatusContractRepository', 'financesRecords'] } }
+                    - { property: 'commentFinances', label: 'Komentarz finansów' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Zgody / rabaty' }
+                    - { property: 'isRebateMarketingAgreement', label: 'Zgoda marketingowa' }
+                    - { property: 'isRebateTimelyPayments', label: 'Terminowe wpłaty' }
+                    - { property: 'isRebateElectronicInvoice', label: 'Elektroniczna faktura' }
+                    - { property: 'isMarketingAgreementColonnade', label: 'Zgoda marketingowa Colonnade' }
+
+                    - { type: 'group', css_class: 'col-sm-12', label: 'OSD' }
+                    - { property: 'isTerminationSent', label: 'Wysłano wypowiedzenie', type: 'choice', type_options: { multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'terminationCreatedDate', label: 'Data wysłania wypowiedzenia', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'isProposalOsdSent', label: 'Wysłano wniosek na OSD', type: 'choice', type_options: { multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'plannedActivationDate', label: 'Planowana data uruchomienia', nullable: false, type_options: { required: false, widget: 'single_text', attr: { class: 'datepicker' } } }
+                    - { property: 'proposalStatus', label: 'Status wniosku', type: 'choice', type_options: { multiple: false, expanded: false, choices: { Pozytywny: 1, Negatywny: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'isCanceled', label: 'Czy jest anulowana', type: 'choice', type_options: { required: false, multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'isPostponed', label: 'Zmiana terminu', type: 'choice', type_options: { required: false, multiple: false, expanded: false, choices: { Tak: 1, Nie: 0 }, placeholder: 'Wybierz...' } }
+                    - { property: 'postponedDeadlines', label: 'Dodatkowe terminy', type: collection, type_options: { entry_type: 'GCRM\CRMBundle\Form\PostponedDeadlinesType', allow_add: true, allow_delete: true } }
+                    
+                    - { type: 'group', css_class: 'col-sm-12', label: 'Meta dane' }
+                    - { property: 'user', label: 'Wprowadził' }
+                    - { property: 'brand', label: 'Marka' }
+                    - { property: 'isCallCenter', label: 'Call Center' }
+                    - { property: 'isResignation', label: 'Spad (rezygnacja)' }
+                    - { property: 'isBrokenContract', label: 'Spad (zerwanie umowy)' }
+                    - { property: 'nextInvoicingPeriod', help: '*Po tej dacie klienci pokażą się na liście do fakturowania (proformy). Koryguj to pole tylko po wystawieniu korekt ze zmienionymi okresami rozliczeniowymi.', label: 'Następny okres fakturowania' }

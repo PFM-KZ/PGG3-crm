@@ -1,0 +1,252 @@
+services:
+#    gcrmcrm.example:
+#        class: GCRM\CRMBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+    GCRM\CRMBundle\:
+        resource: '../../*'
+        # you can exclude directories or files
+        # but if a service is unused, it's removed anyway
+        exclude: '../../{Entity,Repository,Tests}'
+
+    GCRM\CRMBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+    GCRM\CRMBundle\Controller\ExceptionController:
+        autowire: true
+        arguments:
+            $debug: '%kernel.debug%'
+            $kernelEnvironment: '%kernel.environment%'
+
+    GCRM\CRMBundle\Controller\AdminController:
+        autowire: true
+        tags: ['controller.service_arguments']
+
+    GCRM\CRMBundle\Form\ListSearchType:
+        autowire: true
+        tags: [form.type]
+
+    GCRM\CRMBundle\Form\ContractAndServiceType:
+        arguments: ['@doctrine.orm.entity_manager', '@request_stack']
+        tags: [form.type]
+
+    GCRM\CRMBundle\Form\MultiExportType:
+        autowire: true
+        arguments: ['@doctrine.orm.entity_manager']
+        tags: [form.type]
+
+    GCRM\CRMBundle\Form\ImporterPaymentsType:
+        autowire: true
+        tags: [form.type]
+
+    GCRM\CRMBundle\Form\ImporterPaymentsOldType:
+        autowire: true
+        tags: [form.type]
+
+    GCRM\CRMBundle\Form\UserAndBranchType:
+        autowire: true
+        tags: [form.type]
+
+    GCRM\CRMBundle\Form\AuthorizationType:
+        autowire: true
+        tags: [form.type]
+
+    GCRM\CRMBundle\Form\Type\LazyChoiceType:
+        autowire: true
+        tags: [form.type]
+
+    GCRM\CRMBundle\Form\Type\UpdateTargetChoiceType:
+        autowire: true
+        tags: [form.type]
+
+    GCRM\CRMBundle\Twig\StatusClientExtension:
+        autowire: true
+        tags:
+            - { name: twig.extension }
+
+    GCRM\CRMBundle\Twig\FilterContractSearchFormExtension:
+        autowire: true
+        arguments:
+            - '@request_stack'
+        tags:
+            - { name: twig.extension }
+
+    GCRM\CRMBundle\Twig\StatusContractExtension:
+        autowire: true
+        tags:
+            - { name: twig.extension }
+
+    GCRM\CRMBundle\Twig\ContractEditLinkByStatusDepartmentAndTypeExtension:
+        autowire: true
+        tags:
+            - { name: twig.extension }
+
+    GCRM\CRMBundle\Twig\CheckIfBundleExists:
+        autowire: true
+        tags:
+            - { name: twig.extension }
+
+    GCRM\CRMBundle\Twig\TokenParamsExtension:
+        autowire: true
+        tags:
+            - { name: twig.extension }
+
+    GCRM\CRMBundle\Twig\OptionArray:
+        autowire: true
+        tags:
+            - { name: twig.extension }
+
+    GCRM\CRMBundle\Configuration\MenuConfigPass:
+        arguments: ['@doctrine.orm.entity_manager']
+
+    GCRM\CRMBundle\Command\UpdateCheckUserClientFieldCommand:
+        arguments: ['@doctrine.orm.entity_manager']
+        tags:
+            - { name: console.command }
+
+    gcrmcrmbundle.subscriber.easy_admin:
+        class: GCRM\CRMBundle\Event\EasyAdminSubscriber
+        autowire: true
+        tags:
+            - { name: kernel.event_subscriber }
+
+    GCRM\CRMBundle\Event\PaymentsUploadedSubscriber:
+        autowire: true
+        tags:
+            - { name: kernel.event_subscriber }
+
+    GCRM\CRMBundle\Service\ZipModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\GTU:
+        autowire: true
+
+    GCRM\CRMBundle\Service\PaymentImporter\PaymentImporterFactory:
+        autowire: true
+
+    GCRM\CRMBundle\Command\UpdateAllClientsInvoicePaidStateCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    GCRM\CRMBundle\Command\UpdateForeignKeyClientOnInvoiceByBadgeIdCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    GCRM\CRMBundle\Command\UpdateSeparatorDotFromCommaCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+#    GCRM\CRMBundle\Form\ImporterPaymentsType:
+#        autowire: true
+
+#    GCRM\CRMBundle\Entity\Invoice:
+#        arguments: ['%kernel.root_dir%']
+
+    GCRM\CRMBundle\Service\ListDownloader:
+        autowire: true
+
+    GCRM\CRMBundle\Service\ListDataExporter:
+        autowire: true
+
+    GCRM\CRMBundle\Service\InvoiceModel:
+        autowire: true
+        calls:
+            - [setContainer, ['@service_container']]
+
+    GCRM\CRMBundle\Service\PaymentModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\ClientModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\CompanyModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\ModulesModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\Alert\DocumentProcessModel:
+        autowire: true
+
+    GCRM\CRMBundle\Command\UpdateInvoiceDateOfPaymentByCreatedDate:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    GCRM\CRMBundle\Service\ListSearcherStrategyInitializer:
+        autowire: true
+
+    GCRM\CRMBundle\Service\EasyAdminModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\BillingDocument\Initializer:
+        autowire: true
+
+    GCRM\CRMBundle\Command\UpdateForeignKeyClientOnInvoiceCorrectionByInvoiceCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    GCRM\CRMBundle\Service\StatusDepartmentModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\AlertModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\UserModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\ContractModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\StatusContractModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\StatusContractAction:
+        autowire: true
+
+    GCRM\CRMBundle\Service\PackageToSendModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\AccountNumberIdentifierModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\AccountNumberMaker:
+        autowire: true
+
+    GCRM\CRMBundle\Service\Settings\System:
+        autowire: true
+
+    GCRM\CRMBundle\Service\Settings\Brand:
+        autowire: true
+
+    GCRM\CRMBundle\Command\UpdateClientsBankAccountNumberFromAccountNumberIdentifierCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    GCRM\CRMBundle\Command\UpdateClientBankAccountNumberFromAccountNumberIdentifierCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
+    GCRM\CRMBundle\Service\DistributorModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\DistributorBranchModel:
+        autowire: true
+
+    GCRM\CRMBundle\Service\SellerModel:
+        autowire: true
+
+    GCRM\CRMBundle\Form\Type\EntityWithDefaultOptionType:
+        autowire: true
+        tags: [form.type]
+
+    GCRM\CRMBundle\Service\ClientProcedureTPModel:
+        autowire: true

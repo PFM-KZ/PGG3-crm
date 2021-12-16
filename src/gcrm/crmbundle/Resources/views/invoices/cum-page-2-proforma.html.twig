@@ -1,0 +1,230 @@
+{% spaceless %}
+<style>
+* {
+letter-spacing: 0.1px;
+line-height: 16px;
+}
+th {
+font-weight: bold;
+}
+table.bordered td {
+border-top: 1px solid black;
+}
+</style>
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 90%">&nbsp;</td>
+<td style="width: 10%">Strona 2 z 2</td>
+</tr>
+</table>
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 60%; text-align: left; line-height: 1px;"><img src="{{ data.logo }}" height="55"></td>
+<td style="width: 10%; line-height: 70px;"><span>Nasza marka</span></td>
+<td style="width: 10%; line-height: 1px;">
+<img src="{{ data.customData.logoOmg }}" height="55"><br style="line-height: 8px; font-size: 8px;">
+</td>
+<td style="width: 20%;"></td>
+</tr>
+</table>
+
+<div style="border-bottom: 1px solid #1d70b7;">&nbsp;</div>
+<br>
+
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 60%;">
+
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 20%"><b>Faktura NR</b></td>
+<td style="width: 80%"><b>{{ data.nr }}</b></td>
+</tr>
+</table>
+
+</td>
+<td style="width: 40%;">
+
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 50%">Data i miejsce wystawienia:</td>
+<td style="width: 50%; text-align: right;">{{ data.createdInCity }} &nbsp;&nbsp;&nbsp;{{ data.date|date('Y-m-d') }}</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+<br><br><br>
+
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 60%;">
+
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 20%">Sprzedawca:</td>
+<td style="width: 80%">
+<b>{{ data.seller.title }}<br>
+{{ data.seller.address }}<br>
+{{ data.seller.zipcode }} {{ data.seller.city }}, NIP: {{ data.seller.nip }}<br></b>
+</td>
+</tr>
+<tr>
+<td style="width: 20%">Termin płatności:</td>
+<td style="width: 80%"><b>{{ data.dateOfPayment|date('Y-m-d') }}</b></td>
+</tr>
+<tr>
+<td style="width: 20%">Bank:</td>
+<td style="width: 80%"><b>{{ data.seller.bankName }}</b></td>
+</tr>
+<tr>
+<td style="width: 20%">Numer rachunku:</td>
+<td style="width: 80%"><b>{{ data.seller.bankAccount }}</b></td>
+</tr>
+</table>
+
+</td>
+<td style="width: 40%;">
+
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 25%">Nabywca:</td>
+<td style="width: 75%">
+<b>{{ data.client.title }}<br>
+ul. {{ data.client.address }}, {{ data.client.zipcode }} {{ data.client.city }}<br>
+{% if data.client.nip and data.client.nip > 0 %}NIP: {{ data.client.nip }}{% endif %}<br></b>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+<br><br>
+
+
+
+
+
+{% if data.productGroups %}
+<table cellpadding="0" cellspacing="0" style="width: 100%; color: #656565; font-size: 10px; line-height: 2.3;">
+{% for productGroup in data.productGroups %}
+<tr>
+{#<td bgcolor="#FBFBFB" style="border: 1px solid #d0d0d0;">#}
+<td>
+
+{% if productGroup.title %}
+{# START GROUP - GROUP TITLE #}
+<table cellpadding="0" cellspacing="0" style="width: 100%; color: #656565; font-size: 10px; line-height: 2.3;">
+<tr>
+<td style="width: 96%;"><span style="text-align: left; font-size: 9px; line-height: 1.8;"><b>Telefon: {{ productGroup.title }}</b></span></td>
+<td style="width: 4%;"></td>
+</tr>
+</table>
+{% endif %}
+
+<br>
+
+{# PRODUCTS #}
+<table cellpadding="5" cellspacing="0" style="width: 100%; color: #656565; font-size: 10px; line-height: 1.4;">
+{% include '@GCRMCRMBundle/invoices/product-heading-row.html.twig' %}
+{% for product in productGroup.products %}
+{% include '@GCRMCRMBundle/invoices/product.html.twig' %}
+{% endfor %}
+</table>
+<table cellpadding="5" cellspacing="0" style="width: 100%; color: #656565; font-size: 10px; line-height: 1.4;">
+<tr>
+<td style="width: 27%;"></td>
+<td style="width: 25%; color: white; text-align: right; font-weight: bold;" bgcolor="#2ebbc8">Razem wartość usług</td>
+<td style="width: 12%; color: white; text-align: right; font-weight: bold;" bgcolor="#2ebbc8">{{ data.productsGroupSummaryNetValue(productGroup.products)|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; color: white; text-align: right; font-weight: bold;" bgcolor="#2ebbc8">&nbsp;</td>
+<td style="width: 12%; color: white; text-align: right; font-weight: bold;" bgcolor="#2ebbc8">{{ data.productsGroupSummaryVatValue(productGroup.products)|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; color: white; text-align: right; font-weight: bold;" bgcolor="#2ebbc8">{{ data.productsGroupSummary(productGroup.products)|number_format(2, ',', '.') }}</td>
+</tr>
+</table>
+
+
+{# RABATES #}
+{% if productGroup.rabates|length %}
+<br><br>
+<table cellpadding="5" cellspacing="0" style="width: 100%; color: #656565; font-size: 10px; line-height: 1.8;">
+<tr>
+<td style="width: 4%; color: white;" bgcolor="#9C9C9C">Lp.</td>
+<td style="width: 48%; color: white;" bgcolor="#9C9C9C">Rabat</td>
+<td style="width: 12%; color: white; text-align: right;" bgcolor="#9C9C9C">Kwota netto</td>
+<td style="width: 12%; color: white; text-align: right;" bgcolor="#9C9C9C">Stawka VAT</td>
+<td style="width: 12%; color: white; text-align: right;" bgcolor="#9C9C9C">Kwota VAT</td>
+<td style="width: 12%; color: white; text-align: right;" bgcolor="#9C9C9C">Kwota brutto</td>
+</tr>
+{% for product in productGroup.rabates %}
+<tr>
+<td style="width: 4%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ loop.index }}</td>
+<td style="width: 48%;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.title }}</td>
+<td style="width: 12%; text-align: right;;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.netValue|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{% if product.vatPercentage %}{{ product.vatPercentage }}%{% else %}z. w.{% endif %}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.vatValue|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; text-align: right;" {% if loop.index % 2 == 0 %}bgcolor="#efefef"{% endif %}>{{ product.grossValue|number_format(2, ',', '.') }}</td>
+</tr>
+{% endfor %}
+</table>
+<table cellpadding="5" cellspacing="0" style="width: 100%; color: #656565; font-size: 10px; line-height: 1.4;">
+<tr>
+<td style="width: 27%;"></td>
+<td style="width: 25%; color: white; text-align: right; font-weight: bold;" bgcolor="#9C9C9C">Razem wartość rabatu</td>
+<td style="width: 12%; color: white; text-align: right; font-weight: bold;" bgcolor="#9C9C9C">-{{ data.productsGroupSummaryNetValue(productGroup.rabates)|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; color: white; text-align: right; font-weight: bold;" bgcolor="#9C9C9C">&nbsp;</td>
+<td style="width: 12%; color: white; text-align: right; font-weight: bold;" bgcolor="#9C9C9C">-{{ data.productsGroupSummaryVatValue(productGroup.rabates)|number_format(2, ',', '.') }}</td>
+<td style="width: 12%; color: white; text-align: right; font-weight: bold;" bgcolor="#9C9C9C">-{{ data.productsGroupSummary(productGroup.rabates)|number_format(2, ',', '.') }}</td>
+</tr>
+</table>
+<table cellpadding="5" cellspacing="0" style="width: 100%; color: #656565; font-size: 10px; line-height: 2.3;">
+<tr>
+<td style="width: 4%;"></td>
+<td style="width: 92%;"><span style="text-align: left; font-size: 9px; line-height: 1.8;">Szczegółowe informacje dotyczące rabatu znajdziecie Państwo w WARUNKI REGULAMINU PROMOCJI "ENERGIA I GAZ" "MULTI DOM".</span></td>
+<td style="width: 4%;"></td>
+</tr>
+</table>
+{% endif %}
+
+</td>
+</tr>
+<tr><td style="line-height: 1;"></td></tr>
+{% endfor %}{# endfor data.productGroups #}
+</table>{# table data.productGroups #}
+{% endif %}{# endif data.productGroups #}
+
+
+
+
+
+
+
+
+<br><br>
+<br><br>
+
+<table style="width: 100%;" cellpadding="0">
+<tr>
+<td style="width: 5%;"></td>
+<td style="width: 30%;">
+<div style="text-align: center;">
+<span style="font-size: 11px;">Sebastian Daszkiewicz</span><br>
+<span>..........................................................</span><br>
+<span style="font-size: 8px; font-style: italic; color: #656565;">Podpis osoby uprawnionej do wystawienia faktury</span><br>
+</div>
+</td>
+<td style="width: 30%;"></td>
+<td style="width: 30%;">
+<div style="text-align: center;">
+<span style="font-size: 11px;">&nbsp;</span><br>
+<span>..........................................................</span><br>
+<span style="font-size: 8px; font-style: italic; color: #656565;">Podpis osoby uprawnionej do odbioru faktury</span><br><br>
+</div>
+</td>
+<td style="width: 5%;"></td>
+</tr>
+</table>
+{% endspaceless %}
