@@ -141,6 +141,11 @@ services:
         tags:
             - { name: console.command }
 
+    GCRM\CRMBundle\Command\RemoveFromSpecificGroupCommand:
+        autowire: true
+        tags:
+            - { name: console.command }
+
 #    GCRM\CRMBundle\Form\ImporterPaymentsType:
 #        autowire: true
 
