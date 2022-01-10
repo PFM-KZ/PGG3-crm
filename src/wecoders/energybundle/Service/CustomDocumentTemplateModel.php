@@ -5,6 +5,7 @@ namespace Wecoders\EnergyBundle\Service;
 use Doctrine\ORM\EntityManager;
 use GCRM\CRMBundle\Entity\Client;
 use GCRM\CRMBundle\Entity\ContractEnergyBase;
+use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Wecoders\EnergyBundle\Entity\CustomDocumentTemplateAndDocument;
 
@@ -77,15 +78,16 @@ class CustomDocumentTemplateModel
         $street = $payerStreet;
         $houseNr = $payerHouseNr;
         $apartmentNr = $payerApartmentNr;
-
+        $brand = $contract->getBrand();
         $addressWithPrefix = $this->documentModel->manageAddress($city, $street, $houseNr, $apartmentNr, true);
-
+        $this->applyLogo($template, $this->documentModel->getLogoAbsolutePath($brand));
         $template->setValue('clientFullName', $clientFullName);
         $template->setValue('contractNumber', $contract->getContractNumber());
 
         $template->setValue('payerZipCode', $payerZipCode);
         $template->setValue('payerCity', $payerCity);
         $template->setValue('payerAddressWithPrefix', $addressWithPrefix);
+        $template->setValue('bankAccountNumber', $client->getBankAccountNumber());
 
         if (!file_exists($outputDirPath)) {
             mkdir($outputDirPath, 0777, true);
@@ -94,6 +96,15 @@ class CustomDocumentTemplateModel
         $outputFilePath = $outputDirPath . '/' . $filename;
         $template->saveAs($outputFilePath);
         shell_exec('unoconv -f pdf ' . $outputFilePath);
+    }
+
+    public function applyLogo(TemplateProcessor $template, $logoAbsolutePath)
+    {
+        $template->setImageValue('logo', [
+            'path' => $logoAbsolutePath,
+            'width' => 250,
+            'height' => 200,
+        ]);
     }
 
 }
