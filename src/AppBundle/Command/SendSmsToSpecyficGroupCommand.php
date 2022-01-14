@@ -12,6 +12,7 @@ use Smsapi\Client\Feature\Sms\Bag\SendSmsBag;
 use Smsapi\Client\SmsapiHttpClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use TZiebura\SmsBundle\Interfaces\SmsSenderInterface;
@@ -58,7 +59,8 @@ class SendSmsToSpecyficGroupCommand extends Command
 
     protected function configure()
     {
-        $this->setName('appbundle:send-sms-to-specific-group-in-file');
+        $this->setName('appbundle:send-sms-to-specific-group-in-file')
+        ->addArgument('filename', InputOption::VALUE_REQUIRED);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -66,8 +68,8 @@ class SendSmsToSpecyficGroupCommand extends Command
         $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
 
         $kernelRootDir = $this->container->get('kernel')->getRootDir();
-
-        $fileActual = $kernelRootDir . '/../var/data/send-sms/smstest.xlsx';
+        $name = $input->getArgument('filename');
+        $fileActual = $kernelRootDir . '/../var/data/send-sms/'.$name.'.xlsx';
 
         dump('Pobieranie kodów...');
         $rows = $this->spreadsheetReader->fetchRows('Xlsx', $fileActual, 1, 'A');
