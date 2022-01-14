@@ -16,6 +16,8 @@ class SmsTemplate extends BaseSmsTemplate
     const POST_PAYMENT_TEMPLATE = 1;
     const WELCOME_TEMPLATE = 2;
     const CUSTOM_DATE_OF_PAYMENT_TEMPLATE = 3;
+    const BANK_ACCOUNT_CHANGE = 4;
+
     /**
      * @ORM\Column(name="created_at", type="datetime")
      */
