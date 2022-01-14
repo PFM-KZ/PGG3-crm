@@ -236,6 +236,7 @@ class SmsClientGroupModel
             $tokensAndValues = array(
                 '{_dokumenty_}' => $documentsText,
                 '{_kwota_}' => $totalGrossValue,
+                '{_aktualny_nr_rachunku_bankowego_}' => $client->getBankAccountNumber()
             );
 
             
