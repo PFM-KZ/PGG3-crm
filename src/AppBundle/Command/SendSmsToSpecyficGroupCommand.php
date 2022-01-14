@@ -33,7 +33,6 @@ class SendSmsToSpecyficGroupCommand extends Command
     private $defaultBatchSize = 150;
 
 
-
     private $em;
     private $container;
     private $spreadsheetReader;
@@ -60,7 +59,7 @@ class SendSmsToSpecyficGroupCommand extends Command
     protected function configure()
     {
         $this->setName('appbundle:send-sms-to-specific-group-in-file')
-        ->addArgument('filename', InputOption::VALUE_REQUIRED);
+            ->addArgument('filename', InputOption::VALUE_REQUIRED);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -69,7 +68,7 @@ class SendSmsToSpecyficGroupCommand extends Command
 
         $kernelRootDir = $this->container->get('kernel')->getRootDir();
         $name = $input->getArgument('filename');
-        $fileActual = $kernelRootDir . '/../var/data/send-sms/'.$name.'.xlsx';
+        $fileActual = $kernelRootDir . '/../var/data/send-sms/' . $name . '.xlsx';
 
         dump('Pobieranie kodów...');
         $rows = $this->spreadsheetReader->fetchRows('Xlsx', $fileActual, 1, 'A');
@@ -84,13 +83,19 @@ class SendSmsToSpecyficGroupCommand extends Command
         foreach ($rows as $row) {
             $user = $this->clientRepository->find($row[0]);
 
+
+            $number = $user->getContactTelephoneNr() ? $user->getContactTelephoneNr() : $user->getTelephoneNr();
+
+            if (!$number) {
+                continue;
+            }
+
             $tokensAndValues = array(
                 '{_aktualny_nr_rachunku_bankowego_}' => $user->getBankAccountNumber()
             );
 
-            if ($user->getTelephoneNr())
-            {
-                $sms = SendSmsBag::withMessage($user->getTelephoneNr(), $this->replaceTokens($template, $tokensAndValues));
+            try {
+                $sms = SendSmsBag::withMessage($number, $this->replaceTokens($template, $tokensAndValues));
                 $sms->from = 'EnrexEnergy';
                 $sms->encoding = 'UTF-8';
 
@@ -98,7 +103,11 @@ class SendSmsToSpecyficGroupCommand extends Command
                     ->smsapiPlService($smsApiKey);
                 $service->smsFeature()
                     ->sendSms($sms);
+            } catch (\Exception $exception)
+            {
+                echo "Nie można wysłać SMS do pod numer telefonu ".$number.PHP_EOL;
             }
+
 
         }
 
@@ -113,11 +122,11 @@ class SendSmsToSpecyficGroupCommand extends Command
 
     private function replaceTokens($template, $tokensAndValues)
     {
-        if(!$template) {
+        if (!$template) {
             return '';
         }
         $message = $template->getMessage();
-        foreach($tokensAndValues as $token => $value) {
+        foreach ($tokensAndValues as $token => $value) {
             $message = str_replace($token, $value, $message);
         }
 
