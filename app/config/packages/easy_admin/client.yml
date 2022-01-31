@@ -47,6 +47,7 @@ easy_admin:
                     - { property: 'accountNumberIdentifier', label: 'Unikalny numer klienta (nowy)', type_options: { disabled: true } }
                     - { property: 'bankAccountNumber', label: 'Numer rachunku klienta', type_options: { disabled: true } }
                     - { property: 'previousBankAccountNumber', label: 'Poprzedni numer rachunku klienta', type_options: { disabled: true } }
+                    - { property: 'previousSecondBankAccountNumber', label: 'Poprzedni 2 numer rachunku klienta', type_options: { disabled: true } }
                     - { property: 'initialBalance', label: 'Saldo początkowe klienta', help: '+ oznacza, że klient ma nadpłatę / - oznacza do zapłaty' }
 
                     - { type: 'group', css_class: 'col-sm-12 col-md-6', label: 'Adres kontaktowy / korespondencyjny' }
