@@ -831,6 +831,29 @@ class Client implements SmsClientInterface, AccountNumberInterface
     private $previousBankAccountNumber;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="previous_second_bank_account_number", type="string", length=26, nullable=true)
+     */
+    private $previousSecondBankAccountNumber;
+
+    /**
+     * @return string
+     */
+    public function getPreviousSecondBankAccountNumber()
+    {
+        return $this->previousSecondBankAccountNumber;
+    }
+
+    /**
+     * @param string $previousSecondBankAccountNumber
+     */
+    public function setPreviousSecondBankAccountNumber($previousSecondBankAccountNumber)
+    {
+        $this->previousSecondBankAccountNumber = $previousSecondBankAccountNumber;
+    }
+
+    /**
      * @return string
      */
     public function getPreviousBankAccountNumber()
